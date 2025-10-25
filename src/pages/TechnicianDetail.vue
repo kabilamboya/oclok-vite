@@ -1,5 +1,5 @@
 <template>
-  <div class="detail-page">
+  <div class="detail-page" v-if="technician">
     <!-- Back Button -->
     <button class="back-btn" @click="$router.push('/technicians')">
       ⬅ Back to Technicians
@@ -18,63 +18,61 @@
           <p><strong>📍 Location:</strong> {{ technician.location }}</p>
         </div>
       </div>
+    </div>
 
     <!-- Dashboard -->
-    <div class="dashboard">
+    <div class="dashboard" v-if="technician.projects">
       <h2>📊 Project Dashboard</h2>
       <canvas id="projectsChart"></canvas>
     </div>
-    </div>
 
-<!-- Projects Sections -->
-<div class="projects">
+    <!-- Projects Sections -->
+    <div class="projects">
+      <!-- Ongoing -->
+      <div class="project-category" v-if="technician.projects.continuing.length">
+        <h2>Ongoing Projects</h2>
+        <div class="grid">
+          <div 
+            v-for="(proj, idx) in technician.projects.continuing" 
+            :key="`c-${idx}`" 
+            class="project-card"
+          >
+            <h3>{{ proj }}</h3>
+          </div>
+        </div>
+      </div>
 
-  <!-- Ongoing Projects (Grid) -->
-  <div class="project-category" v-if="technician.projects.continuing.length">
-    <h2>Ongoing Projects</h2>
-    <div class="grid">
-      <div 
-        v-for="(proj, idx) in technician.projects.continuing" 
-        :key="`c-${idx}`" 
-        class="project-card"
-      >
-        <h3>{{ proj }}</h3>
+      <!-- Under Review -->
+      <div class="project-category" v-if="technician.projects.review.length">
+        <h2>Projects Under Review</h2>
+        <div class="mixed-layout">
+          <div 
+            v-for="(proj, idx) in technician.projects.review" 
+            :key="`r-${idx}`" 
+            class="project-box"
+          >
+            <span>{{ proj }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed -->
+      <div class="project-category" v-if="technician.projects.completed.length">
+        <h2>Completed Projects</h2>
+        <ul class="completed-list">
+          <li 
+            v-for="(proj, idx) in technician.projects.completed" 
+            :key="`done-${idx}`"
+          >
+            ✔ {{ proj }}
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
-
-  <!-- Projects Under Review (Mixed layout) -->
-  <div class="project-category" v-if="technician.projects.review.length">
-    <h2>Projects Under Review</h2>
-    <div class="mixed-layout">
-      <div 
-        v-for="(proj, idx) in technician.projects.review" 
-        :key="`r-${idx}`" 
-        class="project-box"
-      >
-        <span>{{ proj }}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Completed Projects (List) -->
-  <div class="project-category" v-if="technician.projects.completed.length">
-    <h2>Completed Projects</h2>
-    <ul class="completed-list">
-      <li 
-        v-for="(proj, idx) in technician.projects.completed" 
-        :key="`done-${idx}`"
-      >
-        ✔ {{ proj }}
-      </li>
-    </ul>
-  </div>
-</div>
   </div>
 </template>
 
 <script>
-import technicians from "../data/technicians.json";
 import { Chart, registerables } from "chart.js";
 Chart.register(...registerables);
 
@@ -85,18 +83,27 @@ export default {
       technician: null,
     };
   },
-  created() {
-    const id = parseInt(this.$route.params.id);
-    this.technician = technicians.find((t) => t.id === id);
-  },
   mounted() {
-    if (this.technician) {
-      this.renderChart();
-    }
+    const id = parseInt(this.$route.params.id);
+
+    // Fetch from public folder instead of importing
+    fetch("/technicians.json")
+      .then((res) => res.json())
+      .then((data) => {
+        this.technician = data.find((t) => t.id === id);
+        if (this.technician) {
+          this.$nextTick(() => {
+            this.renderChart();
+          });
+        }
+      })
+      .catch((err) => console.error("Error loading technician details:", err));
   },
   methods: {
     renderChart() {
       const ctx = document.getElementById("projectsChart");
+      if (!ctx) return;
+
       const data = {
         labels: ["Ongoing", "Under Review", "Completed"],
         datasets: [
@@ -235,60 +242,4 @@ export default {
     height: 180px;
   }
 }
-
-
-.projects {
-  margin-top: 20px;
-}
-
-.project-category {
-  margin-bottom: 30px;
-}
-
-.project-category h2 {
-  margin-bottom: 10px;
-}
-
-/* Grid for ongoing */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
-}
-
-.project-card {
-  background: #2d2d2d;
-  padding: 15px;
-  border-radius: 10px;
-  color: #fff;
-  text-align: center;
-}
-
-/* Mixed layout for review */
-.mixed-layout {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.project-box {
-  background: #444;
-  padding: 10px 15px;
-  border-radius: 8px;
-  flex: 1 1 200px;
-  color: #fff;
-}
-
-/* Completed list */
-.completed-list {
-  list-style: none;
-  padding: 0;
-}
-
-.completed-list li {
-  padding: 8px 0;
-  border-bottom: 1px solid #333;
-  color: #aaa;
-}
-
 </style>

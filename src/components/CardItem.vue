@@ -1,33 +1,38 @@
 <template>
-  <div 
-    class="card"
-    :class="`card--${item.color || 'default'}`"
-    @click="$router.push(`/${type}/${item.id}`)"
-  >
-    <!-- Optional Icon -->
-    <i v-if="item.icon" :class="['fas', item.icon, 'service-icon']"></i>
+  <div class="card" :style="{ borderTop: '5px solid ' + item.color }">
+    <img :src="item.image" :alt="item.name" class="card-img" />
 
-    <!-- Image -->
-    <img v-if="item.image" :src="item.image" :alt="item.title || item.name" />
+    <div class="card-body">
+      <h3 class="card-name">{{ item.name }}</h3>
+      <p class="card-specialty">{{ item.specialty }}</p>
+      <p class="card-location">📍 {{ item.location }}</p>
 
-    <!-- Title -->
-    <h2>{{ item.title || item.name }}</h2>
+      <p class="card-bio">
+        {{ item.bio.length > 100 ? item.bio.slice(0, 100) + '...' : item.bio }}
+      </p>
 
-    <!-- Description -->
-    <p v-if="item.description">{{ item.description }}</p>
+      <div class="card-experience">
+        <strong>{{ item.experience }}</strong> years experience
+      </div>
 
-    <!-- Type-specific fields -->
-    <div v-if="type === 'products'" class="extra">
-      <p><strong>Price:</strong> {{ item.price ? `KSh ${item.price}` : 'Contact us' }}</p>
+      <div class="card-projects">
+        <details>
+          <summary>Projects</summary>
+          <ul>
+            <li v-for="(list, key) in item.projects" :key="key">
+              <strong>{{ key }}:</strong>
+              <ul>
+                <li v-for="p in list" :key="p">{{ p }}</li>
+              </ul>
+            </li>
+          </ul>
+        </details>
+      </div>
     </div>
 
-    <div v-if="type === 'technicians'" class="extra">
-      <p><strong>Specialty:</strong> {{ item.specialty }}</p>
-      <p><strong>Experience:</strong> {{ item.experience }} years</p>
-    </div>
-
-    <div v-if="type === 'services'" class="extra">
-      <p><strong>Category:</strong> {{ item.category || 'General' }}</p>
+    <div class="card-footer">
+      <button class="book-btn" @click="$emit('book', item)">Book</button>
+      <a :href="'mailto:' + item.contact.email" class="contact-btn">Email</a>
     </div>
   </div>
 </template>
@@ -36,56 +41,111 @@
 export default {
   name: "CardItem",
   props: {
-    item: { type: Object, required: true },
-    type: { type: String, required: true } // "services", "products", "technicians"
-  }
+    item: {
+      type: Object,
+      required: true,
+    },
+  },
 };
 </script>
 
 <style scoped>
 .card {
-  /* let flex parent control width, just set max-width */
-  max-width: 260px;
-  padding: 20px;
-  border-radius: 16px;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-  text-align: center;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin: 12px 0;
-}
-
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.service-icon {
-  font-size: 30px;
-  margin-bottom: 10px;
+.card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
 }
 
-.extra {
-  margin-top: 10px;
-  font-size: 14px;
-  background: rgba(255,255,255,0.1);
-  padding: 6px;
+.card-body {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.card-name {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.card-specialty {
+  color: #555;
+  font-weight: bold;
+}
+
+.card-location {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 0.5rem;
+}
+
+.card-bio {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.card-experience {
+  font-size: 0.9rem;
+  color: #222;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-projects details {
+  background: #f9f9f9;
   border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
 }
 
-/* Color Variants */
-.card--green { background: linear-gradient(135deg, #34a853, #0f9d58); }
-.card--purple { background: linear-gradient(135deg, #8e24aa, #5e35b1); }
-.card--yellow { background: linear-gradient(135deg, #f4b400, #fdd835); color: #333; }
-.card--orange { background: linear-gradient(135deg, #f4511e, #fb8c00); }
-.card--blue { background: linear-gradient(135deg, #1e88e5, #3949ab); }
-.card--default { background: #555; }
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.book-btn,
+.contact-btn {
+  flex: 1;
+  text-align: center;
+  margin: 0 0.25rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.book-btn {
+  background: #007bff;
+  color: #fff;
+}
+.book-btn:hover {
+  background: #0056b3;
+}
+
+.contact-btn {
+  background: #28a745;
+  color: #fff;
+  text-decoration: none;
+}
+.contact-btn:hover {
+  background: #1e7e34;
+}
 </style>
