@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "title": "Delibois Delivery",
+    "category": "Delivery",
+    "description": [
+      "Fast, reliable, and affordable delivery services right at your doorstep.",
+      "We handle packages with care and track them in real time.",
+      "Your convenience is our top priority."
+    ],
+    "icon": "fa-truck",
+    "image": "/images/45.jpg",
+    "color": "blue"
+  },
+  {
+    "id": 2,
+    "title": "Graphic & Website Design",
+    "category": "Creative",
+    "description": [
+      "We design modern, user-friendly websites and creative graphics.",
+      "Our focus is on clean aesthetics and brand consistency.",
+      "Get designs that speak your identity and engage your audience."
+    ],
+    "icon": "fa-paint-brush",
+    "image": "/images/45.jpg",
+    "color": "purple"
+  },
+  {
+    "id": 3,
+    "title": "Online Cyber Services",
+    "category": "Security",
+    "description": [
+      "Secure and accessible online cyber café services.",
+      "We provide printing, scanning, browsing, and cloud access.",
+      "Trusted solutions for students, professionals, and businesses."
+    ],
+    "icon": "fa-shield-alt",
+    "image": "/images/45.jpg",
+    "color": "orange"
+  },
+  {
+    "id": 4,
+    "title": "Telecommunications Networking",
+    "category": "Infrastructure",
+    "description": [
+      "We set up and maintain strong telecom and networking solutions.",
+      "From cabling to wireless setups, we connect you seamlessly.",
+      "Trusted infrastructure for businesses and communities."
+    ],
+    "icon": "fa-network-wired",
+    "image": "/images/45.jpg",
+    "color": "green"
+  },
+  {
+    "id": 5,
+    "title": "O!clok Media",
+    "category": "Smart Tech",
+    "description": [
+      "Your one-stop hub for podcasts, blogs, and digital media services.",
+      "We blend storytelling with technology to amplify your voice.",
+      "Stay connected, informed, and inspired with O!clok Media."
+    ],
+    "icon": "fa-bullhorn",
+    "image": "/images/45.jpg",
+    "color": "yellow"
+  },
+  {
+    "id": 6,
+    "title": "IoT Connectivity & AI Solutions",
+    "category": "Innovation",
+    "description": [
+      "We bring smart IoT and AI-driven solutions to your business.",
+      "Automate workflows, improve efficiency, and stay future-ready.",
+      "Our team blends innovation with practicality."
+    ],
+    "icon": "fa-robot",
+    "image": "/images/45.jpg",
+    "color": "red"
+  }
+]

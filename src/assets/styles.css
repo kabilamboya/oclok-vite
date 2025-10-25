@@ -1,0 +1,118 @@
+/* src/assets/styles.css */
+
+/* General */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #fefdf9;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+/* Section Headings */
+h1, h2 {
+  font-weight: 700;
+  color: #2c2c2c;
+  margin-bottom: 1rem;
+  border-left: 6px solid #ff6f00;
+  padding-left: 12px;
+}
+
+/* Cards List Parent */
+.cards-container {
+  display: flex;          /* flex layout */
+  flex-wrap: wrap;        /* allow wrapping to next line */
+  gap: 1.8rem;
+  margin: 2rem 0;
+  justify-content: flex-start;
+}
+
+/* Individual Card */
+.card {
+  flex: 0 0 calc(20% - 14.4px); /* 5 cards per row, minus gap adjustment */
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border-top: 6px solid #43a047; /* Default green accent */
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Accent Border Variants */
+.card:nth-child(1) { border-top-color: #ff6f00; } 
+.card:nth-child(2) { border-top-color: #fdd835; } 
+.card:nth-child(3) { border-top-color: #43a047; } 
+.card:nth-child(4) { border-top-color: #8e24aa; } 
+.card:nth-child(5) { border-top-color: #ff6f00; } 
+.card:nth-child(6) { border-top-color: #fdd835; } 
+
+/* Card Hover */
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.15);
+}
+
+/* Card Image */
+.card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+/* Card Title */
+.card h3 {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+  color: #2c2c2c;
+  font-weight: 600;
+}
+
+/* Card Subtitle */
+.card p {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Section Background with subtle pattern */
+section {
+  padding: 2rem;
+  background: linear-gradient(135deg, #fffaf3 0%, #fefae0 100%);
+  background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  background-size: 200px;
+}
+
+/* Responsive Breakpoints */
+
+/* Medium screens: 4 cards per row */
+@media (max-width: 1200px) {
+  .card {
+    flex: 0 0 calc(25% - 15px);
+  }
+}
+
+/* Small screens: 3 cards per row */
+@media (max-width: 900px) {
+  .card {
+    flex: 0 0 calc(33.333% - 13px);
+  }
+}
+
+/* Extra small screens: 2 cards per row */
+@media (max-width: 600px) {
+  .card {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+
+/* Very small screens: 1 card per row */
+@media (max-width: 400px) {
+  .card {
+    flex: 0 0 100%;
+  }
+}

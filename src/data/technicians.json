@@ -1,0 +1,389 @@
+[
+  {
+    "id": 1,
+    "name": "James Kariuki",
+    "specialty": "Electrical Systems",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 7,
+    "color": "blue",
+    "bio": "James is a certified electrician with over 7 years of experience in commercial and residential systems.",
+    "contact": { "phone": "+254 700 111 222", "email": "james.kariuki@example.com" },
+    "location": "Nairobi, Kenya",
+    "projects": {
+      "continuing": ["Hospital wiring upgrade", "Office smart lighting system"],
+      "review": ["University power grid assessment"],
+      "completed": ["Residential solar installation", "Mall electrical maintenance"]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Grace Njeri",
+    "specialty": "HVAC & Refrigeration",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 5,
+    "color": "green",
+    "bio": "Grace specializes in HVAC systems with 5 years of hands-on experience in refrigeration and climate control.",
+    "contact": { "phone": "+254 700 222 333", "email": "grace.njeri@example.com" },
+    "location": "Nakuru, Kenya",
+    "projects": {
+      "continuing": ["Shopping mall HVAC installation"],
+      "review": ["Hospital cold room design"],
+      "completed": ["Supermarket refrigeration system", "Residential AC setup"]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Samuel Otieno",
+    "specialty": "Networking & Cabling",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 9,
+    "color": "orange",
+    "bio": "Samuel is an expert in structured cabling and network design with nearly a decade of experience.",
+    "contact": { "phone": "+254 700 333 444", "email": "samuel.otieno@example.com" },
+    "location": "Kisumu, Kenya",
+    "projects": {
+      "continuing": ["Corporate LAN redesign"],
+      "review": ["Fiber optic backbone assessment"],
+      "completed": ["Campus WiFi deployment", "Office cabling system"]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Linet Wambui",
+    "specialty": "Computer Hardware Repairs",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 6,
+    "color": "purple",
+    "bio": "Linet provides expert repair and maintenance of desktops, laptops, and peripheral devices.",
+    "contact": { "phone": "+254 700 444 555", "email": "linet.wambui@example.com" },
+    "location": "Thika, Kenya",
+    "projects": {
+      "continuing": ["Corporate computer lab maintenance"],
+      "review": ["Laptop refurbishment program"],
+      "completed": ["Printer repair rollout", "SME desktop upgrades"]
+    }
+  },
+  {
+    "id": 5,
+    "name": "David Mwangi",
+    "specialty": "Solar Installation",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 8,
+    "color": "teal",
+    "bio": "David is a renewable energy technician focused on residential and commercial solar solutions.",
+    "contact": { "phone": "+254 700 555 666", "email": "david.mwangi@example.com" },
+    "location": "Eldoret, Kenya",
+    "projects": {
+      "continuing": ["Factory solar panel expansion"],
+      "review": ["Community solar microgrid feasibility"],
+      "completed": ["Residential rooftop solar", "Solar-powered water pump system"]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Mary Achieng",
+    "specialty": "CCTV & Security Systems",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 4,
+    "color": "red",
+    "bio": "Mary is a security systems expert with experience in CCTV, alarms, and biometric systems.",
+    "contact": { "phone": "+254 700 666 777", "email": "mary.achieng@example.com" },
+    "location": "Mombasa, Kenya",
+    "projects": {
+      "continuing": ["City council CCTV expansion"],
+      "review": ["Bank security audit"],
+      "completed": ["Retail surveillance system", "Office access control"]
+    }
+  },
+
+  {
+    "id": 7,
+    "name": "John Mutiso",
+    "specialty": "Electrical Systems",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 10,
+    "color": "blue",
+    "bio": "John is an experienced electrician handling industrial projects across Kenya.",
+    "contact": { "phone": "+254 711 111 333", "email": "john.mutiso@example.com" },
+    "location": "Machakos, Kenya",
+    "projects": {
+      "continuing": ["Factory wiring upgrade"],
+      "review": ["Airport power backup design"],
+      "completed": ["Residential apartments wiring", "Industrial power distribution"]
+    }
+  },
+  {
+    "id": 8,
+    "name": "Cynthia Wairimu",
+    "specialty": "HVAC & Refrigeration",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 7,
+    "color": "green",
+    "bio": "Cynthia specializes in large-scale refrigeration and hospital cooling systems.",
+    "contact": { "phone": "+254 711 222 444", "email": "cynthia.wairimu@example.com" },
+    "location": "Nyeri, Kenya",
+    "projects": {
+      "continuing": ["Cold storage plant upgrade"],
+      "review": ["Hospital ICU cooling assessment"],
+      "completed": ["Restaurant refrigeration setup", "Office central AC system"]
+    }
+  },
+  {
+    "id": 9,
+    "name": "Peter Ndegwa",
+    "specialty": "Networking & Cabling",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 12,
+    "color": "orange",
+    "bio": "Peter has designed and deployed enterprise networks for multinational companies.",
+    "contact": { "phone": "+254 711 333 555", "email": "peter.ndegwa@example.com" },
+    "location": "Nairobi, Kenya",
+    "projects": {
+      "continuing": ["5G-ready campus network"],
+      "review": ["Corporate WAN optimization"],
+      "completed": ["Government office fiber cabling", "NGO headquarters WiFi"]
+    }
+  },
+  {
+    "id": 10,
+    "name": "Lucy Muthoni",
+    "specialty": "Computer Hardware Repairs",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 5,
+    "color": "purple",
+    "bio": "Lucy is skilled in maintaining office computers and peripherals for SMEs.",
+    "contact": { "phone": "+254 711 444 666", "email": "lucy.muthoni@example.com" },
+    "location": "Meru, Kenya",
+    "projects": {
+      "continuing": ["School computer lab maintenance"],
+      "review": ["Corporate hardware asset tracking"],
+      "completed": ["Printer repairs", "Desktop and laptop servicing"]
+    }
+  },
+  {
+    "id": 11,
+    "name": "Anthony Kiprop",
+    "specialty": "Solar Installation",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 6,
+    "color": "teal",
+    "bio": "Anthony focuses on rural electrification projects using solar energy.",
+    "contact": { "phone": "+254 711 555 777", "email": "anthony.kiprop@example.com" },
+    "location": "Kericho, Kenya",
+    "projects": {
+      "continuing": ["Tea estate solar lighting"],
+      "review": ["Rural school solar power"],
+      "completed": ["Village water pump solar system", "Community hall solar lighting"]
+    }
+  },
+  {
+    "id": 12,
+    "name": "Sarah Naliaka",
+    "specialty": "CCTV & Security Systems",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 8,
+    "color": "red",
+    "bio": "Sarah has deployed advanced surveillance systems for corporate and public institutions.",
+    "contact": { "phone": "+254 711 666 888", "email": "sarah.naliaka@example.com" },
+    "location": "Kakamega, Kenya",
+    "projects": {
+      "continuing": ["University CCTV expansion"],
+      "review": ["County hall security upgrade"],
+      "completed": ["Bank security system", "Hotel surveillance network"]
+    }
+  },
+
+  {
+    "id": 13,
+    "name": "Brian Kibet",
+    "specialty": "Electrical Systems",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 11,
+    "color": "blue",
+    "bio": "Brian is a licensed electrician focusing on industrial and construction projects.",
+    "contact": { "phone": "+254 722 111 444", "email": "brian.kibet@example.com" },
+    "location": "Nakuru, Kenya",
+    "projects": {
+      "continuing": ["High-voltage line installation"],
+      "review": ["Data center power upgrade"],
+      "completed": ["Factory rewiring", "Industrial plant power maintenance"]
+    }
+  },
+  {
+    "id": 14,
+    "name": "Joyce Atieno",
+    "specialty": "HVAC & Refrigeration",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 9,
+    "color": "green",
+    "bio": "Joyce works with commercial refrigeration for supermarkets and hotels.",
+    "contact": { "phone": "+254 722 222 555", "email": "joyce.atieno@example.com" },
+    "location": "Kisumu, Kenya",
+    "projects": {
+      "continuing": ["Hotel AC installation"],
+      "review": ["Cold storage warehouse design"],
+      "completed": ["Restaurant cooling system", "Supermarket refrigeration"]
+    }
+  },
+  {
+    "id": 15,
+    "name": "Kevin Mworia",
+    "specialty": "Networking & Cabling",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 8,
+    "color": "orange",
+    "bio": "Kevin specializes in structured cabling for offices and residential estates.",
+    "contact": { "phone": "+254 722 333 666", "email": "kevin.mworia@example.com" },
+    "location": "Embu, Kenya",
+    "projects": {
+      "continuing": ["Estate LAN setup"],
+      "review": ["County government WAN"],
+      "completed": ["School network deployment", "Hospital WiFi setup"]
+    }
+  },
+  {
+    "id": 16,
+    "name": "Esther Njoki",
+    "specialty": "Computer Hardware Repairs",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 6,
+    "color": "purple",
+    "bio": "Esther is a computer technician experienced in diagnostics and component replacement.",
+    "contact": { "phone": "+254 722 444 777", "email": "esther.njoki@example.com" },
+    "location": "Nairobi, Kenya",
+    "projects": {
+      "continuing": ["NGO office IT support"],
+      "review": ["Corporate laptop upgrade plan"],
+      "completed": ["SME desktop maintenance", "Printer servicing contract"]
+    }
+  },
+  {
+    "id": 17,
+    "name": "Felix Barasa",
+    "specialty": "Solar Installation",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 7,
+    "color": "teal",
+    "bio": "Felix develops solar microgrid systems for schools and rural communities.",
+    "contact": { "phone": "+254 722 555 888", "email": "felix.barasa@example.com" },
+    "location": "Busia, Kenya",
+    "projects": {
+      "continuing": ["Community solar project"],
+      "review": ["School solar electrification"],
+      "completed": ["Solar water heating", "Rural clinic solar setup"]
+    }
+  },
+  {
+    "id": 18,
+    "name": "Mercy Wanja",
+    "specialty": "CCTV & Security Systems",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 5,
+    "color": "red",
+    "bio": "Mercy is a specialist in security systems for residential estates.",
+    "contact": { "phone": "+254 722 666 999", "email": "mercy.wanja@example.com" },
+    "location": "Naivasha, Kenya",
+    "projects": {
+      "continuing": ["Estate surveillance setup"],
+      "review": ["Retail CCTV upgrade"],
+      "completed": ["ATM monitoring system", "School security system"]
+    }
+  },
+
+  {
+    "id": 19,
+    "name": "Daniel Oloo",
+    "specialty": "Electrical Systems",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 15,
+    "color": "blue",
+    "bio": "Daniel has over 15 years’ experience in electrical engineering and systems.",
+    "contact": { "phone": "+254 733 111 555", "email": "daniel.oloo@example.com" },
+    "location": "Kisii, Kenya",
+    "projects": {
+      "continuing": ["Hydropower station wiring"],
+      "review": ["Municipal lighting project"],
+      "completed": ["Stadium lighting", "Industrial electrical systems"]
+    }
+  },
+  {
+    "id": 20,
+    "name": "Patricia Nduta",
+    "specialty": "HVAC & Refrigeration",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 10,
+    "color": "green",
+    "bio": "Patricia specializes in refrigeration and cooling systems for pharmaceuticals.",
+    "contact": { "phone": "+254 733 222 666", "email": "patricia.nduta@example.com" },
+    "location": "Nairobi, Kenya",
+    "projects": {
+      "continuing": ["Pharmaceutical cold storage"],
+      "review": ["Hospital cooling assessment"],
+      "completed": ["Medical lab refrigeration", "Blood bank cold rooms"]
+    }
+  },
+  {
+    "id": 21,
+    "name": "Stephen Kibe",
+    "specialty": "Networking & Cabling",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 13,
+    "color": "orange",
+    "bio": "Stephen is a network architect with extensive government projects.",
+    "contact": { "phone": "+254 733 333 777", "email": "stephen.kibe@example.com" },
+    "location": "Nairobi, Kenya",
+    "projects": {
+      "continuing": ["County ICT backbone"],
+      "review": ["Fiber network expansion"],
+      "completed": ["Government WAN", "Public WiFi projects"]
+    }
+  },
+  {
+    "id": 22,
+    "name": "Agnes Wanjiru",
+    "specialty": "Computer Hardware Repairs",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 9,
+    "color": "purple",
+    "bio": "Agnes provides laptop and desktop repair services across universities and companies.",
+    "contact": { "phone": "+254 733 444 888", "email": "agnes.wanjiru@example.com" },
+    "location": "Thika, Kenya",
+    "projects": {
+      "continuing": ["University IT maintenance"],
+      "review": ["NGO hardware replacement"],
+      "completed": ["Corporate PC upgrades", "Peripheral servicing"]
+    }
+  },
+  {
+    "id": 23,
+    "name": "Collins Rono",
+    "specialty": "Solar Installation",
+    "image": "/images/dummy-pic.jpg",
+    "experience": 12,
+    "color": "teal",
+    "bio": "Collins designs and installs hybrid solar solutions for businesses.",
+    "contact": { "phone": "+254 733 555 999", "email": "collins.rono@example.com" },
+    "location": "Nakuru, Kenya",
+    "projects": {
+      "continuing": ["Commercial hybrid solar project"],
+      "review": ["School solar expansion"],
+      "completed": ["Retail solar backup", "Clinic solar system"]
+    }
+  },
+  {
+    "id": 24,
+    "name": "Naomi Chebet",
+    "specialty": "CCTV & Security Systems",
+    "image": "/images/dummy-profile-pic-man.jpg",
+    "experience": 7,
+    "color": "red",
+    "bio": "Naomi secures government offices and public infrastructure with CCTV systems.",
+    "contact": { "phone": "+254 733 666 000", "email": "naomi.chebet@example.com" },
+    "location": "Eldoret, Kenya",
+    "projects": {
+      "continuing": ["County hall CCTV setup"],
+      "review": ["Public market surveillance"],
+      "completed": ["Court security system", "Railway station monitoring"]
+    }
+  }
+]

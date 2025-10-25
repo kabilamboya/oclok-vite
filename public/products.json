@@ -1,0 +1,713 @@
+[
+  {
+    "id": 1,
+    "name": "Smartphone X200",
+    "price": 65000,
+    "description": "High-performance smartphone with 5G and AMOLED display.",
+    "image": "/images/23.jpg",
+    "brand": "Generic Brand",
+    "model": "Model-1",
+    "weight": "N/A",
+    "dimensions": "N/A",
+    "warranty": "6 Months Warranty",
+    "specs": [
+      "Default Spec 1",
+      "Default Spec 2",
+      "Default Spec 3"
+    ],
+    "howToUse": [
+      "Unbox the product",
+      "Read the manual before use",
+      "Power on and enjoy"
+    ],
+    "dos": [
+      "Keep in a dry place",
+      "Handle with care",
+      "Use original accessories"
+    ],
+    "donts": [
+      "Do not expose to water",
+      "Avoid dropping the product",
+      "Do not disassemble"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Smartwatch Pro",
+    "price": 3000,
+    "description": "Track fitness, notifications, and heart rate on the go.",
+    "image": "/images/6.jpeg",
+    "brand": "Generic Brand",
+    "model": "Model-1",
+    "weight": "N/A",
+    "dimensions": "N/A",
+    "warranty": "6 Months Warranty",
+    "specs": [
+      "Default Spec 1",
+      "Default Spec 2",
+      "Default Spec 3"
+    ],
+    "howToUse": [
+      "Unbox the product",
+      "Read the manual before use",
+      "Power on and enjoy"
+    ],
+    "dos": [
+      "Keep in a dry place",
+      "Handle with care",
+      "Use original accessories"
+    ],
+    "donts": [
+      "Do not expose to water",
+      "Avoid dropping the product",
+      "Do not disassemble"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Wireless Earbuds",
+    "price": 1000,
+    "description": "Noise-cancelling true wireless stereo earbuds.",
+    "image": "/images/17.jpg",
+    "brand": "Generic Brand",
+    "model": "Model-1",
+    "weight": "N/A",
+    "dimensions": "N/A",
+    "warranty": "6 Months Warranty",
+    "specs": [
+      "Default Spec 1",
+      "Default Spec 2",
+      "Default Spec 3"
+    ],
+    "howToUse": [
+      "Unbox the product",
+      "Read the manual before use",
+      "Power on and enjoy"
+    ],
+    "dos": [
+      "Keep in a dry place",
+      "Handle with care",
+      "Use original accessories"
+    ],
+    "donts": [
+      "Do not expose to water",
+      "Avoid dropping the product",
+      "Do not disassemble"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Smart Glasses",
+    "price": 45000,
+    "description": "Augmented reality glasses with voice assistant.",
+    "image": "/images/4.jpg",
+    "brand": "Generic Brand",
+    "model": "Model-1",
+    "weight": "N/A",
+    "dimensions": "N/A",
+    "warranty": "6 Months Warranty",
+    "specs": [
+      "Default Spec 1",
+      "Default Spec 2",
+      "Default Spec 3"
+    ],
+    "howToUse": [
+      "Unbox the product",
+      "Read the manual before use",
+      "Power on and enjoy"
+    ],
+    "dos": [
+      "Keep in a dry place",
+      "Handle with care",
+      "Use original accessories"
+    ],
+    "donts": [
+      "Do not expose to water",
+      "Avoid dropping the product",
+      "Do not disassemble"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Smart Drone Pro",
+    "price": 55000,
+    "description": "Slim tablet with stylus support and 120Hz display.",
+    "image": "/images/45.jpg",
+    "brand": "Generic Brand",
+    "model": "Model-1",
+    "weight": "N/A",
+    "dimensions": "N/A",
+    "warranty": "6 Months Warranty",
+    "specs": [
+      "Default Spec 1",
+      "Default Spec 2",
+      "Default Spec 3"
+    ],
+    "howToUse": [
+      "Unbox the product",
+      "Read the manual before use",
+      "Power on and enjoy"
+    ],
+    "dos": [
+      "Keep in a dry place",
+      "Handle with care",
+      "Use original accessories"
+    ],
+    "donts": [
+      "Do not expose to water",
+      "Avoid dropping the product",
+      "Do not disassemble"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Smart Speaker Mini",
+    "price": 3500,
+    "description": "Compact smart speaker with voice assistant.",
+    "image": "/images/30.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 7,
+    "name": "Wireless Mouse",
+    "price": 500,
+    "description": "Color-changing WiFi-enabled smart light bulb.",
+    "image": "/images/7.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 8,
+    "name": "Smart Plug",
+    "price": 2000,
+    "description": "Control appliances remotely with mobile app.",
+    "image": "/images/16.png",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 9,
+    "name": "Smart Thermostat",
+    "price": 12000,
+    "description": "Energy-saving thermostat with app control.",
+    "image": "/images/9.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 10,
+    "name": "Smart Door Lock",
+    "price": 18000,
+    "description": "Fingerprint and app-controlled door lock.",
+    "image": "/images/10.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+
+  {
+    "id": 11,
+    "name": "Smart Security Camera",
+    "price": 15000,
+    "description": "HD WiFi camera with night vision.",
+    "image": "/images/11.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 12,
+    "name": "Smart Vacuum Robot",
+    "price": 32000,
+    "description": "Automatic robot vacuum with mapping tech.",
+    "image": "/images/12.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 13,
+    "name": "Smart Fridge",
+    "price": 85000,
+    "description": "IoT refrigerator with touchscreen and inventory tracking.",
+    "image": "/images/13.png",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 14,
+    "name": "Smart Oven",
+    "price": 40000,
+    "description": "WiFi-enabled oven with recipe integration.",
+    "image": "/images/144.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 15,
+    "name": "Smart Coffee Maker",
+    "price": 18000,
+    "description": "App-controlled coffee brewing system.",
+    "image": "/images/15.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+
+  {
+    "id": 16,
+    "name": "Smart Air Purifier",
+    "price": 25000,
+    "description": "HEPA air purifier with IoT app controls.",
+    "image": "/images/13.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 17,
+    "name": "Smart Scale",
+    "price": 6000,
+    "description": "Body composition scale with Bluetooth sync.",
+    "image": "/images/17.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 18,
+    "name": "Fitness Tracker Band",
+    "price": 7000,
+    "description": "Lightweight tracker for steps, sleep, and calories.",
+    "image": "/images/18.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 19,
+    "name": "Smart Blood Pressure Monitor",
+    "price": 12000,
+    "description": "Medical-grade monitor with app history.",
+    "image": "/images/19.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 20,
+    "name": "Smart Ring",
+    "price": 15000,
+    "description": "Wearable IoT ring for activity & wellness tracking.",
+    "image": "/images/20.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+
+  {
+    "id": 21,
+    "name": "Gaming Console",
+    "price": 60000,
+    "description": "Next-gen gaming console with 4K support.",
+    "image": "/images/21.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 22,
+    "name": "Starlink",
+    "price": 75000,
+    "description": "4K internet speed - accessible remotely.",
+    "image": "/images/2.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 23,
+    "name": "Smart TV 55”",
+    "price": 68000,
+    "description": "4K HDR Smart TV with streaming apps built-in.",
+    "image": "/images/23.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 24,
+    "name": "VR Headset",
+    "price": 40000,
+    "description": "Immersive virtual reality headset for gaming.",
+    "image": "/images/1.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 25,
+    "name": "Smart Projector",
+    "price": 35000,
+    "description": "Portable projector with WiFi & Bluetooth.",
+    "image": "/images/25.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+
+  {
+    "id": 26,
+    "name": "Smart Mirror",
+    "price": 45000,
+    "description": "Interactive mirror with fitness & news display.",
+    "image": "/images/26.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 27,
+    "name": "Smart Garden Kit",
+    "price": 20000,
+    "description": "IoT kit for automated indoor gardening.",
+    "image": "/images/18.png",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 28,
+    "name": "Smart Washing Machine",
+    "price": 70000,
+    "description": "WiFi-enabled washing machine with auto detergent.",
+    "image": "/images/28.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 29,
+    "name": "Robots",
+    "price": 100000,
+    "description": "AGI robots - customized.",
+    "image": "/images/4.jpeg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+  {
+    "id": 30,
+    "name": "Smart Bike Lock",
+    "price": 8000,
+    "description": "Bluetooth lock with GPS tracking.",
+    "image": "/images/30.jpg",
+      "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+  },
+
+
+{
+  "id": 31,
+  "name": "Smartphone X",
+  "price": 25000,
+  "image": "/images/144.jpg",
+    "images": [
+    "/images/smartphone-front.jpg",
+    "/images/smartphone-back.jpg",
+    "/images/smartphone-side.jpg"
+  ],
+  "brand": "Generic Brand",
+  "model": "Model-1",
+  "weight": "N/A",
+  "dimensions": "N/A",
+  "warranty": "6 Months Warranty",
+  "specs": ["Default Spec 1", "Default Spec 2", "Default Spec 3"],
+  "howToUse": ["Unbox the product", "Read the manual before use", "Power on and enjoy"],
+  "dos": ["Keep in a dry place", "Handle with care", "Use original accessories"],
+  "donts": ["Do not expose to water", "Avoid dropping the product", "Do not disassemble"]
+}
+]
