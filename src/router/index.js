@@ -45,10 +45,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() {
-    // Smooth scroll to top when navigating
-    return { top: 0, behavior: 'smooth' };
+  
+    scrollBehavior(to) {
+  if (to.hash) {
+    return {
+      el: to.hash,
+      behavior: 'smooth',
+    };
   }
+}
+
 });
 
 export default router;

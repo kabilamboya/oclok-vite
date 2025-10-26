@@ -31,7 +31,48 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <!-- ... footer content stays same ... -->
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="/images/ocLoGo.png" alt="O!clok Store Logo" class="footer-logo" />
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> Kisumu, Kenya</li>
+            <li><i class="fas fa-phone-alt"></i> +254 732 379 292</li>
+            <li><i class="fas fa-envelope"></i> info@clokmediam@gmail.com</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">User Guide</a></li>
+            <li><a href="#">Community Forum</a></li>
+            <li><a href="#">Partner Program</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>FAQs</h3>
+          <ul>
+            <li><a href="#">How do I place an order?</a></li>
+            <li><a href="#">What payment methods are supported?</a></li>
+            <li><a href="#">How do I track my delivery?</a></li>
+            <li><a href="#">Where can I get a reliable technician?</a></li>
+            <li><a href="#">Do you offer returns/refunds?</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 O!clok Store — All Rights Reserved.</p>
+        <a href="#" class="back-to-top">↑ Back to Top</a>
+      </div>
     </footer>
   </div>
 </template>
@@ -192,4 +233,19 @@ export default {
   font-size: 1.2rem;
   cursor: pointer;
 }
+
+/* --- Footer --- */
+.footer { background:#222; color:#ddd; padding:50px 20px; }
+.footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
+.footer-logo { height:70px; margin-bottom:15px; }
+.footer h3 { color:#ff6600; margin-bottom:12px; font-size:1.2rem; }
+.contact-list li i { color:#ff6600; margin-right:8px; }
+.footer ul li a { color:#ddd; text-decoration:none; transition:0.3s; }
+.footer ul li a:hover { color:#ff6600; }
+.footer-bottom { border-top:1px solid #444; margin-top:30px; padding-top:15px; text-align:center; font-size:0.9rem; display:flex; justify-content:space-between; flex-wrap:wrap; }
+.back-to-top { color:#ffcc00; text-decoration:none; }
+.back-to-top:hover { color:#ff6600; }
+
+/* --- Responsive --- */
+@media(max-width:768px){.about-container{flex-direction:column;text-align:center;}.about-text{text-align:center;}.social-icons{justify-content:center;}}
 </style>

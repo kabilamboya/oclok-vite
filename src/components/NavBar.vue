@@ -10,12 +10,14 @@
       <button class="hamburger" @click="toggleMenu">☰</button>
 
       <!-- Navigation Links -->
-      <nav :class="['nav-links', { active: isMenuOpen }]">
-        <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
-        <router-link :to="{ name: 'Products' }" @click="closeMenu">Products</router-link>
-        <router-link :to="{ name: 'Technicians' }" @click="closeMenu">Technicians</router-link>
-        <router-link :to="{ name: 'Services' }" @click="closeMenu">Services</router-link>
-      </nav>
+      <div class="cta-buttons">
+        <nav :class="['nav-links', { active: isMenuOpen }]" role="navigation" aria-label="Main Navigation">
+          <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
+          <router-link :to="{ name: 'Products' }" class="cta-button" @click="closeMenu">Shop Now</router-link>
+          <router-link :to="{ name: 'Technicians' }" class="cta-button" @click="closeMenu">Book a Technician</router-link>
+          <router-link :to="{ name: 'Services' }" class="cta-button" @click="closeMenu">Explore Services</router-link>
+        </nav>
+      </div>
 
       <!-- Search & Cart -->
       <div class="nav-actions">
@@ -31,10 +33,11 @@
         </div>
 
         <!-- Cart Icon -->
-        <div class="cart-icon" @click="$emit('open-cart')">
+        <div class="cart-icon" @click="openCart">
           🛒
           <span v-if="cartCount > 0" class="badge">{{ cartCount }}</span>
         </div>
+
       </div>
     </div>
   </header>
@@ -211,5 +214,9 @@ export default {
     flex: 1;
     width: 70%;
   }
+
+.cta-buttons { margin:20px; display:flex; gap:10px; flex-wrap:wrap; }
+.cta-buttons button { background:#ff6600; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
+.cta-buttons button:hover { background:#cc5200; }
 }
 </style>

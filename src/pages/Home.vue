@@ -4,17 +4,17 @@
     <header class="header">
       <div class="header-container">
         <img src="/images/oclokLogo.png" alt="O!clok Store Logo" class="logo" />
-        <h1>Welcome to O!clok Store</h1>
+        <h1>Welcome to <strong> O!clok Media ltd </strong></h1>
         <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
       </div>
-
-      <!-- CTA Buttons -->
-      <div class="cta-buttons">
-        <button @click="$router.push('/products')">Shop Now</button>
-        <button @click="$router.push('/technicians')">Book a Technician</button>
-        <button @click="$router.push('/services')">Explore Services</button>
-      </div>
     </header>
+
+      <!-- Tabs -->
+          <div class="tabs">
+            <button :class="{ active: activeTab==='about' }" @click="activeTab='about'">About Us</button>
+            <button :class="{ active: activeTab==='mission' }" @click="activeTab='mission'">Our Mission</button>
+            <button :class="{ active: activeTab==='vision' }" @click="activeTab='vision'">Our Vision</button>
+          </div>
 
     <!-- Hero / About Tabs Section -->
     <section class="about">
@@ -26,19 +26,12 @@
 
         <!-- Right Tab Content -->
         <div class="about-text">
-          <!-- Tabs -->
-          <div class="tabs">
-            <button :class="{ active: activeTab==='about' }" @click="activeTab='about'">About Us</button>
-            <button :class="{ active: activeTab==='mission' }" @click="activeTab='mission'">Our Mission</button>
-            <button :class="{ active: activeTab==='vision' }" @click="activeTab='vision'">Our Vision</button>
-          </div>
-
           <!-- Tab Panels -->
           <div class="tab-panels">
             <div v-show="activeTab==='about'" class="tab-content animate-on-scroll">
               <h2>About Us</h2>
               <p>
-                At <strong>O!clok Store</strong>, we combine <em>modern e-commerce convenience</em> with a <em>personal touch</em>: curated products, responsive support, 
+                At <strong>O!clok Media</strong>, we combine <em>modern e-commerce convenience</em> with a <em>personal touch</em>: curated products, responsive support, 
                 and a commitment to building lasting relationships with our customers.
                 </p>
                 <p>
@@ -114,15 +107,10 @@
     <footer class="footer">
       <div class="footer-grid">
         <div class="footer-brand">
+          <div class="footer-resources-section">
           <img src="/images/ocLoGo.png" alt="O!clok Store Logo" class="footer-logo" />
-          <ul class="contact-list">
-            <li><i class="fas fa-map-marker-alt"></i> Kisumu, Kenya</li>
-            <li><i class="fas fa-phone-alt"></i> +254 732 379 292</li>
-            <li><i class="fas fa-envelope"></i> info@clokmediam@gmail.com</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Resources</h3>
+            <h3>Resources</h3>
+          </div>
           <ul>
             <li><a href="#">Help Center</a></li>
             <li><a href="#">User Guide</a></li>
@@ -131,15 +119,16 @@
           </ul>
         </div>
         <div>
-          <h3>FAQs</h3>
-          <ul>
-            <li><a href="#">How do I place an order?</a></li>
-            <li><a href="#">What payment methods are supported?</a></li>
-            <li><a href="#">How do I track my delivery?</a></li>
-            <li><a href="#">Where can I get a reliable technician?</a></li>
-            <li><a href="#">Do you offer returns/refunds?</a></li>
-          </ul>
-        </div>
+  <h3>FAQs</h3>
+  <ul>
+    <li><router-link :to="{ path: '/faq', hash: '#order' }">How do I place an order?</router-link></li>
+    <li><router-link :to="{ path: '/faq', hash: '#payment' }">What payment methods are supported?</router-link></li>
+    <li><router-link :to="{ path: '/faq', hash: '#delivery' }">How do I track my delivery?</router-link></li>
+    <li><router-link :to="{ path: '/faq', hash: '#technician' }">Where can I get a reliable technician?</router-link></li>
+    <li><router-link :to="{ path: '/faq', hash: '#returns' }">Do you offer returns/refunds?</router-link></li>
+  </ul>
+</div>
+
         <div>
           <h3>Follow Us</h3>
           <div class="social-icons">
@@ -148,10 +137,15 @@
             <a href="#"><i class="fab fa-linkedin-in"></i></a>
             <a href="#"><i class="fab fa-instagram"></i></a>
           </div>
+          <ul class="contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> Kisumu, Kenya</li>
+            <li><i class="fas fa-phone-alt"></i> +254 732 379 292</li>
+            <li><i class="fas fa-envelope"></i> info@clokmediam@gmail.com</li>
+          </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2025 O!clok Store — All Rights Reserved.</p>
+        <p>© 2025 O!clok Mediam — All Rights Reserved.</p>
         <a href="#" class="back-to-top">↑ Back to Top</a>
       </div>
     </footer>
@@ -173,7 +167,6 @@ export default {
       ],
       phrases: [
         "Your trusted hub for quality products & services.",
-        "We bet on convenience",
         "Empower smart living through innovations",
         "Connecting technology with your lifestyle.",
         "Make a smart choice now for a brighter tomorrow"
@@ -228,29 +221,113 @@ export default {
 </script>
 
 <style scoped>
-.header-container { display:flex; align-items:center; gap:12px; margin:10px; padding:20px; }
 .logo { width:56px; }
-.header-container h1 { margin:0; font-size:3rem; color:#ff6600; }
-.animated-text { flex:1; overflow:hidden; white-space:nowrap; text-overflow:clip; opacity:0; padding:10px; }
+.header-container h1 { margin:10; font-size:2rem; color:#000000; }
 .animated-text.play { animation: rushInOut 4s ease-in-out forwards; }
 @keyframes rushInOut { 0%{opacity:0;transform:translateX(30%);}12%{opacity:1;transform:translateX(0);}70%{opacity:1;transform:translateX(0);}100%{opacity:0;transform:translateX(-20%);} }
-.cta-buttons { margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; }
-.cta-buttons button { background:#ff6600; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
-.cta-buttons button:hover { background:#cc5200; }
+
+
+/* Container with moving background */
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+  padding: 10px;
+  background: url('/images/oclokBg.jpg') repeat-x; /* Replace with your bg */
+  background-size: cover;
+  animation: moveBackground 10s linear infinite;
+}
+
+/* Animated text moving right */
+.animated-text {
+  background: rgba(255, 102, 0, 0.8);
+  margin-left: 20px;
+  font-size: 1.5rem;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  color: #fff;
+  padding: 10px;
+  animation: moveText 10s linear infinite;
+}
+
+/* Keyframes for background moving left */
+@keyframes moveBackground {
+  0% { background-position-x: 0; }
+  100% { background-position-x: -1000px; } /* adjust based on image width */
+}
+
+/* Keyframes for text moving right */
+@keyframes moveText {
+  0% { transform: translateX(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translateX(50%); opacity: 1; }
+  100% { transform: translateX(-100%); opacity: 0; }
+}
+
 
 /* --- About Tabs --- */
-.about-container { display:flex; flex-wrap:wrap; gap:40px; align-items:center; margin:40px; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
-.about-image { flex:1; text-align:left; }
-.about-image img { max-width:100%; border-radius:12px; }
-.about-text { flex:1; text-align:right; }
-.tabs { display:flex; gap:10px; justify-content:flex-end; margin-bottom:20px; }
+/* About Section */
+.about {
+  padding: 20px 10px; /* reduce top/bottom padding */
+}
+
+.about-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;         /* reduce gap between image & text */
+  align-items: flex-start; /* align top */
+  padding: 15px;     /* less padding */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.about-image {
+  flex: 1;
+  text-align: left;
+}
+
+.about-image img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.about-text {
+  flex: 1;
+  padding: 10px 15px;  /* reduce padding */
+  text-align: left;    /* optional, cleaner layout */
+}
+
+.tab-content h2 {
+  margin: 0 0 10px 0;   /* reduce top/bottom margin */
+  font-size: 1.5rem;    /* slightly smaller */
+}
+
+.tab-content p {
+  margin: 5px 0;        /* tighter spacing */
+  line-height: 1.4;     /* slightly compact */
+}
+
+/* Social Icons */
+.social-icons {
+  display: flex;
+  padding-top: 20px;
+  margin-top: 10px;      /* reduce extra spacing */
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.tabs { display:flex; gap:10px; justify-content:flex-end; margin-right:100px; margin-bottom:20px; }
 .tabs button { background:#ffcc99; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold; transition: background 0.3s; }
 .tabs button.active, .tabs button:hover { background:#ff6600; color:#fff; }
 .tab-content { transition: all 0.6s ease; opacity:0; transform:translateX(40px); }
 .tab-content.show { opacity:1; transform:translateX(0); }
 .animate-on-scroll { opacity:0; transform:translateY(30px); transition: all 0.8s ease-out; }
 .animate-on-scroll.show { opacity:1; transform:translateY(0); }
-.social-icons { display:flex; gap:15px; justify-content:flex-end; margin-top:20px; }
 .social-icons a { color:#fff; background:#ff6600; width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:1.2rem; transition: transform 0.2s, background 0.3s; }
 .social-icons a:hover { transform:scale(1.2); background:#cc5200; color:#fff; }
 
@@ -271,6 +348,7 @@ export default {
 .footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
 .footer-logo { height:70px; margin-bottom:15px; }
 .footer h3 { color:#ff6600; margin-bottom:12px; font-size:1.2rem; }
+.footer-resources-section { display: flex; align-items: center; gap: 10px; }
 .contact-list li i { color:#ff6600; margin-right:8px; }
 .footer ul li a { color:#ddd; text-decoration:none; transition:0.3s; }
 .footer ul li a:hover { color:#ff6600; }
