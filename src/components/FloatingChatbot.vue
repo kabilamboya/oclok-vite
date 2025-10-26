@@ -1,66 +1,51 @@
 <template>
   <div>
-    <!-- Floating Chat Button (only visible when chat is closed) -->
-      <button 
-        v-if="!isOpen" 
-        class="chatbot-btn" 
-        @click="toggleChat"
-      >
-        <!-- Try to load logo, fallback to emoji if error -->
-        <img 
-          src="/images/oclokLogo.png" 
-          alt="Chat Logo" 
-          @error="logoError = true" 
-          v-if="!logoError"
-        />
-        <span v-else>💬</span>
-      </button>
+    <!-- Floating Draggable Chat Icon -->
+    <div 
+      v-if="!isOpen" 
+      class="chat-bubble" 
+      :style="{ top: bubblePos.top + 'px', left: bubblePos.left + 'px' }"
+      @mousedown="startBubbleDrag"
+    >
+      <div class="bubble-icon" @click="toggleChat">💬</div>
+    </div>
 
     <!-- Chat Window -->
-    <div 
-      v-if="isOpen" 
-      class="chatbot-window" 
-      :style="{ top: position.top + 'px', left: position.left + 'px' }"
-      @mousedown="startDrag"
-    >
-      <div class="chatbot-header" @mousedown.stop="startDrag">
-        <h4>O!clok Assistant</h4>
-        <button class="close-btn" @click="toggleChat">×</button>
-      </div>
+    <transition name="fade-scale">
+      <div 
+        v-if="isOpen" 
+        class="chatbot-window"
+        :style="{ top: position.top + 'px', left: position.left + 'px' }"
+        @mousedown="startDrag"
+      >
+        <div class="chatbot-header" @mousedown.stop="startDrag">
+          <h4>O!clok Assistant</h4>
+          <button class="close-btn" @click="toggleChat">–</button>
+        </div>
 
-      <div class="chatbot-messages" ref="messages">
-        <div 
-          v-for="(msg, idx) in messages" 
-          :key="idx" 
-          :class="['message', msg.sender]"
-        >
-          {{ msg.text }}
+        <div class="chatbot-messages" ref="messages">
+          <div 
+            v-for="(msg, idx) in messages" 
+            :key="idx" 
+            :class="['message', msg.sender]"
+          >
+            {{ msg.text }}
+          </div>
+        </div>
+
+        <div class="chatbot-input">
+          <input 
+            type="text" 
+            v-model="userInput" 
+            placeholder="Ask me something..." 
+            @keyup.enter="sendMessage"
+          />
+          <button @click="sendMessage">➤</button>
         </div>
       </div>
-
-      <div class="chatbot-input">
-        <input 
-          type="text" 
-          v-model="userInput" 
-          placeholder="Ask me something..." 
-          @keyup.enter="sendMessage"
-        />
-        <button @click="sendMessage">➤</button>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
-
-  <script setup>
-  import { ref } from 'vue'
-
-  const isOpen = ref(false)
-  const logoError = ref(false)
-
-  const toggleChat = () => {
-    isOpen.value = !isOpen.value
-  }
-  </script>
 
 <script>
 export default {
@@ -70,10 +55,12 @@ export default {
       isOpen: false,
       userInput: "",
       messages: [
-        { sender: "bot", text: "Hi 👋, I’m your guide. Ask me anything about our services!" }
+        { sender: "bot", text: "Hey 👋, how can I help you today?" }
       ],
-      position: { top: window.innerHeight - 500, left: window.innerWidth - 360 }, // starting pos
-      drag: { active: false, offsetX: 0, offsetY: 0 }
+      position: { top: window.innerHeight - 480, left: window.innerWidth - 360 },
+      bubblePos: { top: window.innerHeight - 90, left: window.innerWidth - 90 },
+      drag: { active: false, offsetX: 0, offsetY: 0 },
+      bubbleDrag: { active: false, offsetX: 0, offsetY: 0 },
     };
   },
   methods: {
@@ -95,64 +82,96 @@ export default {
     },
     getBotResponse(input) {
       input = input.toLowerCase();
-      if (input.includes("services")) return "We offer smart solutions, creative design, and innovations tailored for you.";
-      if (input.includes("contact")) return "You can reach us via the Contact page or social media links in the footer.";
-      if (input.includes("price")) return "Pricing depends on your project needs. Would you like me to connect you with sales?";
-      return "I'm not sure, but I’ll learn 🤔. Try asking about 'services', 'contact', or 'pricing'.";
+      if (input.includes("services")) return "We provide creative, smart, and innovative solutions.";
+      if (input.includes("contact")) return "You can reach us via the Contact page or social media links.";
+      if (input.includes("price") || input.includes("cost")) return "Pricing depends on your project scope.";
+      return "Hmm 🤔 I’m not sure — try asking about 'services', 'contact', or 'pricing'.";
     },
     scrollToBottom() {
       this.$nextTick(() => {
         const box = this.$refs.messages;
-        box.scrollTop = box.scrollHeight;
+        if (box) box.scrollTop = box.scrollHeight;
       });
     },
-    // Dragging
+    // Draggable chat window
     startDrag(e) {
       this.drag.active = true;
       this.drag.offsetX = e.clientX - this.position.left;
       this.drag.offsetY = e.clientY - this.position.top;
-
       document.addEventListener("mousemove", this.onDrag);
       document.addEventListener("mouseup", this.stopDrag);
     },
     onDrag(e) {
       if (this.drag.active) {
-        this.position.left = e.clientX - this.drag.offsetX;
-        this.position.top = e.clientY - this.drag.offsetY;
+        this.position.left = Math.min(
+          window.innerWidth - 320,
+          Math.max(0, e.clientX - this.drag.offsetX)
+        );
+        this.position.top = Math.min(
+          window.innerHeight - 100,
+          Math.max(0, e.clientY - this.drag.offsetY)
+        );
       }
     },
     stopDrag() {
       this.drag.active = false;
       document.removeEventListener("mousemove", this.onDrag);
       document.removeEventListener("mouseup", this.stopDrag);
-    }
+    },
+    // Draggable chat icon
+    startBubbleDrag(e) {
+      this.bubbleDrag.active = true;
+      this.bubbleDrag.offsetX = e.clientX - this.bubblePos.left;
+      this.bubbleDrag.offsetY = e.clientY - this.bubblePos.top;
+      document.addEventListener("mousemove", this.onBubbleDrag);
+      document.addEventListener("mouseup", this.stopBubbleDrag);
+    },
+    onBubbleDrag(e) {
+      if (this.bubbleDrag.active) {
+        this.bubblePos.left = Math.min(
+          window.innerWidth - 70,
+          Math.max(0, e.clientX - this.bubbleDrag.offsetX)
+        );
+        this.bubblePos.top = Math.min(
+          window.innerHeight - 70,
+          Math.max(0, e.clientY - this.bubbleDrag.offsetY)
+        );
+      }
+    },
+    stopBubbleDrag() {
+      this.bubbleDrag.active = false;
+      document.removeEventListener("mousemove", this.onBubbleDrag);
+      document.removeEventListener("mouseup", this.stopBubbleDrag);
+    },
   }
 };
 </script>
 
 <style scoped>
-/* Floating Button */
-.chatbot-btn {
+/* Chat bubble icon */
+.chat-bubble {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #3eb489; /* mint color */
-  color: white;
-  border: none;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: 0.3s;
-  z-index: 1000;
+  background: #3eb489;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 9999;
+  transition: transform 0.25s ease;
 }
-.chatbot-btn:hover {
-  background: #34a67e;
+.chat-bubble:hover {
+  transform: scale(1.1);
+}
+.bubble-icon {
+  font-size: 28px;
+  cursor: pointer;
 }
 
-/* Chat Window */
+/* Chat window */
 .chatbot-window {
   position: fixed;
   width: 320px;
@@ -162,14 +181,13 @@ export default {
   box-shadow: 0 6px 18px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  z-index: 1000;
+  z-index: 10000;
   user-select: none;
-  transition: transform 0.2s ease-in-out;
 }
 
 /* Header */
 .chatbot-header {
-  background: #3eb489; /* mint */
+  background: #3eb489;
   color: white;
   padding: 0.7rem 1rem;
   border-radius: 12px 12px 0 0;
@@ -182,12 +200,11 @@ export default {
   background: none;
   border: none;
   color: white;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: transform 0.2s;
 }
 .close-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 
 /* Messages */
@@ -202,7 +219,6 @@ export default {
   padding: 0.6rem 0.9rem;
   border-radius: 10px;
   max-width: 80%;
-  line-height: 1.3;
 }
 .message.bot {
   background: #f1f1f1;
@@ -215,7 +231,7 @@ export default {
   margin-left: auto;
 }
 
-/* Input Area */
+/* Input area */
 .chatbot-input {
   display: flex;
   border-top: 1px solid #ddd;
@@ -236,5 +252,16 @@ export default {
 }
 .chatbot-input button:hover {
   background: #34a67e;
+}
+
+/* Animations */
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
 }
 </style>

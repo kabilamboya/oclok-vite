@@ -26,13 +26,49 @@
 
     <!-- Technicians Grid -->
     <div class="cards">
-      <CardItem
-        v-for="tech in filteredTechnicians"
-        :key="tech.id"
-        :item="tech"
-        type="technicians"
-        @book="bookTechnician"
-      />
+      <div 
+        v-for="tech in paginatedTechnicians" 
+        :key="tech.id" 
+        class="card"
+        @click="$router.push(`/technicians/${tech.id}`)"
+      >
+        <img :src="tech.image" :alt="tech.name" class="avatar" />
+        <h3>{{ tech.name }}</h3>
+        <p class="spec">{{ tech.specialty }}</p>
+
+        <!-- Rating Stars -->
+        <div class="rating">
+          <span 
+            v-for="i in 5" 
+            :key="i" 
+            class="star" 
+            :class="{ filled: i <= Math.round(getAverageRating(tech.ratings)) }"
+          >★</span>
+          <small>{{ getAverageRating(tech.ratings).toFixed(1) }}</small>
+        </div>
+
+        <button 
+          class="book-btn" 
+          @click.stop="bookTechnician(tech)"
+        >
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination" v-if="totalPages > 1">
+      <button 
+        :disabled="currentPage === 1" 
+        @click="currentPage--"
+      >⟨ Prev</button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button 
+        :disabled="currentPage === totalPages" 
+        @click="currentPage++"
+      >Next ⟩</button>
     </div>
 
     <!-- Booking Summary -->
@@ -54,26 +90,23 @@
 </template>
 
 <script>
-import CardItem from "../components/CardItem.vue";
-
 export default {
   name: "Technicians",
-  components: { CardItem },
   data() {
     return {
       technicians: [],
       searchQuery: "",
       selectedSpecialty: "",
       bookings: [],
+      currentPage: 1,
+      itemsPerPage: 50,
     };
   },
   computed: {
     specialties() {
-      // Get unique specialties dynamically
       return [...new Set(this.technicians.map((t) => t.specialty))];
     },
     filteredTechnicians() {
-      // Filter by name and specialty
       return this.technicians.filter((t) => {
         const matchesSearch = t.name
           .toLowerCase()
@@ -84,6 +117,13 @@ export default {
         return matchesSearch && matchesSpecialty;
       });
     },
+    totalPages() {
+      return Math.ceil(this.filteredTechnicians.length / this.itemsPerPage);
+    },
+    paginatedTechnicians() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.filteredTechnicians.slice(start, start + this.itemsPerPage);
+    },
   },
   methods: {
     bookTechnician(tech) {
@@ -93,6 +133,12 @@ export default {
     },
     clearBookings() {
       this.bookings = [];
+    },
+    getAverageRating(ratings) {
+      if (!ratings) return 0;
+      const values = Object.values(ratings);
+      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      return avg;
     },
   },
   mounted() {
@@ -152,8 +198,82 @@ export default {
 /* Cards Grid */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.5rem;
+}
+
+.card {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 0.8rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.spec {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Stars */
+.star {
+  color: #ccc;
+  font-size: 1rem;
+}
+.star.filled {
+  color: #ffb400;
+}
+.rating {
+  margin: 0.4rem 0;
+}
+
+/* Buttons */
+.book-btn {
+  background: #ffcc00;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.book-btn:hover {
+  background: #ffd633;
+}
+
+/* Pagination */
+.pagination {
+  margin: 2rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+.pagination button {
+  background: #ffcc00;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.pagination button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
 }
 
 /* Booking Summary */
@@ -191,7 +311,6 @@ export default {
   cursor: pointer;
   transition: 0.3s;
 }
-
 .clear-btn:hover {
   background: #ffdb4d;
 }

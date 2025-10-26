@@ -54,7 +54,7 @@ export default {
 /* Hero background */
 .hero {
   background: url('/images/hero-bg.jpg') center/cover no-repeat;
-  height: 50vh;
+  height: 30vh;
   display: flex;
   justify-content: center;
   align-items: center;
