@@ -22,7 +22,7 @@
       "Get designs that speak your identity and engage your audience."
     ],
     "icon": "fa-paint-brush",
-    "image": "/images/45.jpg",
+    "image": "/images/RANA.jpg",
     "color": "purple"
   },
   {
@@ -35,7 +35,7 @@
       "Trusted solutions for students, professionals, and businesses."
     ],
     "icon": "fa-shield-alt",
-    "image": "/images/45.jpg",
+    "image": "/images/cyber.png",
     "color": "orange"
   },
   {
@@ -48,7 +48,7 @@
       "Trusted infrastructure for businesses and communities."
     ],
     "icon": "fa-network-wired",
-    "image": "/images/45.jpg",
+    "image": "/images/PCB.jpg",
     "color": "green"
   },
   {
@@ -61,7 +61,7 @@
       "Stay connected, informed, and inspired with O!clok Media."
     ],
     "icon": "fa-bullhorn",
-    "image": "/images/45.jpg",
+    "image": "/images/bott.jpeg",
     "color": "yellow"
   },
   {
@@ -74,7 +74,7 @@
       "Our team blends innovation with practicality."
     ],
     "icon": "fa-robot",
-    "image": "/images/45.jpg",
+    "image": "/images/home.jpg",
     "color": "red"
   }
 ]

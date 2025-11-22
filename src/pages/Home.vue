@@ -4,7 +4,7 @@
     <header class="header">
       <div class="header-container">
         <img src="/images/oclokLogo.png" alt="O!clok Store Logo" class="logo" />
-        <h1>Welcome to <strong> O!clok Media ltd </strong></h1>
+        <h1>Welcome to <strong> O!clok ltd </strong></h1>
         <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
       </div>
     </header>

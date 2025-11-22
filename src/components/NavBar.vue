@@ -13,9 +13,10 @@
       <div class="cta-buttons">
         <nav :class="['nav-links', { active: isMenuOpen }]" role="navigation" aria-label="Main Navigation">
           <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
-          <router-link :to="{ name: 'Products' }" class="cta-button" @click="closeMenu">Shop Now</router-link>
-          <router-link :to="{ name: 'Technicians' }" class="cta-button" @click="closeMenu">Book a Technician</router-link>
-          <router-link :to="{ name: 'Services' }" class="cta-button" @click="closeMenu">Explore Services</router-link>
+          <router-link :to="{ name: 'Products' }" class="cta-button" @click="closeMenu">Store</router-link>
+          <router-link :to="{ name: 'Media' }" class="cta-button" @click="closeMenu">Media</router-link>
+          <router-link :to="{ name: 'Technicians' }" class="cta-button" @click="closeMenu">Doctors</router-link>
+          <router-link :to="{ name: 'Services' }" class="cta-button" @click="closeMenu">Services</router-link>
         </nav>
       </div>
 

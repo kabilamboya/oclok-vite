@@ -1,29 +1,31 @@
 [
   {
     "id": 1,
-    "name": "James Kariuki",
+    "slug": "kabila-mboya",
+    "name": "Kabila Mboya",
     "specialty": "Electrical Systems",
-    "image": "/images/dummy-pic.jpg",
-    "experience": 7,
+    "image": "/images/LAURENT.jpg",
+    "experience": 5,
     "color": "blue",
-    "bio": "James is a certified electrician with over 7 years of experience in commercial and residential systems.",
-    "contact": { "phone": "+254 700 111 222", "email": "james.kariuki@example.com" },
-    "location": "Nairobi, Kenya",
+    "bio": "James is a certified electrician with over 5 years of experience in commercial and residential systems.",
+    "contact": { "phone": "+254 732 379 292", "email": "kabilamboya@gmail.com" },
+    "location": "Kisumu, Kenya",
     "projects": {
       "continuing": ["Hospital wiring upgrade", "Office smart lighting system"],
       "review": ["University power grid assessment"],
       "completed": ["Residential solar installation", "Mall electrical maintenance"]
     },
     "socials": {
-  "linkedin": "https://linkedin.com/in/technician",
-  "facebook": "https://facebook.com/tech",
-  "x": "https://x.com/tech",
-  "tiktok": "https://tiktok.com/@tech"
+  "linkedin": "https://linkedin.com/in/kabilamboya",
+  "facebook": "https://facebook.com/kabilamboya",
+  "x": "https://x.com/kabilamboya",
+  "tiktok": "https://tiktok.com/@kenyayouthchannel"
 }
 
   },
   {
     "id": 2,
+    "slug": "grace-njeri",
     "name": "Grace Njeri",
     "specialty": "HVAC & Refrigeration",
     "image": "/images/dummy-pic.jpg",
@@ -46,6 +48,7 @@
   },
   {
     "id": 3,
+    "slug": "samuel-otieno",
     "name": "Samuel Otieno",
     "specialty": "Networking & Cabling",
     "image": "/images/dummy-pic.jpg",

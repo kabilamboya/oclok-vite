@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../pages/Home.vue';
 import Services from '../pages/Services.vue';
 import ServiceDetail from '../pages/ServiceDetail.vue';
+import Media from '../pages/media.vue';
 import Technicians from '../pages/Technicians.vue';
 import TechnicianDetail from '../pages/TechnicianDetail.vue';
 import Products from '../pages/Products.vue';
@@ -14,12 +15,16 @@ import AccountPage from '../pages/AccountPage.vue';
 import ContactSupplier from '../pages/ContactSupplier.vue';
 import NotFound from '../pages/NotFound.vue'; // optional import (lazy-load below works too)
 
+import Faq from '../pages/faq.vue';
+
 // Define routes
 const routes = [
   { path: '/', name: 'Home', component: Home },
 
   { path: '/services', name: 'Services', component: Services },
   { path: '/services/:id', name: 'ServiceDetail', component: ServiceDetail, props: true },
+
+  { path: '/media', name: 'Media', component: Media },
 
   { path: '/technicians', name: 'Technicians', component: Technicians },
   { path: '/technicians/:id', name: 'TechnicianDetail', component: TechnicianDetail, props: true },
@@ -38,7 +43,14 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound
+  },
+
+  {
+    path: '/faq',
+    name: 'Faq',
+    component: Faq
   }
+
 ];
 
 // Create router instance
