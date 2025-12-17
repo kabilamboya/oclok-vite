@@ -5,8 +5,6 @@
 
     <!-- Router pages render here -->
     <router-view :cart="cart" @add-to-cart="addToCart" />
-    
-    <Footer />
 
     <!-- Cart Modal -->
     <CartModal
@@ -19,6 +17,8 @@
       @checkout="goToCheckout"
     />
     <FloatingChatbot/>
+    
+    <Footer />
   </div>
 </template>
 

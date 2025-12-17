@@ -1,13 +1,13 @@
 <template>
   <div>
-    <!-- Floating Draggable Chat Icon -->
+    <!-- Floating Draggable Chat Bubble -->
     <div 
       v-if="!isOpen" 
       class="chat-bubble" 
       :style="{ top: bubblePos.top + 'px', left: bubblePos.left + 'px' }"
       @mousedown="startBubbleDrag"
     >
-      <div class="bubble-icon" @click="toggleChat">💬</div>
+      <div class="bubble-icon" @click.stop="toggleChat">💬</div>
     </div>
 
     <!-- Chat Window -->
@@ -16,7 +16,6 @@
         v-if="isOpen" 
         class="chatbot-window"
         :style="{ top: position.top + 'px', left: position.left + 'px' }"
-        @mousedown="startDrag"
       >
         <div class="chatbot-header" @mousedown.stop="startDrag">
           <h4>O!clok Assistant</h4>
@@ -64,8 +63,7 @@
 
 <script>
 export default {
-  name: "ChatBot",
-
+  name: "FloatingChatbot",
   data() {
     return {
       isOpen: false,
@@ -74,8 +72,6 @@ export default {
       messages: [
         { sender: "bot", text: "Hey 👋, how can I help you today?" }
       ],
-
-      /* FAQ DATA (from your FAQ component) */
       faqData: [
         {
           title: "Ordering",
@@ -116,15 +112,12 @@ export default {
           ],
         },
       ],
-
-      /* draggable settings */
       position: { top: window.innerHeight - 480, left: window.innerWidth - 360 },
       bubblePos: { top: window.innerHeight - 90, left: window.innerWidth - 90 },
       drag: { active: false, offsetX: 0, offsetY: 0 },
       bubbleDrag: { active: false, offsetX: 0, offsetY: 0 },
     };
   },
-
   methods: {
     toggleChat() {
       this.isOpen = !this.isOpen;
@@ -148,29 +141,16 @@ export default {
       this.scrollToBottom();
     },
 
-    /* ===========================
-       SMART FAQ MATCHING LOGIC
-    ============================*/
     findFAQResponse(input) {
       const allFAQs = this.faqData.flatMap(cat => cat.items);
-
-      // direct match by first word or keyword
       for (let item of allFAQs) {
         const q = item.question.toLowerCase();
-
-        // first word match
-        if (input.includes(q.split(" ")[0])) return item.answer;
-
-        // match long keywords (>= 4 letters)
         const keywords = q.split(" ").filter(k => k.length >= 4);
         if (keywords.some(k => input.includes(k))) return item.answer;
       }
-
-      // fallback replies
       if (input.includes("services")) return "We provide creative and innovative digital solutions.";
       if (input.includes("contact")) return "You can contact us via the Contact page or social media.";
       if (input.includes("price") || input.includes("cost")) return "Pricing depends on project details.";
-
       return "I'm not fully sure 🤔 — but you can ask about orders, delivery, payments, technicians, warranty, or returns.";
     },
 
@@ -181,87 +161,54 @@ export default {
       });
     },
 
-    /* ===========================
-          DRAGGABLE WINDOW
-    ============================*/
+    // Chat Window Drag
     startDrag(e) {
       this.drag.active = true;
       this.drag.offsetX = e.clientX - this.position.left;
       this.drag.offsetY = e.clientY - this.position.top;
-
       document.addEventListener("mousemove", this.onDrag);
       document.addEventListener("mouseup", this.stopDrag);
     },
-
     onDrag(e) {
       if (!this.drag.active) return;
-
-      this.position.left = Math.min(
-        window.innerWidth - 320,
-        Math.max(0, e.clientX - this.drag.offsetX)
-      );
-
-      this.position.top = Math.min(
-        window.innerHeight - 100,
-        Math.max(0, e.clientY - this.drag.offsetY)
-      );
+      this.position.left = Math.min(window.innerWidth - 320, Math.max(0, e.clientX - this.drag.offsetX));
+      this.position.top = Math.min(window.innerHeight - 100, Math.max(0, e.clientY - this.drag.offsetY));
     },
-
     stopDrag() {
       this.drag.active = false;
       document.removeEventListener("mousemove", this.onDrag);
       document.removeEventListener("mouseup", this.stopDrag);
     },
 
-    /* ===========================
-         DRAGGABLE BUBBLE
-    ============================*/
+    // Bubble Drag
     startBubbleDrag(e) {
       this.bubbleDrag.active = true;
       this.bubbleDrag.offsetX = e.clientX - this.bubblePos.left;
       this.bubbleDrag.offsetY = e.clientY - this.bubblePos.top;
-
       document.addEventListener("mousemove", this.onBubbleDrag);
       document.addEventListener("mouseup", this.stopBubbleDrag);
     },
-
     onBubbleDrag(e) {
       if (!this.bubbleDrag.active) return;
-
-      this.bubblePos.left = Math.min(
-        window.innerWidth - 70,
-        Math.max(0, e.clientX - this.bubbleDrag.offsetX)
-      );
-
-      this.bubblePos.top = Math.min(
-        window.innerHeight - 70,
-        Math.max(0, e.clientY - this.bubbleDrag.offsetY)
-      );
+      this.bubblePos.left = Math.min(window.innerWidth - 70, Math.max(0, e.clientX - this.bubbleDrag.offsetX));
+      this.bubblePos.top = Math.min(window.innerHeight - 70, Math.max(0, e.clientY - this.bubbleDrag.offsetY));
     },
-
     stopBubbleDrag() {
       this.bubbleDrag.active = false;
       document.removeEventListener("mousemove", this.onBubbleDrag);
       document.removeEventListener("mouseup", this.stopBubbleDrag);
     },
 
-    /* ===========================
-            SUGGESTIONS
-    ============================*/
+    // Suggestions
     generateSuggestions(input) {
       const txt = input.toLowerCase().trim();
       if (!txt) {
         this.suggestions = [];
         return;
       }
-
       const allFAQs = this.faqData.flatMap(cat => cat.items);
-
-      this.suggestions = allFAQs
-        .filter(item => item.question.toLowerCase().includes(txt))
-        .slice(0, 5);
+      this.suggestions = allFAQs.filter(item => item.question.toLowerCase().includes(txt)).slice(0, 5);
     },
-
     applySuggestion(q) {
       this.userInput = q;
       this.suggestions = [];
@@ -272,29 +219,103 @@ export default {
 </script>
 
 <style scoped>
+/* Chat Window */
+.chatbot-window {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  background-color: #242424;
+  color: #fff;
+  border-radius: 0 20px 0 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Header */
+.chatbot-header {
+  padding: 10px 15px;
+  background-color: #1f1f1f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move; /* show drag hint */
+}
+
+/* Messages */
+.chatbot-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* Input */
+.chatbot-input {
+  display: flex;
+  border-top: 1px solid #333;
+}
+.chatbot-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background-color: #333;
+  color: #fff;
+}
+.chatbot-input button {
+  padding: 0 15px;
+  border: none;
+  background-color: #ffcc00;
+  cursor: pointer;
+}
+
+/* Bubble */
+.chat-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+.bubble-icon {
+  background: #ffcc00;
+  color: black;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Suggestions */
 .suggestion-box {
   position: absolute;
   bottom: 55px;
   left: 10px;
   right: 10px;
-  background: white;
+  background: #333;
+  color: #fff;
   border-radius: 8px;
   max-height: 180px;
   overflow-y: auto;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
   list-style: none;
   padding: 0;
   margin: 0;
-  z-index: 20;
+  z-index: 10000;
 }
-
 .suggestion-box li {
   padding: 10px 14px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #555;
 }
-
 .suggestion-box li:hover {
-  background: #f7f7f7;
+  background: #444;
 }
 </style>
