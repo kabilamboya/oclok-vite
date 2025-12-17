@@ -3,10 +3,20 @@
     <!-- Page Header -->
     <header class="media-header">
       <h1>Media</h1>
-      <p>Explore our tech podcasts, blogs, and digital media services.,
-      We blend storytelling with technology to amplify your voice.,
-      Stay connected, informed, and inspired with O!clok Media.</p>
+      <p>
+        Explore our tech podcasts, blogs, and digital media services.
+        We blend storytelling with technology to amplify your voice.
+        Stay connected, informed, and inspired with O!clok Media.
+      </p>
     </header>
+
+    <!-- YouTube Channel Embed -->
+    <section class="youtube-section">
+      <h2>Kenya Youth Channel</h2>
+      <div class="youtube-wrapper">
+        <iframe src="https://www.youtube.com/embed/W6TjHvjClQQ?si=quZiUjxdpKQUB4JW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+    </section>
 
     <!-- Media Content Section -->
     <section class="media-content">
@@ -17,11 +27,13 @@
         <a :href="item.link" target="_blank" class="cta-button">View</a>
       </div>
     </section>
+
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+
 
 // Example media items data
 const mediaItems = ref([
@@ -50,6 +62,34 @@ const mediaItems = ref([
 </script>
 
 <style scoped>
+.youtube-section {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.youtube-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.youtube-wrapper {
+  position: relative;
+  max-width: 500px; /* 👉 reduce this number to scale more */
+  margin: 0 auto;
+  padding-bottom: 56.25%; /* 16:9 ratio */
+  height: 0;
+}
+
+.youtube-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+
 .media-page {
   font-family: Arial, sans-serif;
   padding: 2rem;
@@ -115,4 +155,5 @@ const mediaItems = ref([
 .cta-button:hover {
   background-color: darkorange;
 }
+
 </style>

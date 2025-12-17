@@ -5,6 +5,8 @@
 
     <!-- Router pages render here -->
     <router-view :cart="cart" @add-to-cart="addToCart" />
+    
+    <Footer />
 
     <!-- Cart Modal -->
     <CartModal
@@ -24,10 +26,11 @@
 import NavBar from "./components/NavBar.vue";
 import CartModal from "./components/CartModal.vue";
 import FloatingChatbot from "./components/FloatingChatbot.vue";
+import Footer from "./components/Footer.vue";
 
 export default {
   name: "App",
-  components: { NavBar , CartModal , FloatingChatbot },
+  components: { NavBar , CartModal , FloatingChatbot, Footer },
   data() {
     return {
       cart: [],

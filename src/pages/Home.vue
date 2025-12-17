@@ -102,53 +102,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="footer-resources-section">
-          <img src="/images/ocLoGo.png" alt="O!clok Store Logo" class="footer-logo" />
-            <h3>Resources</h3>
-          </div>
-          <ul>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">User Guide</a></li>
-            <li><a href="#">Community Forum</a></li>
-            <li><a href="#">Partner Program</a></li>
-          </ul>
-        </div>
-        <div>
-  <h3>FAQs</h3>
-  <ul>
-    <li><router-link :to="{ path: '/faq', hash: '#order' }">How do I place an order?</router-link></li>
-    <li><router-link :to="{ path: '/faq', hash: '#payment' }">What payment methods are supported?</router-link></li>
-    <li><router-link :to="{ path: '/faq', hash: '#delivery' }">How do I track my delivery?</router-link></li>
-    <li><router-link :to="{ path: '/faq', hash: '#technician' }">Where can I get a reliable technician?</router-link></li>
-    <li><router-link :to="{ path: '/faq', hash: '#returns' }">Do you offer returns/refunds?</router-link></li>
-  </ul>
-</div>
-
-        <div>
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-          </div>
-          <ul class="contact-list">
-            <li><i class="fas fa-map-marker-alt"></i> Kisumu, Kenya</li>
-            <li><i class="fas fa-phone-alt"></i> +254 732 379 292</li>
-            <li><i class="fas fa-envelope"></i> info@clokmediam@gmail.com</li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>© 2025 O!clok Mediam — All Rights Reserved.</p>
-        <a href="#" class="back-to-top">↑ Back to Top</a>
-      </div>
-    </footer>
   </div>
 </template>
 

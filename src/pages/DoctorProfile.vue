@@ -1,93 +1,106 @@
 <template>
   <div class="technician-detail" v-if="technician" aria-live="polite">
-    <!-- Sticky Top Row (Back + CTAs) -->
+
+    <!-- ===== TOP ROW ===== -->
     <div class="top-row">
-      <button class="back-btn" @click="goBack" aria-label="Back to technicians">
+      <button class="back-btn" @click="goBack" aria-label="Back to technicians list">
         ← Technicians
       </button>
 
       <div class="top-ctas">
-        <button class="ghost-btn" @click="toggleSave" :aria-pressed="saved" :title="saved ? 'Saved' : 'Save'">
-          <span v-if="saved">💾 Saved</span>
-          <span v-else>💾 Save</span>
+        <button
+          class="ghost-btn"
+          @click="toggleSave"
+          :aria-pressed="saved"
+          :title="saved ? 'Saved' : 'Save'"
+        >
+          {{ saved ? "💾 Saved" : "💾 Save" }}
         </button>
 
-        <button class="primary-btn" @click="openMessage" title="Message technician">Message</button>
-        <button class="accent-btn" @click="hireTechnician" title="Hire technician">Hire</button>
+        <button class="primary-btn" @click="openMessage">Message</button>
+        <button class="accent-btn" @click="hireTechnician">Hire</button>
       </div>
     </div>
 
-    <!-- Hero Card -->
-    <section class="hero-card" role="region" :aria-labelledby="'tech-name'">
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero-card">
       <div class="hero-left">
+
+        <!-- Avatar -->
         <div class="avatar-wrap">
           <img
             :src="technician.image || placeholder"
-            :alt="`${technician.name} profile photo`"
+            :alt="technician.name + ' profile photo'"
             class="avatar"
             @error="onImgErr"
           />
         </div>
 
-        <div class="quick-stats" aria-hidden="true">
+        <!-- Quick Stats -->
+        <div class="quick-stats">
           <div class="stat">
             <div class="stat-value">{{ avgRating.toFixed(1) }}</div>
-            <div class="stat-label">Avg rating</div>
+            <div class="stat-label">Avg Rating</div>
           </div>
-          <div class="divider" />
+
+          <div class="divider"/>
+
           <div class="stat">
             <div class="stat-value">{{ completedCount }}</div>
             <div class="stat-label">Completed</div>
           </div>
-          <div class="divider" />
+
+          <div class="divider"/>
+
           <div class="stat">
             <div class="stat-value" :class="{ online: technician.available }">
-              <span v-if="technician.available">●</span>
-              <span v-else>○</span>
+              {{ technician.available ? "●" : "○" }}
             </div>
-            <div class="stat-label">{{ technician.available ? 'Available' : 'Offline' }}</div>
+            <div class="stat-label">{{ technician.available ? "Available" : "Offline" }}</div>
           </div>
         </div>
       </div>
 
       <div class="hero-right">
-        <h1 id="tech-name" class="name">{{ technician.name }}</h1>
-        <div class="subtitle">
+        <h1 class="name" id="tech-name">{{ technician.name }}</h1>
+
+        <p class="subtitle">
           <strong class="role">{{ technician.specialty }}</strong>
           <span class="sep">•</span>
           <span>{{ technician.experience }} yrs</span>
+        </p>
+
+        <!-- Badges -->
+        <div class="badges">
+          <span v-if="technician.verified" class="badge verified">✔ Verified</span>
+          <span v-if="isTopRated" class="badge top-rated">★ Top Rated</span>
+          <span v-if="technician.partnered" class="badge partner">🤝 Partnered</span>
         </div>
 
-        <div class="badges" role="status" aria-label="Technician badges">
-          <span class="badge verified" v-if="technician.verified">✔ Verified</span>
-          <span class="badge top-rated" v-if="completedCount > 10 && avgRating >= 4.5">★ Top rated</span>
-          <span class="badge partner" v-if="technician.partnered">🤝 Partnered</span>
-        </div>
+        <p v-if="technician.bio" class="bio">{{ technician.bio }}</p>
 
-        <p class="bio" v-if="technician.bio">{{ technician.bio }}</p>
-
+        <!-- Contact -->
         <div class="contact-row">
-          <div class="contact-item" v-if="technician.contact.phone">
-            <a :href="`tel:${technician.contact.phone}`" aria-label="Call technician">
-              📞 {{ formatPhone(technician.contact.phone) }}
-            </a>
+          <div v-if="technician.contact.phone" class="contact-item">
+            <a :href="'tel:' + technician.contact.phone">📞 {{ formatPhone(technician.contact.phone) }}</a>
           </div>
-          <div class="contact-item" v-if="technician.contact.email">
-            <a :href="`mailto:${technician.contact.email}`" aria-label="Email technician">✉️ {{ technician.contact.email }}</a>
+
+          <div v-if="technician.contact.email" class="contact-item">
+            <a :href="'mailto:' + technician.contact.email">✉️ {{ technician.contact.email }}</a>
           </div>
-          <div class="contact-item" v-if="technician.location">
+
+          <div v-if="technician.location" class="contact-item">
             📍 {{ technician.location }}
           </div>
         </div>
 
+        <!-- Socials -->
         <div class="socials" v-if="hasSocials">
           <a
             v-if="technician.contact.phone"
             :href="whatsappLink(technician.contact.phone)"
             target="_blank"
-            rel="noopener noreferrer"
             class="social whatsapp"
-            aria-label="Message on WhatsApp"
           >WhatsApp</a>
 
           <a
@@ -95,9 +108,7 @@
             :key="platform"
             :href="link"
             target="_blank"
-            rel="noopener noreferrer"
             class="social"
-            :title="platform"
           >
             {{ platform }}
           </a>
@@ -105,106 +116,135 @@
       </div>
     </section>
 
-    <!-- Ratings Card -->
-    <section class="ratings-card" role="region" aria-labelledby="ratings-title">
-      <h2 id="ratings-title" class="section-title">Ratings</h2>
+    <!-- ===== RATINGS ===== -->
+    <section class="ratings-card">
+      <h2 class="section-title">Ratings</h2>
 
       <div class="ratings-grid">
-        <div class="rating-row" v-for="(label, key) in ratingKeys" :key="key">
+        <div
+          class="rating-row"
+          v-for="(label, key) in ratingKeys"
+          :key="key"
+        >
           <div class="rating-meta">
-            <span class="rating-icon" aria-hidden="true">{{ ratingIcon(key) }}</span>
+            <span class="rating-icon">{{ ratingIcon(key) }}</span>
             <span class="rating-label">{{ label }}</span>
           </div>
 
           <div class="rating-bar">
-            <div class="bar-track" :aria-hidden="true">
+            <div class="bar-track">
               <div class="bar-fill" :style="{ width: ratingPercent(technician.ratings[key]) }"></div>
             </div>
-            <div class="rating-number" aria-label="rating number">{{ (technician.ratings[key] || 0).toFixed(1) }}/5</div>
+            <span class="rating-number">{{ (technician.ratings[key] || 0).toFixed(1) }}/5</span>
           </div>
         </div>
       </div>
 
       <div class="ratings-footer">
-        <div class="reviews-count">Based on <strong>{{ reviewCount }}</strong> reviews</div>
-        <div class="last-updated">Last updated: {{ lastUpdatedText }}</div>
+        <div>Based on <strong>{{ reviewCount }}</strong> reviews</div>
+        <div>Last updated: {{ lastUpdatedText }}</div>
       </div>
     </section>
 
-    <!-- Dashboard (Chart) -->
-    <section class="dashboard-card" role="region" aria-label="Project overview">
+    <!-- ===== CHART ===== -->
+    <section class="dashboard-card">
       <h2 class="section-title">Project Overview</h2>
       <div class="chart-wrap">
-        <canvas id="projectsChart" aria-hidden="true"></canvas>
+        <canvas id="projectsChart"></canvas>
       </div>
     </section>
 
-    <!-- Projects with Tabs -->
-    <section class="projects-card" role="region" aria-labelledby="projects-title">
-      <h2 id="projects-title" class="section-title">Projects</h2>
+    <!-- ===== PROJECTS WITH TABS ===== -->
+    <section class="projects-card">
+      <h2 class="section-title">Projects</h2>
 
-      <nav class="tabs" role="tablist" aria-label="Project categories">
+      <nav class="tabs" role="tablist">
         <button
           v-for="tab in tabs"
           :key="tab"
           class="tab"
           :class="{ active: activeTab === tab }"
           @click="activeTab = tab"
-          :aria-selected="activeTab === tab"
-          role="tab"
         >
           {{ tab }}
         </button>
       </nav>
 
       <div class="tab-panel">
+
+        <!-- ONGOING -->
         <template v-if="activeTab === 'Ongoing'">
-          <div class="grid projects-grid">
-            <article v-for="(p, i) in technician.projects.continuing" :key="`c-${i}`" class="project-card" :aria-label="p.title || p">
-              <h3 class="proj-title">{{ p.title || p }}</h3>
+          <div class="projects-grid">
+            <article
+              v-for="(p, i) in technician.projects.continuing"
+              :key="i"
+              class="project-card"
+            >
+              <h3 class="proj-title">{{ p.title }}</h3>
               <p class="proj-meta">Last updated: {{ humanDate(p.updated) }}</p>
+
               <div class="proj-actions">
                 <button class="mini-btn" @click="viewProject(p)">View</button>
                 <button class="mini-btn secondary" @click="messageAboutProject(p)">Message</button>
               </div>
             </article>
-            <div v-if="!technician.projects.continuing.length" class="empty">No ongoing projects</div>
+
+            <div v-if="!technician.projects.continuing.length" class="empty">
+              No ongoing projects
+            </div>
           </div>
         </template>
 
+        <!-- UNDER REVIEW -->
         <template v-if="activeTab === 'Under Review'">
-          <div class="mixed projects-grid">
-            <div v-for="(p, i) in technician.projects.review" :key="`r-${i}`" class="project-box">
-              <h4>{{ p.title || p }}</h4>
+          <div class="projects-grid">
+            <div
+              v-for="(p, i) in technician.projects.review"
+              :key="i"
+              class="project-box"
+            >
+              <h4>{{ p.title }}</h4>
               <small>Submitted: {{ humanDate(p.updated) }}</small>
             </div>
-            <div v-if="!technician.projects.review.length" class="empty">No projects under review</div>
+
+            <div v-if="!technician.projects.review.length" class="empty">
+              No projects under review
+            </div>
           </div>
         </template>
 
+        <!-- COMPLETED -->
         <template v-if="activeTab === 'Completed'">
           <ul class="completed-list">
-            <li v-for="(p, i) in technician.projects.completed" :key="`done-${i}`">
-              ✔ {{ p.title || p }} <span class="meta">— completed {{ humanDate(p.completedAt) }}</span>
+            <li v-for="(p, i) in technician.projects.completed" :key="i">
+              ✔ {{ p.title }} —
+              <span class="meta">Completed {{ humanDate(p.completedAt) }}</span>
             </li>
-            <div v-if="!technician.projects.completed.length" class="empty">No completed projects yet</div>
+
+            <div v-if="!technician.projects.completed.length" class="empty">
+              No completed projects yet
+            </div>
           </ul>
         </template>
+
       </div>
     </section>
 
-    <!-- Accountability Partner Card -->
-    <aside class="partner-card" role="complementary" aria-label="Accountability partner">
+    <!-- ===== ACCOUNTABILITY ===== -->
+    <aside class="partner-card">
       <h3 class="section-title">Accountability Partner</h3>
+
       <div class="partner-stats">
         <div class="partner-row">
           <span class="label">Response speed</span>
-          <span class="value">{{ technician.accountability.responseSpeed || '—' }}</span>
+          <span class="value">{{ technician.accountability.responseSpeed || "—" }}</span>
         </div>
+
         <div class="partner-row">
           <span class="label">Monthly activity</span>
-          <span class="value">{{ technician.accountability.monthlyActivity || '—' }}</span>
+          <span class="value">{{ technician.accountability.monthlyActivity || "—" }}</span>
         </div>
+
         <div class="partner-row">
           <span class="label">Reliability</span>
           <span class="value">{{ (technician.accountability.reliability || 0).toFixed(1) }}</span>
@@ -212,32 +252,48 @@
       </div>
 
       <div class="partner-actions">
-        <button class="mini-btn" @click="submitMonthlyReport">Submit Monthly Report</button>
-        <div v-if="technician.partnered" class="partner-badge">✔ Reviewed by O!clok</div>
+        <button class="mini-btn" @click="submitMonthlyReport">
+          Submit Monthly Report
+        </button>
+
+        <div v-if="technician.partnered" class="partner-badge">
+          ✔ Reviewed by O!clok
+        </div>
       </div>
     </aside>
 
-    <!-- Reviews Preview -->
-    <section class="reviews-card" role="region" aria-labelledby="reviews-title" v-if="technician.reviews && technician.reviews.length">
-      <h2 id="reviews-title" class="section-title">Recent Reviews</h2>
+    <!-- ===== REVIEWS ===== -->
+    <section
+      class="reviews-card"
+      v-if="technician.reviews?.length"
+    >
+      <h2 class="section-title">Recent Reviews</h2>
+
       <ul class="review-list">
-        <li v-for="(r, i) in recentReviews" :key="`rev-${i}`" class="review-item">
+        <li
+          class="review-item"
+          v-for="(r, i) in recentReviews"
+          :key="i"
+        >
           <div class="rev-head">
-            <strong>{{ r.author || 'Customer' }}</strong>
+            <strong>{{ r.author || "Customer" }}</strong>
             <span class="rev-rating">★ {{ r.rating.toFixed(1) }}</span>
           </div>
+
           <p class="rev-text">{{ r.text }}</p>
           <small class="rev-date">{{ humanDate(r.date) }}</small>
         </li>
       </ul>
+
       <div class="reviews-actions">
         <button class="mini-btn" @click="openAllReviews">See all reviews</button>
         <button class="mini-btn secondary" @click="writeReview">Write review</button>
       </div>
     </section>
+
   </div>
 
-  <!-- Loading / Not Found -->
+  <!-- NOT FOUND -->
   <div v-else class="notfound">
     <p>Technician not found or loading…</p>
   </div>
@@ -249,178 +305,197 @@ Chart.register(...registerables);
 
 export default {
   name: "TechnicianDetail",
+
   data() {
     return {
       technician: null,
-      avgRating: 0,
-      reviewCount: 0,
       placeholder: "/images/avatar-placeholder.png",
       saved: false,
+      avgRating: 0,
+      reviewCount: 0,
       tabs: ["Ongoing", "Under Review", "Completed"],
       activeTab: "Ongoing",
+      _projectsChart: null
     };
   },
+
   computed: {
     ratingKeys() {
-      // display order + nice labels
       return {
-        app: "App rating",
-        skills: "Skills rating",
-        customer: "Customer rating",
+        app: "App Rating",
+        skills: "Skills",
+        customer: "Customer Experience"
       };
     },
+
     completedCount() {
-      return (this.technician && this.technician.projects && this.technician.projects.completed)
-        ? this.technician.projects.completed.length
-        : 0;
+      return this.technician?.projects?.completed?.length || 0;
     },
+
     hasSocials() {
-      return this.technician && this.technician.socials && Object.keys(this.technician.socials).length;
+      return this.technician?.socials && Object.keys(this.technician.socials).length > 0;
     },
+
+    isTopRated() {
+      return this.completedCount > 10 && this.avgRating >= 4.5;
+    },
+
     lastUpdatedText() {
-      // simple text — if technician has ratingsUpdated date, show it
-      return (this.technician && this.technician.ratingsUpdated) ? this.humanDate(this.technician.ratingsUpdated) : "This month";
+      return this.technician?.ratingsUpdated
+        ? this.humanDate(this.technician.ratingsUpdated)
+        : "This month";
     },
+
     recentReviews() {
-      return (this.technician && this.technician.reviews) ? this.technician.reviews.slice(0, 3) : [];
+      return this.technician?.reviews?.slice(0, 3) || [];
     }
   },
+
   mounted() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    const id = parseInt(this.$route.params.id, 10);
+    window.scrollTo({ top: 0 });
+
+    const id = Number(this.$route.params.id);
     fetch("/technicians.json")
-      .then((res) => res.json())
-      .then((data) => {
-        this.technician = data.find((t) => t.id === id) || null;
+      .then(res => res.json())
+      .then(data => {
+        this.technician = data.find(t => t.id === id) || null;
+
         if (this.technician) {
-          this.normalizeProjectDates();
+          this.normalizeProjects();
           this.computeAverageRating();
-          this.reviewCount = (this.technician.reviews && this.technician.reviews.length) || 0;
+          this.reviewCount = this.technician.reviews?.length || 0;
           this.$nextTick(() => this.renderChart());
         }
       })
-      .catch((err) => {
-        console.error("Error loading technicians:", err);
-        this.technician = null;
-      });
+      .catch(err => console.error(err));
   },
+
   methods: {
+    /* ---------- Navigation ---------- */
     goBack() {
       this.$router.back();
     },
-    hireTechnician() {
-      // wire up modal/intent flow in your app
-      this.$emit("hire", this.technician);
-      alert(`Hiring intent sent for ${this.technician.name}`);
-    },
-    openMessage() {
-      this.$emit("message", this.technician);
-      // prefer your in-app chat modal
-      alert(`Open chat with ${this.technician.name}`);
-    },
+
+    /* ---------- Save ---------- */
     toggleSave() {
       this.saved = !this.saved;
     },
+
+    /* ---------- Contact Actions ---------- */
+    openMessage() {
+      this.$emit("message", this.technician);
+      alert("Opening chat with " + this.technician.name);
+    },
+
+    hireTechnician() {
+      this.$emit("hire", this.technician);
+      alert("Hiring request sent for " + this.technician.name);
+    },
+
+    whatsappLink(phone) {
+      return "https://wa.me/" + phone.replace(/\D/g, "");
+    },
+
+    /* ---------- Display Helpers ---------- */
+    formatPhone(phone) {
+      const s = phone.replace(/\D/g, "");
+      if (s.length === 12 && s.startsWith("254"))
+        return `+${s.slice(0,3)} ${s.slice(3,6)} ${s.slice(6)}`;
+      return phone;
+    },
+
+    ratingPercent(num) {
+      return `${((num || 0) / 5) * 100}%`;
+    },
+
+    ratingIcon(key) {
+      return {
+        app: "🚀",
+        skills: "🔧",
+        customer: "🙂"
+      }[key] || "★";
+    },
+
+    humanDate(d) {
+      const date = new Date(d);
+      return isNaN(date) ? d : date.toLocaleDateString();
+    },
+
+    /* ---------- Image Handling ---------- */
     onImgErr(e) {
       e.target.src = this.placeholder;
     },
-    formatPhone(phone) {
-      // minimal formatting for display
-      if (!phone) return "";
-      const s = phone.replace(/\D/g, "");
-      if (s.length === 12 && s.startsWith("254")) {
-        return `+${s.slice(0, 3)} ${s.slice(3, 6)} ${s.slice(6)}`;
-      }
-      return phone;
-    },
-    whatsappLink(phone) {
-      if (!phone) return "#";
-      const clean = phone.replace(/\D/g, "");
-      // whatsapp web expects country code, try to handle local numbers gracefully
-      return `https://wa.me/${clean}`;
-    },
-    ratingPercent(val) {
-      return `${((val || 0) / 5) * 100}%`;
-    },
-    computeAverageRating() {
-      const r = (this.technician && this.technician.ratings) ? this.technician.ratings : { app: 0, skills: 0, customer: 0 };
-      const avg = (Number(r.app || 0) + Number(r.skills || 0) + Number(r.customer || 0)) / 3;
-      this.avgRating = avg || 0;
-    },
-    ratingIcon(key) {
-      switch (key) {
-        case "app": return "🚀";
-        case "skills": return "🔧";
-        case "customer": return "🙂";
-        default: return "★";
-      }
-    },
-    humanDate(d) {
-      if (!d) return "—";
-      const date = new Date(d);
-      if (isNaN(date)) return d;
-      return date.toLocaleDateString();
-    },
-    normalizeProjectDates() {
-      // ensure project items are objects with date fields for display
-      const p = this.technician.projects || { continuing: [], review: [], completed: [] };
-      ["continuing", "review", "completed"].forEach((k) => {
-        this.technician.projects[k] = (p[k] || []).map((item) => {
-          if (typeof item === "string") return { title: item, updated: null, completedAt: null };
-          return item;
-        });
+
+    /* ---------- Data Prep ---------- */
+    normalizeProjects() {
+      ["continuing", "review", "completed"].forEach(type => {
+        this.technician.projects[type] =
+          this.technician.projects[type].map(item =>
+            typeof item === "string"
+              ? { title: item, updated: null }
+              : item
+          );
       });
     },
+
+    computeAverageRating() {
+      const r = this.technician.ratings;
+      this.avgRating = (r.app + r.skills + r.customer) / 3;
+    },
+
+    /* ---------- Chart Rendering ---------- */
     renderChart() {
       const ctx = document.getElementById("projectsChart");
-      if (!ctx || !this.technician) return;
+      if (!ctx) return;
+
       const ongoing = this.technician.projects.continuing.length;
       const review = this.technician.projects.review.length;
       const completed = this.technician.projects.completed.length;
 
-      // destroy previous chart safely
       if (this._projectsChart) {
-        try { this._projectsChart.destroy(); } catch (e) { /* ignore */ }
+        this._projectsChart.destroy();
       }
 
       this._projectsChart = new Chart(ctx, {
         type: "doughnut",
         data: {
           labels: ["Ongoing", "Under Review", "Completed"],
-          datasets: [{
-            data: [ongoing, review, completed],
-            backgroundColor: ["#ffb400", "#f39c12", "#4caf50"],
-          }],
+          datasets: [
+            {
+              data: [ongoing, review, completed],
+              backgroundColor: ["#ffb400", "#f39c12", "#4caf50"]
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: "bottom" } },
-        },
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
       });
     },
 
-    // small UX actions
+    /* ---------- Project Actions ---------- */
     viewProject(p) {
       this.$emit("view-project", p);
-      // open project detail modal or route
     },
+
     messageAboutProject(p) {
       this.openMessage();
     },
+
     submitMonthlyReport() {
-      alert("Monthly report modal: implement in admin flow.");
+      alert("Monthly report submitted.");
     },
+
     openAllReviews() {
       this.$emit("open-reviews", this.technician.reviews);
     },
+
     writeReview() {
       this.$emit("write-review", this.technician.id);
-    }
-  },
-  unmounted() {
-    if (this._projectsChart) {
-      try { this._projectsChart.destroy(); } catch (e) {}
     }
   }
 };

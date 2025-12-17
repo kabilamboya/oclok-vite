@@ -38,10 +38,25 @@
             type="text" 
             v-model="userInput" 
             placeholder="Ask me something..." 
+            @input="generateSuggestions(userInput)"
             @keyup.enter="sendMessage"
           />
           <button @click="sendMessage">➤</button>
         </div>
+
+        <!-- FAQ Suggestions -->
+        <ul 
+          v-if="suggestions.length && userInput.length > 1" 
+          class="suggestion-box"
+        >
+          <li 
+            v-for="(s, i) in suggestions" 
+            :key="i" 
+            @click="applySuggestion(s.question)"
+          >
+            {{ s.question }}
+          </li>
+        </ul>
       </div>
     </transition>
   </div>
@@ -50,218 +65,236 @@
 <script>
 export default {
   name: "ChatBot",
+
   data() {
     return {
       isOpen: false,
       userInput: "",
+      suggestions: [],
       messages: [
         { sender: "bot", text: "Hey 👋, how can I help you today?" }
       ],
+
+      /* FAQ DATA (from your FAQ component) */
+      faqData: [
+        {
+          title: "Ordering",
+          items: [
+            { question: "How do I place an order?", answer: "Browse products, add to cart, and proceed to checkout." },
+            { question: "What payment methods are supported?", answer: "We accept M-Pesa, Airtel Money, Visa, Mastercard, and bank transfers." },
+            { question: "Can I change or cancel my order after placing it?", answer: "Yes, if the order hasn’t been dispatched yet. Contact support immediately." },
+          ],
+        },
+        {
+          title: "Delivery",
+          items: [
+            { question: "How do I track my delivery?", answer: "A tracking link will be sent via SMS or email once shipped." },
+            { question: "Do you deliver outside Nairobi or Kisumu?", answer: "Yes, we deliver across Kenya including Eldoret, Vihiga, and Mombasa." },
+            { question: "Where can I get a reliable technician?", answer: "Use our 'Book a Technician' feature to find certified professionals." },
+          ],
+        },
+        {
+          title: "Support & Returns",
+          items: [
+            { question: "Do you offer returns or refunds?", answer: "Yes, within 7 days. Refunds process in 3–5 business days." },
+            { question: "What if I receive the wrong product?", answer: "Send a photo and order number. We’ll replace or refund." },
+            { question: "Is there a warranty on products?", answer: "Most electronics include a manufacturer's warranty." },
+          ],
+        },
+        {
+          title: "Account & Security",
+          items: [
+            { question: "How do I reset my password?", answer: "Click 'Forgot Password' on the login page." },
+            { question: "Is my personal data safe?", answer: "Yes, we use encrypted servers and strict privacy controls." },
+          ],
+        },
+        {
+          title: "Product Information",
+          items: [
+            { question: "How do I know if a product is in stock?", answer: "If the product shows an 'Add to Cart' button, it is available." },
+            { question: "Can I request a product that's not listed?", answer: "Yes, contact us via WhatsApp or the contact form." },
+          ],
+        },
+      ],
+
+      /* draggable settings */
       position: { top: window.innerHeight - 480, left: window.innerWidth - 360 },
       bubblePos: { top: window.innerHeight - 90, left: window.innerWidth - 90 },
       drag: { active: false, offsetX: 0, offsetY: 0 },
       bubbleDrag: { active: false, offsetX: 0, offsetY: 0 },
     };
   },
+
   methods: {
     toggleChat() {
       this.isOpen = !this.isOpen;
     },
+
     sendMessage() {
       if (!this.userInput.trim()) return;
-      this.messages.push({ sender: "user", text: this.userInput });
 
-      let reply = this.getBotResponse(this.userInput);
+      const text = this.userInput;
+      this.messages.push({ sender: "user", text });
+
+      const reply = this.findFAQResponse(text.toLowerCase());
+
       setTimeout(() => {
         this.messages.push({ sender: "bot", text: reply });
         this.scrollToBottom();
       }, 600);
 
       this.userInput = "";
+      this.suggestions = [];
       this.scrollToBottom();
     },
-    getBotResponse(input) {
-      input = input.toLowerCase();
-      if (input.includes("services")) return "We provide creative, smart, and innovative solutions.";
-      if (input.includes("contact")) return "You can reach us via the Contact page or social media links.";
-      if (input.includes("price") || input.includes("cost")) return "Pricing depends on your project scope.";
-      return "Hmm 🤔 I’m not sure — try asking about 'services', 'contact', or 'pricing'.";
+
+    /* ===========================
+       SMART FAQ MATCHING LOGIC
+    ============================*/
+    findFAQResponse(input) {
+      const allFAQs = this.faqData.flatMap(cat => cat.items);
+
+      // direct match by first word or keyword
+      for (let item of allFAQs) {
+        const q = item.question.toLowerCase();
+
+        // first word match
+        if (input.includes(q.split(" ")[0])) return item.answer;
+
+        // match long keywords (>= 4 letters)
+        const keywords = q.split(" ").filter(k => k.length >= 4);
+        if (keywords.some(k => input.includes(k))) return item.answer;
+      }
+
+      // fallback replies
+      if (input.includes("services")) return "We provide creative and innovative digital solutions.";
+      if (input.includes("contact")) return "You can contact us via the Contact page or social media.";
+      if (input.includes("price") || input.includes("cost")) return "Pricing depends on project details.";
+
+      return "I'm not fully sure 🤔 — but you can ask about orders, delivery, payments, technicians, warranty, or returns.";
     },
+
     scrollToBottom() {
       this.$nextTick(() => {
-        const box = this.$refs.messages;
-        if (box) box.scrollTop = box.scrollHeight;
+        const container = this.$refs.messages;
+        if (container) container.scrollTop = container.scrollHeight;
       });
     },
-    // Draggable chat window
+
+    /* ===========================
+          DRAGGABLE WINDOW
+    ============================*/
     startDrag(e) {
       this.drag.active = true;
       this.drag.offsetX = e.clientX - this.position.left;
       this.drag.offsetY = e.clientY - this.position.top;
+
       document.addEventListener("mousemove", this.onDrag);
       document.addEventListener("mouseup", this.stopDrag);
     },
+
     onDrag(e) {
-      if (this.drag.active) {
-        this.position.left = Math.min(
-          window.innerWidth - 320,
-          Math.max(0, e.clientX - this.drag.offsetX)
-        );
-        this.position.top = Math.min(
-          window.innerHeight - 100,
-          Math.max(0, e.clientY - this.drag.offsetY)
-        );
-      }
+      if (!this.drag.active) return;
+
+      this.position.left = Math.min(
+        window.innerWidth - 320,
+        Math.max(0, e.clientX - this.drag.offsetX)
+      );
+
+      this.position.top = Math.min(
+        window.innerHeight - 100,
+        Math.max(0, e.clientY - this.drag.offsetY)
+      );
     },
+
     stopDrag() {
       this.drag.active = false;
       document.removeEventListener("mousemove", this.onDrag);
       document.removeEventListener("mouseup", this.stopDrag);
     },
-    // Draggable chat icon
+
+    /* ===========================
+         DRAGGABLE BUBBLE
+    ============================*/
     startBubbleDrag(e) {
       this.bubbleDrag.active = true;
       this.bubbleDrag.offsetX = e.clientX - this.bubblePos.left;
       this.bubbleDrag.offsetY = e.clientY - this.bubblePos.top;
+
       document.addEventListener("mousemove", this.onBubbleDrag);
       document.addEventListener("mouseup", this.stopBubbleDrag);
     },
+
     onBubbleDrag(e) {
-      if (this.bubbleDrag.active) {
-        this.bubblePos.left = Math.min(
-          window.innerWidth - 70,
-          Math.max(0, e.clientX - this.bubbleDrag.offsetX)
-        );
-        this.bubblePos.top = Math.min(
-          window.innerHeight - 70,
-          Math.max(0, e.clientY - this.bubbleDrag.offsetY)
-        );
-      }
+      if (!this.bubbleDrag.active) return;
+
+      this.bubblePos.left = Math.min(
+        window.innerWidth - 70,
+        Math.max(0, e.clientX - this.bubbleDrag.offsetX)
+      );
+
+      this.bubblePos.top = Math.min(
+        window.innerHeight - 70,
+        Math.max(0, e.clientY - this.bubbleDrag.offsetY)
+      );
     },
+
     stopBubbleDrag() {
       this.bubbleDrag.active = false;
       document.removeEventListener("mousemove", this.onBubbleDrag);
       document.removeEventListener("mouseup", this.stopBubbleDrag);
     },
+
+    /* ===========================
+            SUGGESTIONS
+    ============================*/
+    generateSuggestions(input) {
+      const txt = input.toLowerCase().trim();
+      if (!txt) {
+        this.suggestions = [];
+        return;
+      }
+
+      const allFAQs = this.faqData.flatMap(cat => cat.items);
+
+      this.suggestions = allFAQs
+        .filter(item => item.question.toLowerCase().includes(txt))
+        .slice(0, 5);
+    },
+
+    applySuggestion(q) {
+      this.userInput = q;
+      this.suggestions = [];
+      this.sendMessage();
+    }
   }
 };
 </script>
 
 <style scoped>
-/* Chat bubble icon */
-.chat-bubble {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #3eb489;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-  z-index: 9999;
-  transition: transform 0.25s ease;
-}
-.chat-bubble:hover {
-  transform: scale(1.1);
-}
-.bubble-icon {
-  font-size: 28px;
-  cursor: pointer;
-}
-
-/* Chat window */
-.chatbot-window {
-  position: fixed;
-  width: 320px;
-  height: 420px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  z-index: 10000;
-  user-select: none;
-}
-
-/* Header */
-.chatbot-header {
-  background: #3eb489;
-  color: white;
-  padding: 0.7rem 1rem;
-  border-radius: 12px 12px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: move;
-}
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.3rem;
-  cursor: pointer;
-}
-.close-btn:hover {
-  transform: scale(1.3);
-}
-
-/* Messages */
-.chatbot-messages {
-  flex: 1;
-  padding: 1rem;
+.suggestion-box {
+  position: absolute;
+  bottom: 55px;
+  left: 10px;
+  right: 10px;
+  background: white;
+  border-radius: 8px;
+  max-height: 180px;
   overflow-y: auto;
-  font-size: 0.9rem;
-}
-.message {
-  margin-bottom: 0.8rem;
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
-  max-width: 80%;
-}
-.message.bot {
-  background: #f1f1f1;
-  text-align: left;
-}
-.message.user {
-  background: #3eb489;
-  color: white;
-  text-align: right;
-  margin-left: auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 20;
 }
 
-/* Input area */
-.chatbot-input {
-  display: flex;
-  border-top: 1px solid #ddd;
-}
-.chatbot-input input {
-  flex: 1;
-  border: none;
-  padding: 0.7rem;
-  font-size: 0.9rem;
-  outline: none;
-}
-.chatbot-input button {
-  border: none;
-  background: #3eb489;
-  color: white;
-  padding: 0.7rem 1rem;
+.suggestion-box li {
+  padding: 10px 14px;
   cursor: pointer;
-}
-.chatbot-input button:hover {
-  background: #34a67e;
+  border-bottom: 1px solid #eee;
 }
 
-/* Animations */
-.fade-scale-enter-active,
-.fade-scale-leave-active {
-  transition: all 0.25s ease;
-}
-.fade-scale-enter-from,
-.fade-scale-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
+.suggestion-box li:hover {
+  background: #f7f7f7;
 }
 </style>
