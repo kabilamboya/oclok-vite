@@ -17,6 +17,7 @@
           <router-link :to="{ name: 'Media' }" class="cta-button" @click="closeMenu">Media</router-link>
           <router-link :to="{ name: 'Technicians' }" class="cta-button" @click="closeMenu">Doctor</router-link>
           <router-link :to="{ name: 'Cyber' }" class="cta-button" @click="closeMenu">Cyber</router-link>
+          <router-link :to="{ name: 'Discover' }" class="cta-button" @click="closeMenu">Discover</router-link>
         </nav>
       </div>
 

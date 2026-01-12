@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "name": "Dunga Hill Camp",
+    "slug": "dunga-hill-camp",
+    "location": "Dunga Beach, Kisumu",
+    "category": "Restaurant",
+    "rating": 4.5,
+    "image": "/images/dunga.jpg",
+    "description": "A beautiful lakeside experience offering local dishes, sunsets, and boat rides."
+  },
+  {
+    "id": 2,
+    "name": "Achieng' Oneko Memorial Park",
+    "slug": "achieng-oneko-memorial-park",
+    "location": "Milimani, Kisumu",
+    "category": "Attraction",
+    "rating": 4.3,
+    "image": "/images/achieng-oneko.jpg",
+    "description": "A historic cultural site honoring one of Kenya’s freedom heroes with serene gardens."
+  },
+  {
+    "id": 3,
+    "name": "Acacia Premier Hotel Rooftop",
+    "slug": "acacia-premier-rooftop",
+    "location": "Achieng Oneko Road, Kisumu",
+    "category": "Hotel & Lounge",
+    "rating": 4.6,
+    "image": "/images/acacia.jpg",
+    "description": "Luxury rooftop dining and drinks with panoramic views of Kisumu City."
+  },
+  {
+    "id": 4,
+    "name": "Tilapia Beach",
+    "slug": "tilapia-beach",
+    "location": "Dunga, Kisumu",
+    "category": "Restaurant",
+    "rating": 4.4,
+    "image": "/images/tilapia-beach.jpg",
+    "description": "Popular for fresh tilapia, lake breeze, and relaxed outdoor seating."
+  },
+  {
+    "id": 5,
+    "name": "Kisumu Impala Sanctuary",
+    "slug": "kisumu-impala-sanctuary",
+    "location": "Nyerere Road, Kisumu",
+    "category": "Attraction",
+    "rating": 4.5,
+    "image": "/images/impala.jpg",
+    "description": "A lakeside wildlife sanctuary ideal for nature walks, picnics, and family visits."
+  },
+  {
+    "id": 6,
+    "name": "Dunga Beach Wetlands Boardwalk",
+    "slug": "dunga-wetlands-boardwalk",
+    "location": "Dunga Beach, Kisumu",
+    "category": "Nature",
+    "rating": 4.4,
+    "image": "/images/dunga-boardwalk.jpg",
+    "description": "A scenic eco-boardwalk offering bird watching and sunset photography."
+  },
+  {
+    "id": 7,
+    "name": "The Laughing Buddha",
+    "slug": "the-laughing-buddha",
+    "location": "Milimani, Kisumu",
+    "category": "Restaurant",
+    "rating": 4.2,
+    "image": "/images/laughing-buddha.jpg",
+    "description": "A cozy restaurant serving Asian-inspired dishes in a relaxed environment."
+  },
+  {
+    "id": 8,
+    "name": "Mega City Mall Rooftop",
+    "slug": "mega-city-mall-rooftop",
+    "location": "Kisumu CBD",
+    "category": "Entertainment",
+    "rating": 4.1,
+    "image": "/images/mega-city.jpg",
+    "description": "An urban hangout spot with city views, eateries, and nightlife energy."
+  },
+  {
+    "id": 9,
+    "name": "Hippo Point",
+    "slug": "hippo-point",
+    "location": "Dunga Area, Kisumu",
+    "category": "Nature",
+    "rating": 4.3,
+    "image": "/images/hippo-point.jpg",
+    "description": "A calm lakeside spot known for occasional hippo sightings and quiet views."
+  },
+  {
+    "id": 10,
+    "name": "Car Wash Lounge Milimani",
+    "slug": "car-wash-lounge-milimani",
+    "location": "Milimani Estate, Kisumu",
+    "category": "Lounge",
+    "rating": 4.0,
+    "image": "/images/car-wash-lounge.jpg",
+    "description": "A laid-back social spot combining car wash services, food, music, and drinks."
+  },
+  {
+  "id": 11,
+  "name": "Kisumu Museum",
+  "slug": "kisumu-museum",
+  "location": "Nyerere Road, Kisumu",
+  "category": "Culture",
+  "rating": 4.4,
+  "image": "/images/kisumu-museum.jpg",
+  "description": "A cultural museum showcasing Luo heritage, traditional homesteads, and regional history."
+},
+{
+  "id": 12,
+  "name": "Victoria Terrace Lounge",
+  "slug": "victoria-terrace-lounge",
+  "location": "Milimani, Kisumu",
+  "category": "Lounge",
+  "rating": 4.2,
+  "image": "/images/victoria-terrace.jpg",
+  "description": "An elegant rooftop lounge offering city views, cocktails, and evening entertainment."
+}
+]

@@ -21,7 +21,7 @@
       <div class="about-container">
         <!-- Left Image -->
         <div class="about-image">
-          <img src="/images/45.jpg" alt="O!clok Store Team" />
+          <img src="/images/deliDrone.jpeg" alt="O!clok Store Team" />
         </div>
 
         <!-- Right Tab Content -->

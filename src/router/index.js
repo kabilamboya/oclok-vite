@@ -1,71 +1,69 @@
 // src/router/index.js
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 
-// Import pages
-import Home from '../pages/Home.vue';
-import Media from '../pages/Media.vue';
-import Technicians from '../pages/Technicians.vue';
-import DoctorProfile from '../pages/DoctorProfile.vue';
-import Products from '../pages/Store.vue';
-import Cyber from '../pages/Cyber.vue';
-import ProductDetail from '../pages/ProductDetail.vue';
-import SearchResults from '../pages/SearchResults.vue';
-import AccountPage from '../pages/AccountPage.vue';
-import NotFound from '../pages/NotFound.vue';
-
-import Hellen from '../pages/Hellen.vue';
+// Pages using dynamic imports
+const Home = () => import('../pages/Home.vue');
+const Media = () => import('../pages/Media.vue');
+const Technicians = () => import('../pages/Technicians.vue');
+const DoctorProfile = () => import('../pages/DoctorProfile.vue');
+const Hellen = () => import('../pages/Hellen.vue');
+const Products = () => import('../pages/Store.vue');
+const ProductDetail = () => import('../pages/ProductDetail.vue');
+const AccountPage = () => import('../pages/AccountPage.vue');
+const Cyber = () => import('../pages/Cyber.vue');
+const Discover = () => import('../pages/Discover.vue');
+const DiscoverDetails = () => import('../pages/DiscoverDetails.vue');
+const SearchResults = () => import('../pages/SearchResults.vue');
+const CheckOut = () => import('../pages/CheckOut.vue');
+const NotFound = () => import('../pages/NotFound.vue');
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
-
-  // Media
   { path: '/media', name: 'Media', component: Media },
 
   // Technicians
   { path: '/technicians', name: 'Technicians', component: Technicians },
-  { path: '/technicians/:slug', name: 'DoctorProfile', component: DoctorProfile, props: true },
   { path: '/technicians/hellen', name: 'Hellen', component: Hellen },
+  { path: '/technicians/:slug', name: 'DoctorProfile', component: DoctorProfile, props: true },
 
   // Products
   { path: '/products', name: 'Products', component: Products },
   { path: '/products/:id', name: 'ProductDetail', component: ProductDetail, props: true },
 
-  // Accounts + Checkout
+  // Account
   { path: '/account', name: 'AccountPage', component: AccountPage },
+
+  // Cyber page with nested routes
+  {
+    path: '/cyber',
+    name: 'Cyber',
+    component: Cyber,
+    children: [
+      { path: '', redirect: 'creator' } // default route
+    ]
+  },
+
+  { path: '/discover', name: 'Discover', component: Discover },
+  { path: '/discover/:slug', name: 'DiscoverDetails', component: DiscoverDetails, props: true },
 
   // Search
   { path: '/search', name: 'Search', component: SearchResults },
 
-  // Cyber
-  { path: '/cyber', name: 'Cyber', component: Cyber },
-
-  // Design Gallery
+  // Checkout
   {
-    path: '/gallery',
-    name: 'DesignGallery',
-    component: () => import('../pages/DesignGallery.vue')
+    path: '/checkout',
+    name: 'Checkout',
+    component: CheckOut,
+    props: () => ({ cart: JSON.parse(localStorage.getItem('cart')) || [] })
   },
 
-  {
-  path: "/checkout",
-  name: "Checkout",
-  component: () => import("../pages/CheckOut.vue"),
-  props: route => ({ cart: JSON.parse(localStorage.getItem("cart")) || [] })
-},
-
-  // 404 — Keep last
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
+  // 404 - Must be last
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-  scrollBehavior(to) {
-    if (to.hash) {
-      return { el: to.hash, behavior: 'smooth' };
-    }
-    return { top: 0 };
-  }
+  routes
 });
 
 export default router;
