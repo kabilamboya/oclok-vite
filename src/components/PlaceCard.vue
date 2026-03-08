@@ -24,7 +24,7 @@ defineProps({
 .card {
   display: block;
   text-decoration: none;
-  color: inherit;
+  color: #ffffff !important;
   border-radius: 12px;
   overflow: hidden;
   background: #020617;

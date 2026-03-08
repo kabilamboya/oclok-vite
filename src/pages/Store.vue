@@ -1,15 +1,12 @@
 <template>
   <div class="products-page">
-
-    <!-- Hero Banner -->
     <section class="hero" aria-hidden="false">
       <div class="hero-text">
-        <h1>O!clok Store — delivered by Delibois</h1>
+        <h1>O!clok Store - delivered by Delibois</h1>
         <p>Explore smart and innovative solutions designed for you.</p>
       </div>
     </section>
 
-    <!-- Filters -->
     <div class="filters" role="search" aria-label="Product filters">
       <input
         v-model="searchQuery"
@@ -28,30 +25,26 @@
       </select>
     </div>
 
-    <!-- Products Grid -->
     <div class="products-grid" aria-live="polite">
-      <!-- Skeleton Loader -->
-      <div v-if="loading" class="product-card skeleton" v-for="n in 8" :key="'skeleton-' + n" aria-hidden="true"></div>
+      <div v-if="loading" class="product-card skeleton" v-for="n in 8" :key="`skeleton-${n}`" aria-hidden="true"></div>
 
-      <!-- No results -->
       <div v-if="!loading && filteredProducts.length === 0" class="no-results" role="status">
         <p>No products match your search.</p>
       </div>
 
-      <!-- Products -->
       <div
         v-if="!loading"
         v-for="product in paginatedProducts"
         :key="product.id"
         class="product-card"
       >
-        <!-- Image -> product details -->
-        <RouterLink :to="`/product/${product.id}`" class="image-link" :aria-label="`Open ${product.name} details`">
+        <RouterLink :to="`/products/${product.id}`" class="image-link" :aria-label="`Open ${product.name} details`">
           <img
             :src="product.image"
             :alt="product.name"
             class="product-image"
             loading="lazy"
+            @error="onProductImageError"
           />
         </RouterLink>
 
@@ -65,7 +58,7 @@
               Add to Cart
             </button>
 
-            <RouterLink :to="`/product/${product.id}`" class="details-link" aria-label="View details">
+            <RouterLink :to="`/products/${product.id}`" class="details-link" aria-label="View details">
               View
             </RouterLink>
           </div>
@@ -73,24 +66,21 @@
       </div>
     </div>
 
-    <!-- Pagination -->
     <div v-if="!loading && totalPages > 1" class="pagination" aria-label="Pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">← Prev</button>
+      <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">Next →</button>
+      <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
     </div>
 
-    <!-- Floating cart button -->
     <button
       class="floating-cart"
       @click="openCart"
       :aria-label="`Open cart with ${cartCount} items`"
       v-if="cartCount > 0"
     >
-      🛒 <span class="badge">{{ cartCount }}</span>
+      Cart <span class="badge">{{ cartCount }}</span>
     </button>
 
-    <!-- Cart Modal (uses your CartModal component) -->
     <CartModal
       :cart="cart"
       :isOpen="isCartOpen"
@@ -101,14 +91,13 @@
       @checkout="goToCheckout"
     />
 
-    <footer class="footer">
-      <!-- your footer content -->
-    </footer>
+    <footer class="footer"></footer>
   </div>
 </template>
 
 <script>
 import CartModal from "../components/CartModal.vue";
+import productsData from "../data/products.json";
 
 export default {
   name: "ProductsPage",
@@ -129,13 +118,15 @@ export default {
 
   computed: {
     categories() {
-      return [...new Set(this.products.map(p => p.category))].filter(Boolean);
+      return [...new Set(this.products.map((p) => p.category))].filter(Boolean);
     },
 
     filteredProducts() {
       const q = this.searchQuery.trim().toLowerCase();
-      return this.products.filter(p => {
-        const matchesSearch = q === "" || p.name.toLowerCase().includes(q) || (p.category || "").toLowerCase().includes(q);
+      return this.products.filter((p) => {
+        const productName = (p.name || "").toLowerCase();
+        const productCategory = (p.category || "").toLowerCase();
+        const matchesSearch = q === "" || productName.includes(q) || productCategory.includes(q);
         const matchesCategory = this.selectedCategory ? p.category === this.selectedCategory : true;
         return matchesSearch && matchesCategory;
       });
@@ -152,33 +143,47 @@ export default {
 
     cartCount() {
       return this.cart.reduce((sum, i) => sum + (i.quantity || 1), 0);
-    }
+    },
   },
 
   watch: {
-    // reset page when filters/search change
-    searchQuery() { this.currentPage = 1; },
-    selectedCategory() { this.currentPage = 1; }
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    selectedCategory() {
+      this.currentPage = 1;
+    },
   },
 
   methods: {
+    normalizeProduct(product) {
+      const numericPrice = Number(product?.price);
+      return {
+        ...product,
+        price: Number.isFinite(numericPrice) ? numericPrice : 0,
+      };
+    },
+
+    onProductImageError(event) {
+      event.target.style.display = "none";
+    },
+
     nextPage() {
       if (this.currentPage < this.totalPages) this.currentPage++;
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
+
     prevPage() {
       if (this.currentPage > 1) this.currentPage--;
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
 
     onFilterChange() {
-      // keep it small and simple: reset pagination when filters change
       this.currentPage = 1;
     },
 
     addToCart(product) {
-      // add minimal cart object to avoid dragging entire product data if undesirable
-      const itemIndex = this.cart.findIndex(i => i.id === product.id);
+      const itemIndex = this.cart.findIndex((i) => i.id === product.id);
       if (itemIndex !== -1) {
         this.cart[itemIndex].quantity += 1;
       } else {
@@ -190,77 +195,71 @@ export default {
           image: product.image,
           thumbnail: product.image,
           quantity: 1,
-          // preserve optional flags from your product schema
           file: product.file || false,
-          isMockup: product.isMockup || false
+          isMockup: product.isMockup || false,
         });
       }
+
       this.saveCart();
-      // small confirm feedback
-      try { window.navigator.vibrate?.(10); } catch(e) {}
-      // open cart automatically (optional). comment out if you don't want this:
-      // this.openCart();
-      // friendly toast
-      this.$nextTick(() => alert(`${product.name} added to cart!`));
+      try {
+        window.navigator.vibrate?.(10);
+      } catch (_error) {
+        // Ignore unsupported vibration API.
+      }
     },
 
     saveCart() {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    // Cart modal controls
-    openCart() { this.isCartOpen = true; },
-    closeCart() { this.isCartOpen = false; },
+    openCart() {
+      this.isCartOpen = true;
+    },
+
+    closeCart() {
+      this.isCartOpen = false;
+    },
 
     increaseQty(id) {
-      const item = this.cart.find(i => i.id === id);
+      const item = this.cart.find((i) => i.id === id);
       if (item) item.quantity++;
       this.saveCart();
     },
 
     decreaseQty(id) {
-      const item = this.cart.find(i => i.id === id);
+      const item = this.cart.find((i) => i.id === id);
       if (!item) return;
+
       if (item.quantity > 1) {
         item.quantity--;
       } else {
         this.removeItem(id);
       }
+
       this.saveCart();
     },
 
     removeItem(id) {
-      this.cart = this.cart.filter(i => i.id !== id);
+      this.cart = this.cart.filter((i) => i.id !== id);
       this.saveCart();
     },
 
     goToCheckout() {
-      // Persist cart (already saved) and navigate to checkout route
       this.closeCart();
       this.$router.push({ path: "/checkout", query: { from: "cart" } });
-    }
+    },
   },
 
   mounted() {
-    // small delay for nicer skeleton effect (keeps compatibility)
     setTimeout(() => {
-      fetch("/products.json")
-        .then(res => res.json())
-        .then(data => {
-          this.products = data || [];
-          this.loading = false;
-        })
-        .catch(err => {
-          console.error("Error loading products:", err);
-          this.loading = false;
-        });
+      this.products = (productsData || []).map((item) => this.normalizeProduct(item));
+      this.loading = false;
     }, 500);
-  }
+  },
 };
 </script>
 
 <style scoped>
-/* Basic layout + hero */
 .hero {
   padding: 48px 20px;
   text-align: center;
@@ -283,16 +282,15 @@ export default {
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   min-width: 180px;
-  transition: box-shadow .15s;
+  transition: box-shadow 0.15s;
 }
 
 .search-bar:focus,
 .filter-dropdown:focus {
   outline: none;
-  box-shadow: 0 6px 18px rgba(37,99,235,0.08);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
 }
 
-/* PRODUCTS GRID */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -300,7 +298,6 @@ export default {
   padding: 10px;
 }
 
-/* Product card */
 .product-card {
   border: 1px solid #f0f0f0;
   border-radius: 12px;
@@ -330,7 +327,6 @@ export default {
   display: block;
 }
 
-/* Info */
 .info {
   padding: 14px;
   display: flex;
@@ -357,7 +353,6 @@ export default {
   margin-bottom: 12px;
 }
 
-/* Actions */
 .card-actions {
   display: flex;
   gap: 8px;
@@ -375,7 +370,10 @@ export default {
   flex: 1 1 auto;
 }
 
-.add-cart-btn:hover { background: #0ea46e; transform: translateY(-1px); }
+.add-cart-btn:hover {
+  background: #0ea46e;
+  transform: translateY(-1px);
+}
 
 .details-link {
   display: inline-block;
@@ -388,7 +386,6 @@ export default {
   font-weight: 600;
 }
 
-/* Skeleton */
 .skeleton {
   height: 250px;
   background: linear-gradient(90deg, #f2f2f2 0%, #e8e8e8 50%, #f2f2f2 100%);
@@ -398,11 +395,14 @@ export default {
 }
 
 @keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -411,7 +411,6 @@ export default {
   padding: 18px 0;
 }
 
-/* Floating cart */
 .floating-cart {
   position: fixed;
   right: 18px;
@@ -438,9 +437,13 @@ export default {
   color: white;
 }
 
-/* Responsive tweaks */
 @media (max-width: 768px) {
-  .product-image { height: 160px; }
-  .products-grid { gap: 14px; }
+  .product-image {
+    height: 160px;
+  }
+
+  .products-grid {
+    gap: 14px;
+  }
 }
 </style>

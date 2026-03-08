@@ -102,7 +102,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PieController, ArcElement } from 'chart.js'
-import { Bar, Pie } from 'vue-chartjs'
+import { Bar as BarChart, Pie as PieChart } from 'vue-chartjs'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 

@@ -1,39 +1,33 @@
 <template>
   <div class="page">
-    <!-- Title -->
     <h1 class="title">Our Certified O!clok Doctors</h1>
 
-    <!-- Filters -->
     <div class="filters">
-      <input 
-        v-model="searchQuery" 
-        type="text" 
-        placeholder="🔍 Search technicians..."
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search technicians..."
         class="search-input"
       />
 
       <select v-model="selectedSpecialty" class="specialty-select">
         <option value="">All Specialties</option>
-        <option
-          v-for="spec in specialties"
-          :key="spec"
-          :value="spec"
-        >
+        <option v-for="spec in specialties" :key="spec" :value="spec">
           {{ spec }}
         </option>
       </select>
     </div>
 
-    <!-- Technicians Grid -->
     <div class="cards">
-      <div 
+      <div
         v-for="tech in paginatedTechnicians"
         :key="tech.id"
         class="card"
         @click="goToTech(tech)"
       >
-        <img 
-          :src="tech.image" 
+        <img
+          v-if="tech.image"
+          :src="tech.image"
           :alt="tech.name"
           class="avatar"
           loading="lazy"
@@ -42,19 +36,17 @@
         <h3>{{ tech.name }}</h3>
         <p class="spec">{{ tech.specialty }}</p>
 
-        <!-- Rating -->
         <div class="rating" :aria-label="`Rating: ${averageRating(tech).toFixed(1)} / 5`">
           <span
             v-for="i in 5"
             :key="i"
             class="star"
             :class="{ filled: i <= Math.round(averageRating(tech)) }"
-          >★</span>
+          >*</span>
           <small>{{ averageRating(tech).toFixed(1) }}</small>
         </div>
 
-        <!-- Book Button -->
-        <button 
+        <button
           class="book-btn"
           @click.stop="bookTechnician(tech)"
         >
@@ -63,20 +55,18 @@
       </div>
     </div>
 
-    <!-- Pagination -->
     <div class="pagination" v-if="totalPages > 1">
-      <button :disabled="currentPage === 1" @click="currentPage--">⟨ Prev</button>
+      <button :disabled="currentPage === 1" @click="currentPage--">Prev</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button :disabled="currentPage === totalPages" @click="currentPage++">Next ⟩</button>
+      <button :disabled="currentPage === totalPages" @click="currentPage++">Next</button>
     </div>
 
-    <!-- Booking Summary -->
     <div v-if="bookings.length" class="booking-summary">
-      <h2>📋 Bookings ({{ bookings.length }})</h2>
+      <h2>Bookings ({{ bookings.length }})</h2>
 
       <ul role="list">
         <li v-for="tech in bookings" :key="tech.id" role="listitem">
-          {{ tech.name }} — <strong>{{ tech.specialty }}</strong>
+          {{ tech.name }} - <strong>{{ tech.specialty }}</strong>
         </li>
       </ul>
 
@@ -84,12 +74,20 @@
     </div>
 
     <footer class="footer">
-      <p>© {{ new Date().getFullYear() }} O!clok Services — All Rights Reserved.</p>
+      <p>(c) {{ new Date().getFullYear() }} O!clok Services - All Rights Reserved.</p>
     </footer>
   </div>
 </template>
 
 <script>
+import techniciansData from "../data/technicians.json";
+
+const defaultRatings = {
+  app: 0,
+  skills: 0,
+  customer: 0,
+};
+
 export default {
   name: "Technicians",
 
@@ -106,21 +104,24 @@ export default {
 
   computed: {
     specialties() {
-      return [...new Set(this.technicians.map((t) => t.specialty))];
+      return [...new Set(this.technicians.map((t) => t.specialty).filter(Boolean))];
     },
 
     filteredTechnicians() {
+      const query = this.searchQuery.trim().toLowerCase();
       return this.technicians.filter((t) => {
-        const search = t.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const specialty = this.selectedSpecialty
-          ? t.specialty.toLowerCase() === this.selectedSpecialty.toLowerCase()
+        const name = (t.name || "").toLowerCase();
+        const specialtyText = (t.specialty || "").toLowerCase();
+        const searchMatches = !query || name.includes(query) || specialtyText.includes(query);
+        const specialtyMatches = this.selectedSpecialty
+          ? specialtyText === this.selectedSpecialty.toLowerCase()
           : true;
-        return search && specialty;
+        return searchMatches && specialtyMatches;
       });
     },
 
     totalPages() {
-      return Math.ceil(this.filteredTechnicians.length / this.itemsPerPage);
+      return Math.max(1, Math.ceil(this.filteredTechnicians.length / this.itemsPerPage));
     },
 
     paginatedTechnicians() {
@@ -133,26 +134,44 @@ export default {
     searchQuery() {
       this.currentPage = 1;
     },
+
     selectedSpecialty() {
       this.currentPage = 1;
-    }
+    },
+
+    totalPages(newTotal) {
+      if (this.currentPage > newTotal) {
+        this.currentPage = newTotal;
+      }
+    },
   },
 
   methods: {
-    /** Navigate to technician detail using slug */
+    createSlug(name) {
+      return (name || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    },
+
     goToTech(tech) {
-      this.$router.push(`/technicians/${tech.slug}`);
+      const routeKey = tech.slug || this.createSlug(tech.name) || String(tech.id);
+      this.$router.push(`/technicians/${routeKey}`);
     },
 
-    /** Safe Rating Calculation */
     averageRating(tech) {
-      if (!tech.ratings) return 0;
-      const values = Object.values(tech.ratings);
+      const ratings = tech?.ratings || defaultRatings;
+      const values = Object.values(ratings)
+        .map((value) => Number(value))
+        .filter((value) => Number.isFinite(value));
+
       if (!values.length) return 0;
-      return values.reduce((a, b) => a + b, 0) / values.length;
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
     },
 
-    /** Booking System */
     bookTechnician(tech) {
       if (!this.bookings.some((b) => b.id === tech.id)) {
         this.bookings.push(tech);
@@ -165,14 +184,14 @@ export default {
   },
 
   mounted() {
-    fetch("/technicians.json")
-      .then((res) => res.json())
-      .then((data) => {
-        this.technicians = data;
-      })
-      .catch((err) => {
-        console.error("Error loading technicians:", err);
-      });
+    this.technicians = (techniciansData || []).map((tech) => ({
+      ...tech,
+      slug: tech.slug || this.createSlug(tech.name) || String(tech.id),
+      ratings: {
+        ...defaultRatings,
+        ...(tech.ratings || {}),
+      },
+    }));
   },
 };
 </script>
@@ -194,7 +213,6 @@ export default {
   font-weight: 700;
 }
 
-/* Filters */
 .filters {
   display: flex;
   justify-content: center;
@@ -218,7 +236,6 @@ export default {
   box-shadow: 0 0 4px rgba(255, 204, 0, 0.4);
 }
 
-/* Cards Layout */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -252,7 +269,6 @@ export default {
   font-size: 0.95rem;
 }
 
-/* Rating */
 .rating {
   margin: 0.4rem 0;
 }
@@ -266,7 +282,6 @@ export default {
   color: #ffb400;
 }
 
-/* Buttons */
 .book-btn {
   background: #ffcc00;
   border: none;
@@ -281,7 +296,6 @@ export default {
   background: #ffd633;
 }
 
-/* Pagination */
 .pagination {
   margin: 2rem auto;
   display: flex;
@@ -301,13 +315,12 @@ export default {
   background: #ddd;
 }
 
-/* Booking Summary */
 .booking-summary {
   margin-top: 2rem;
   background: #fff;
   padding: 1.3rem;
   border-radius: 0.8rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .booking-summary ul {
@@ -325,7 +338,6 @@ export default {
   margin-top: 1rem;
 }
 
-/* Footer */
 .footer {
   margin-top: auto;
   padding: 1.2rem 0;

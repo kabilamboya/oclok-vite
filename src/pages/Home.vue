@@ -3,9 +3,10 @@
     <!-- Header -->
     <header class="header">
       <div class="header-container">
-        <img src="/images/oclokLogo.png" alt="O!clok Store Logo" class="logo" />
-        <h1>Welcome to <strong> O!clok ltd </strong></h1>
+        <h1>Welcome to <strong> O!clok services </strong></h1>
+        <div class="background-notanimated">
         <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
+        </div>
       </div>
     </header>
 
@@ -31,28 +32,32 @@
             <div v-show="activeTab==='about'" class="tab-content animate-on-scroll">
               <h2>About Us</h2>
               <p>
-                At <strong>O!clok Media</strong>, we combine <em>modern e-commerce convenience</em> with a <em>personal touch</em>: curated products, responsive support, 
-                and a commitment to building lasting relationships with our customers.
-                </p>
-                <p>
-                We provide <strong>value, essence, and convenience</strong>.
+                At <strong>O!clok Services</strong> we provide reliable delivery services using both trained human couriers and emerging autonomous systems, alongside digital marketing,
+                web development, and media services that help businesses grow.
+              </p>
+              <p>
+                Our work is built on <strong>convenience, essence, and value</strong> - bringing practical solutions closer to people,
+                businesses, and communities, right when they are needed.
               </p>
             </div>
 
             <div v-show="activeTab==='mission'" class="tab-content animate-on-scroll">
               <h2>Our Mission</h2>
               <p>
-              To make quality products and reliable services accessible to everyone, right on time. 
+                To provide convenient, efficient, and technology-enabled delivery and digital services that empower individuals
+                and businesses to operate smarter and faster.
               </p>
               <p>
-              To provide exceptional service and innovative solutions that empower our customers to live smarter and more conveniently.
+                We are committed to combining innovation with a human-centered approach to ensure trust, accessibility,
+                and long-term value for every customer we serve.
               </p>
             </div>
 
             <div v-show="activeTab==='vision'" class="tab-content animate-on-scroll">
               <h2>Our Vision</h2>
               <p>
-                To be the leading hub for products and services that connect technology and lifestyle in Kenya and beyond.
+                To become a leading smart logistics and digital services platform, shaping the future of delivery,
+                commerce, and online engagement across Kenya and beyond.
               </p>
             </div>
           </div>
@@ -68,158 +73,210 @@
       </div>
     </section>
 
-    <!-- Search & Filters -->
-    <div class="filters">
-      <div class="search-bar">
-        <input type="text" placeholder="Search products..." v-model="searchQuery" />
-        <button @click="searchProducts">Search</button>
-      </div>
-      <div class="filter-options">
-        <label>
-          Category:
-          <select v-model="selectedCategory">
-            <option value="">All</option>
-            <option v-for="cat in categories" :key="cat">{{ cat }}</option>
-          </select>
-        </label>
-      </div>
-    </div>
+  <!-- Featured Services from Other Pages -->
+  <section class="featured-projects">
+    <h2 class="section-title">Our Top Services</h2>
+    <p class="projects-subtitle">Highlights pulled from key pages across O!clok.</p>
 
-    <!-- Products Grid -->
-    <section class="products">
-      <h2>Featured Products</h2>
-      <div class="product-grid">
-        <div
-          v-for="product in filteredProducts"
-          :key="product.id"
-          class="product-card animate-on-scroll"
-        >
-          <img :src="product.image" :alt="product.title" />
-          <h3>{{ product.title }}</h3>
-          <p>{{ product.description }}</p>
-          <span class="price">KSh {{ product.price }}</span>
-          <button @click="addToCart(product)">Add to Cart</button>
+    <div class="projects-grid">
+      <article
+        v-for="project in featuredProjects"
+        :key="project.id"
+        class="project-card animate-on-scroll"
+      >
+        <img :src="project.image" :alt="project.title" />
+        <div class="project-content">
+          <span class="project-source">{{ project.source }}</span>
+          <h3>{{ project.title }}</h3>
+          <p>{{ project.description }}</p>
+          <RouterLink :to="project.route" class="project-btn">Open Page</RouterLink>
         </div>
-      </div>
-    </section>
-  </div>
+      </article>
+    </div>
+  </section>
+</div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      activeTab: 'about',
-      searchQuery: "",
-      selectedCategory: "",
-      categories: ["Electronics", "Home", "Fashion"],
-      products: [
-        { id: 1, title: "Smartphone", description: "Latest model with powerful features.", price: 30000, category: "Electronics", image: "/images/smartphone.jpg" },
-        { id: 2, title: "Smart Watch", description: "Track your fitness and stay connected.", price: 8000, category: "Electronics", image: "/images/smartwatch.jpg" },
-        { id: 3, title: "Sofa Set", description: "Comfortable and stylish living room set.", price: 50000, category: "Home", image: "/images/sofaset.jpg" },
-      ],
-      phrases: [
-        "Your trusted hub for quality products & services.",
-        "Empower smart living through innovations",
-        "Connecting technology with your lifestyle.",
-        "Make a smart choice now for a brighter tomorrow"
-      ],
-      phraseIndex: 0,
-      currentPhrase: "Empowering smart living through innovation",
-      _phraseTimer: null,
-    };
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import services from '../data/services.json'
+
+// Featured services
+const featuredServices = services.filter(s => s.featured)
+
+const featuredProjects = [
+  {
+    id: 1,
+    title: 'Media Campaign Studio',
+    source: 'From Media Page',
+    description: 'Podcast, interview, and content production workflows for brand storytelling.',
+    image: '/images/BiGmage.jpg',
+    route: '/media'
   },
-  computed: {
-    filteredProducts() {
-      return this.products.filter(p => {
-        const matchSearch = p.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchCategory = this.selectedCategory ? p.category === this.selectedCategory : true;
-        return matchSearch && matchCategory;
-      });
-    },
+  {
+    id: 2,
+    title: 'Creator Lab',
+    source: 'From Cyber Page',
+    description: 'Writing, mockups, and creative workflows for digital product delivery.',
+    image: '/images/dgtl.jpg',
+    route: '/cyber/creator'
   },
-  methods: {
-    searchProducts() { console.log("Searching for:", this.searchQuery); },
-    addToCart(product) { alert(`${product.title} added to cart!`); },
-    _playOnce() {
-      const el = this.$refs.animatedText;
-      if (!el) return;
-      el.classList.remove("play");
-      void el.offsetWidth;
-      el.classList.add("play");
-    },
-    _nextPhrase() {
-      this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
-      this.currentPhrase = this.phrases[this.phraseIndex];
-      this._playOnce();
-    },
-    handleScroll() {
-      const elements = document.querySelectorAll(".animate-on-scroll");
-      const triggerBottom = window.innerHeight * 0.85;
-      elements.forEach(el => {
-        const top = el.getBoundingClientRect().top;
-        if(top < triggerBottom) el.classList.add("show");
-      });
-    }
+  {
+    id: 3,
+    title: 'City Discovery Routes',
+    source: 'From Discover Page',
+    description: 'Location-based recommendations and curated experiences around Kisumu.',
+    image: '/images/AMAZINGRACE.jpg',
+    route: '/discover'
   },
-  mounted() {
-    this._playOnce();
-    this._phraseTimer = setInterval(this._nextPhrase, 4000);
-    window.addEventListener("scroll", this.handleScroll);
-    this.handleScroll(); // initial check
-  },
-  beforeDestroy() { if(this._phraseTimer) clearInterval(this._phraseTimer); },
-  beforeUnmount() { if(this._phraseTimer) clearInterval(this._phraseTimer); }
-};
+  {
+    id: 4,
+    title: 'Smart Commerce',
+    source: 'From Store Page',
+    description: 'Products and checkout-ready flows designed for fast online purchases.',
+    image: '/images/ROBOto.jpg',
+    route: '/products'
+  }
+]
+
+// Tabs
+const activeTab = ref('about')
+
+// Search & filters
+const searchQuery = ref('')
+const selectedCategory = ref('')
+const categories = ["Electronics", "Home", "Fashion"]
+
+// Animated phrases
+const phrases = [
+  "We serve individuals, families, and businesses",
+  "by providing convenient technical services.",
+  "Saving you time through smart digital solutions"
+]
+const phraseIndex = ref(0)
+const currentPhrase = ref("Empowering smart living through innovation")
+const animatedText = ref(null)
+let phraseTimer = null
+
+// Functions
+const _playOnce = () => {
+  const el = animatedText.value
+  if (!el) return
+  el.classList.remove('play')
+  void el.offsetWidth
+  el.classList.add('play')
+}
+
+const _nextPhrase = () => {
+  phraseIndex.value = (phraseIndex.value + 1) % phrases.length
+  currentPhrase.value = phrases[phraseIndex.value]
+  _playOnce()
+}
+
+const handleScroll = () => {
+  const elements = document.querySelectorAll(".animate-on-scroll")
+  const triggerBottom = window.innerHeight * 0.85
+  elements.forEach(el => {
+    const top = el.getBoundingClientRect().top
+    if (top < triggerBottom) el.classList.add("show")
+  })
+}
+
+// Lifecycle
+onMounted(() => {
+  _playOnce()
+  phraseTimer = setInterval(_nextPhrase, 4000)
+  window.addEventListener("scroll", handleScroll)
+  handleScroll() // initial check
+})
+
+onBeforeUnmount(() => {
+  if (phraseTimer) clearInterval(phraseTimer)
+  window.removeEventListener("scroll", handleScroll)
+})
 </script>
 
 <style scoped>
-.logo { width:56px; }
-.header-container h1 { margin:10; font-size:2rem; color:#000000; }
-.animated-text.play { animation: rushInOut 4s ease-in-out forwards; }
-@keyframes rushInOut { 0%{opacity:0;transform:translateX(30%);}12%{opacity:1;transform:translateX(0);}70%{opacity:1;transform:translateX(0);}100%{opacity:0;transform:translateX(-20%);} }
+.logo {
+  width: 56px;
+}
 
+.header-container h1 {
+  margin-left: 5px; /* FIXED */
+  font-size: 2rem;
+  color: #000000;
+  white-space: nowrap;
+}
 
-/* Container with moving background */
+/* Header wrapper */
+.header {
+  width: 100%;
+}
+
+/* Header container – ONE ROW */
 .header-container {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 10px;
-  padding: 10px;
-  background: url('/images/oclokBg.jpg') repeat-x; /* Replace with your bg */
-  background-size: cover;
-  animation: moveBackground 10s linear infinite;
+  gap: 20px;
+
+  padding: 10px 20px;
+  min-height: 20vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Animated text moving right */
-.animated-text {
-  background: rgba(255, 102, 0, 0.8);
-  margin-left: 20px;
-  font-size: 1.5rem;
-  flex: 1;
+/* Static ticker background – EDGE TO EDGE */
+.background-notanimated {
+  background: rgba(255, 102, 0, 0.95);
+  height: 45px;
+  padding: 10px 5px;
+  border-radius: 5px;
+
+  flex: 1;                 /* 🔑 fills remaining row space */
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: clip;
+
+  display: flex;
+  align-items: center;
+}
+
+/* Animated text ONLY */
+.animated-text {
+  font-size: 1.4rem;
   color: #fff;
-  padding: 10px;
-  animation: moveText 10s linear infinite;
+  white-space: nowrap;
+  line-height: 1.2;      /* 🔑 removes extra vertical space */
+  margin: 30px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  opacity: 0;
+  transform: translateY(100%);
 }
 
-/* Keyframes for background moving left */
-@keyframes moveBackground {
-  0% { background-position-x: 0; }
-  100% { background-position-x: -1000px; } /* adjust based on image width */
+.animated-text.play {
+  animation: verticalTicker 4s ease-in-out forwards;
 }
 
-/* Keyframes for text moving right */
-@keyframes moveText {
-  0% { transform: translateX(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  50% { transform: translateX(50%); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 0; }
+/* Vertical ticker animation */
+@keyframes verticalTicker {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120%);
+  }
 }
-
 
 /* --- About Tabs --- */
 /* About Section */
@@ -284,30 +341,156 @@ export default {
 .social-icons a { color:#fff; background:#ff6600; width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:1.2rem; transition: transform 0.2s, background 0.3s; }
 .social-icons a:hover { transform:scale(1.2); background:#cc5200; color:#fff; }
 
-/* --- Products & Filters --- */
-.filters { display:flex; justify-content:space-between; padding:20px; }
-.search-bar input, .filter-options select { padding:8px; margin-right:8px; }
-.products { padding:30px; }
-.product-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
-.product-card { border:1px solid #ddd; border-radius:10px; padding:15px; text-align:center; transition:all 0.3s; background:#fff; }
-.product-card:hover { transform:scale(1.03); box-shadow:0 6px 18px rgba(0,0,0,0.1); }
-.product-card img { max-width:100%; height:150px; object-fit:cover; }
-.price { font-weight:bold; display:block; margin:10px 0; }
-.product-card button { background:#ffcc00; border:none; padding:8px 12px; cursor:pointer; border-radius:4px; }
-.product-card button:hover { background:#ff9900; }
+/* --- Top Services --- */
+.featured-services {
+  padding: 60px 30px;
+  background: #fafafa;
+}
 
-/* --- Footer --- */
-.footer { background:#222; color:#ddd; padding:50px 20px; }
-.footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:30px; }
-.footer-logo { height:70px; margin-bottom:15px; }
-.footer h3 { color:#ff6600; margin-bottom:12px; font-size:1.2rem; }
-.footer-resources-section { display: flex; align-items: center; gap: 10px; }
-.contact-list li i { color:#ff6600; margin-right:8px; }
-.footer ul li a { color:#ddd; text-decoration:none; transition:0.3s; }
-.footer ul li a:hover { color:#ff6600; }
-.footer-bottom { border-top:1px solid #444; margin-top:30px; padding-top:15px; text-align:center; font-size:0.9rem; display:flex; justify-content:space-between; flex-wrap:wrap; }
-.back-to-top { color:#ffcc00; text-decoration:none; }
-.back-to-top:hover { color:#ff6600; }
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 40px;
+  color: #222;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+}
+
+.service-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 18px;
+}
+
+.card-content h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.card-content p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #555;
+}
+
+.price {
+  display: block;
+  margin: 10px 0;
+  font-weight: bold;
+  color: #ff6600;
+}
+
+.cta-btn {
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cta-btn:hover {
+  background: #e65a00;
+}
+
+/* --- Featured Projects --- */
+.featured-projects {
+  padding: 60px 30px;
+  background: #fff7f2;
+}
+
+.projects-subtitle {
+  text-align: center;
+  margin: -20px auto 36px;
+  max-width: 720px;
+  color: #6b7280;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.project-card img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.project-content {
+  padding: 16px;
+}
+
+.project-source {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ff6600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.project-content h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.project-content p {
+  margin: 0 0 14px;
+  font-size: 0.92rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.project-btn {
+  display: inline-block;
+  background: #ff6600;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 9px 14px;
+  border-radius: 7px;
+  font-weight: 600;
+}
+
+.project-btn:hover {
+  background: #e65a00;
+}
 
 /* --- Responsive --- */
 @media(max-width:768px){.about-container{flex-direction:column;text-align:center;}.about-text{text-align:center;}.social-icons{justify-content:center;}}

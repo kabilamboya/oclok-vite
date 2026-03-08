@@ -10,14 +10,16 @@
       <!-- Product Images -->
       <div class="image-container">
         <img
+          v-if="activeImage"
           :src="activeImage"
           :alt="product.name"
           class="main-image"
           loading="lazy"
+          @error="onImgErr"
         />
         <div class="thumbnail-row">
           <img
-            v-for="(img, index) in product.images || [product.image]"
+            v-for="(img, index) in (product.images?.length ? product.images : (product.image ? [product.image] : []))"
             :key="index"
             :src="img"
             :alt="`${product.name} view ${index + 1}`"
@@ -25,6 +27,7 @@
             :class="{ active: activeImage === img }"
             @click="activeImage = img"
             loading="lazy"
+            @error="onImgErr"
           />
         </div>
       </div>
@@ -95,8 +98,11 @@
 </template>
 
 <script>
+import productsData from "../data/products.json";
+
 export default {
   props: ["id"],
+
   data() {
     return {
       products: [],
@@ -120,29 +126,75 @@ export default {
       ],
     };
   },
-  async created() {
-    try {
-      const res = await fetch("/products.json");
-      this.products = await res.json();
-      this.product = this.products.find((p) => p.id === parseInt(this.id));
-      if (this.product) {
-        this.activeImage = this.product.images
-          ? this.product.images[0]
-          : this.product.image;
-      }
-    } catch (error) {
-      console.error("Error loading product details:", error);
-    }
+
+  watch: {
+    id() {
+      this.loadProduct();
+    },
   },
+
+  created() {
+    this.products = (productsData || []).map((product) => this.normalizeProduct(product));
+    this.loadProduct();
+  },
+
   methods: {
+    normalizeProduct(product) {
+      const numericPrice = Number(product?.price);
+      return {
+        ...product,
+        price: Number.isFinite(numericPrice) ? numericPrice : 0,
+      };
+    },
+
+    loadProduct() {
+      const productId = Number(this.id);
+      this.product = this.products.find((p) => Number(p.id) === productId) || null;
+
+      if (!this.product) {
+        this.activeImage = "";
+        return;
+      }
+
+      this.activeImage = this.product.images?.[0] || this.product.image || "";
+    },
+
+    onImgErr(event) {
+      event.target.style.display = "none";
+    },
+
     goBack() {
       this.$router.push("/products");
     },
+
     contactSupplier() {
-      this.$router.push(`/contact-supplier?supplier=${this.product.name}`);
+      const productName = this.product?.name || "this product";
+      const text = encodeURIComponent(`Hello O!clok, I am interested in ${productName}.`);
+      window.open(`https://wa.me/254700000000?text=${text}`, "_blank", "noopener,noreferrer");
     },
+
     CartModal() {
-      alert(`${this.product.name} added to cart!`);
+      if (!this.product) return;
+
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const itemIndex = cart.findIndex((item) => item.id === this.product.id);
+
+      if (itemIndex >= 0) {
+        cart[itemIndex].quantity = (cart[itemIndex].quantity || 1) + 1;
+      } else {
+        cart.push({
+          id: this.product.id,
+          name: this.product.name,
+          title: this.product.name,
+          price: this.product.price,
+          image: this.product.image,
+          thumbnail: this.product.image,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${this.product.name} added to cart.`);
     },
   },
 };
@@ -411,3 +463,4 @@ export default {
   }
 }
 </style>
+

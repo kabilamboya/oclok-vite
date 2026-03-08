@@ -29,7 +29,8 @@
         <!-- Avatar -->
         <div class="avatar-wrap">
           <img
-            :src="technician.image || placeholder"
+            v-if="technician.image"
+            :src="technician.image"
             :alt="technician.name + ' profile photo'"
             class="avatar"
             @error="onImgErr"
@@ -301,7 +302,27 @@
 
 <script>
 import { Chart, registerables } from "chart.js";
+import techniciansData from "../data/technicians.json";
+
 Chart.register(...registerables);
+
+const defaultRatings = {
+  app: 0,
+  skills: 0,
+  customer: 0,
+};
+
+const defaultProjects = {
+  continuing: [],
+  review: [],
+  completed: [],
+};
+
+const defaultAccountability = {
+  responseSpeed: "N/A",
+  monthlyActivity: "N/A",
+  reliability: 0,
+};
 
 export default {
   name: "TechnicianDetail",
@@ -309,13 +330,12 @@ export default {
   data() {
     return {
       technician: null,
-      placeholder: "/images/avatar-placeholder.png",
       saved: false,
       avgRating: 0,
       reviewCount: 0,
       tabs: ["Ongoing", "Under Review", "Completed"],
       activeTab: "Ongoing",
-      _projectsChart: null
+      _projectsChart: null,
     };
   },
 
@@ -324,7 +344,7 @@ export default {
       return {
         app: "App Rating",
         skills: "Skills",
-        customer: "Customer Experience"
+        customer: "Customer Experience",
       };
     },
 
@@ -333,7 +353,9 @@ export default {
     },
 
     hasSocials() {
-      return this.technician?.socials && Object.keys(this.technician.socials).length > 0;
+      const socials = this.technician?.socials;
+      if (!socials || typeof socials !== "object") return false;
+      return Object.values(socials).some(Boolean);
     },
 
     isTopRated() {
@@ -348,103 +370,178 @@ export default {
 
     recentReviews() {
       return this.technician?.reviews?.slice(0, 3) || [];
-    }
+    },
   },
 
   mounted() {
     window.scrollTo({ top: 0 });
 
-    const id = Number(this.$route.params.id);
-    fetch("/technicians.json")
-      .then(res => res.json())
-      .then(data => {
-        this.technician = data.find(t => t.id === id) || null;
+    const routeKey = String(this.$route.params.slug || "").trim();
+    const routeId = Number(routeKey);
 
-        if (this.technician) {
-          this.normalizeProjects();
-          this.computeAverageRating();
-          this.reviewCount = this.technician.reviews?.length || 0;
-          this.$nextTick(() => this.renderChart());
-        }
-      })
-      .catch(err => console.error(err));
+    const foundBySlug = (techniciansData || []).find(
+      (t) => String(t.slug || "").toLowerCase() === routeKey.toLowerCase(),
+    );
+
+    const foundById = Number.isFinite(routeId)
+      ? (techniciansData || []).find((t) => Number(t.id) === routeId)
+      : null;
+
+    const found = foundBySlug || foundById;
+
+    if (!found) {
+      this.technician = null;
+      return;
+    }
+
+    this.technician = this.normalizeTechnician(found);
+    this.computeAverageRating();
+    this.reviewCount = this.technician.reviews.length;
+    this.saved = this.readSavedState(this.technician.id);
+    this.$nextTick(() => this.renderChart());
+  },
+
+  beforeUnmount() {
+    if (this._projectsChart) {
+      this._projectsChart.destroy();
+      this._projectsChart = null;
+    }
   },
 
   methods: {
-    /* ---------- Navigation ---------- */
+    normalizeProjectItems(items = []) {
+      if (!Array.isArray(items)) return [];
+      return items.map((item) => {
+        if (typeof item === "string") {
+          return { title: item, updated: null, completedAt: null };
+        }
+
+        return {
+          title: item?.title || "Untitled project",
+          updated: item?.updated || null,
+          completedAt: item?.completedAt || null,
+        };
+      });
+    },
+
+    normalizeTechnician(tech) {
+      const projects = tech?.projects || defaultProjects;
+
+      return {
+        ...tech,
+        contact: {
+          phone: "",
+          email: "",
+          ...(tech.contact || {}),
+        },
+        ratings: {
+          ...defaultRatings,
+          ...(tech.ratings || {}),
+        },
+        projects: {
+          continuing: this.normalizeProjectItems(projects.continuing),
+          review: this.normalizeProjectItems(projects.review),
+          completed: this.normalizeProjectItems(projects.completed),
+        },
+        accountability: {
+          ...defaultAccountability,
+          ...(tech.accountability || {}),
+        },
+        reviews: Array.isArray(tech.reviews) ? tech.reviews : [],
+        socials: tech.socials && typeof tech.socials === "object" ? tech.socials : {},
+        available: Boolean(tech.available),
+      };
+    },
+
+    readSavedState(id) {
+      try {
+        return localStorage.getItem(`saved_technician_${id}`) === "1";
+      } catch {
+        return false;
+      }
+    },
+
+    writeSavedState(id, value) {
+      try {
+        localStorage.setItem(`saved_technician_${id}`, value ? "1" : "0");
+      } catch {
+        // Ignore storage failures.
+      }
+    },
+
     goBack() {
       this.$router.back();
     },
 
-    /* ---------- Save ---------- */
     toggleSave() {
       this.saved = !this.saved;
+      if (this.technician?.id) {
+        this.writeSavedState(this.technician.id, this.saved);
+      }
     },
 
-    /* ---------- Contact Actions ---------- */
     openMessage() {
+      if (!this.technician) return;
       this.$emit("message", this.technician);
       alert("Opening chat with " + this.technician.name);
     },
 
     hireTechnician() {
+      if (!this.technician) return;
       this.$emit("hire", this.technician);
       alert("Hiring request sent for " + this.technician.name);
     },
 
     whatsappLink(phone) {
-      return "https://wa.me/" + phone.replace(/\D/g, "");
+      return "https://wa.me/" + String(phone || "").replace(/\D/g, "");
     },
 
-    /* ---------- Display Helpers ---------- */
     formatPhone(phone) {
-      const s = phone.replace(/\D/g, "");
-      if (s.length === 12 && s.startsWith("254"))
-        return `+${s.slice(0,3)} ${s.slice(3,6)} ${s.slice(6)}`;
+      const s = String(phone || "").replace(/\D/g, "");
+      if (s.length === 12 && s.startsWith("254")) {
+        return `+${s.slice(0, 3)} ${s.slice(3, 6)} ${s.slice(6)}`;
+      }
       return phone;
     },
 
     ratingPercent(num) {
-      return `${((num || 0) / 5) * 100}%`;
+      const rating = Number(num);
+      if (!Number.isFinite(rating)) return "0%";
+      return `${Math.max(0, Math.min(100, (rating / 5) * 100))}%`;
     },
 
     ratingIcon(key) {
       return {
-        app: "🚀",
-        skills: "🔧",
-        customer: "🙂"
-      }[key] || "★";
+        app: "A",
+        skills: "S",
+        customer: "C",
+      }[key] || "*";
     },
 
     humanDate(d) {
+      if (!d) return "N/A";
       const date = new Date(d);
-      return isNaN(date) ? d : date.toLocaleDateString();
+      return Number.isNaN(date.getTime()) ? d : date.toLocaleDateString();
     },
 
-    /* ---------- Image Handling ---------- */
     onImgErr(e) {
-      e.target.src = this.placeholder;
-    },
-
-    /* ---------- Data Prep ---------- */
-    normalizeProjects() {
-      ["continuing", "review", "completed"].forEach(type => {
-        this.technician.projects[type] =
-          this.technician.projects[type].map(item =>
-            typeof item === "string"
-              ? { title: item, updated: null }
-              : item
-          );
-      });
+      e.target.style.display = "none";
     },
 
     computeAverageRating() {
-      const r = this.technician.ratings;
-      this.avgRating = (r.app + r.skills + r.customer) / 3;
+      const ratings = this.technician?.ratings || defaultRatings;
+      const values = [ratings.app, ratings.skills, ratings.customer]
+        .map((value) => Number(value))
+        .filter((value) => Number.isFinite(value));
+
+      this.avgRating = values.length
+        ? values.reduce((sum, value) => sum + value, 0) / values.length
+        : 0;
     },
 
-    /* ---------- Chart Rendering ---------- */
     renderChart() {
+      if (!this.technician) return;
+
       const ctx = document.getElementById("projectsChart");
       if (!ctx) return;
 
@@ -463,26 +560,25 @@ export default {
           datasets: [
             {
               data: [ongoing, review, completed],
-              backgroundColor: ["#ffb400", "#f39c12", "#4caf50"]
-            }
-          ]
+              backgroundColor: ["#ffb400", "#f39c12", "#4caf50"],
+            },
+          ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: "bottom" }
-          }
-        }
+            legend: { position: "bottom" },
+          },
+        },
       });
     },
 
-    /* ---------- Project Actions ---------- */
     viewProject(p) {
       this.$emit("view-project", p);
     },
 
-    messageAboutProject(p) {
+    messageAboutProject(_p) {
       this.openMessage();
     },
 
@@ -491,13 +587,13 @@ export default {
     },
 
     openAllReviews() {
-      this.$emit("open-reviews", this.technician.reviews);
+      this.$emit("open-reviews", this.technician?.reviews || []);
     },
 
     writeReview() {
-      this.$emit("write-review", this.technician.id);
-    }
-  }
+      this.$emit("write-review", this.technician?.id || null);
+    },
+  },
 };
 </script>
 
@@ -702,3 +798,4 @@ export default {
   .top-ctas { justify-content: center; }
 }
 </style>
+

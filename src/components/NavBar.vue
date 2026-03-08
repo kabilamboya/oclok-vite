@@ -13,11 +13,12 @@
       <div class="cta-buttons">
         <nav :class="['nav-links', { active: isMenuOpen }]" role="navigation" aria-label="Main Navigation">
           <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
-          <router-link :to="{ name: 'Products' }" class="cta-button" @click="closeMenu">Store</router-link>
-          <router-link :to="{ name: 'Media' }" class="cta-button" @click="closeMenu">Media</router-link>
-          <router-link :to="{ name: 'Technicians' }" class="cta-button" @click="closeMenu">Doctor</router-link>
-          <router-link :to="{ name: 'Cyber' }" class="cta-button" @click="closeMenu">Cyber</router-link>
-          <router-link :to="{ name: 'Discover' }" class="cta-button" @click="closeMenu">Discover</router-link>
+          <router-link :to="{ name: 'Products' }" @click="closeMenu">Store</router-link>
+          <router-link :to="{ name: 'Media' }" @click="closeMenu">Media</router-link>
+          <router-link :to="{ name: 'Technicians' }" @click="closeMenu">Doctor</router-link>
+          <router-link :to="{ name: 'Robots' }" @click="closeMenu">Dynamics</router-link>
+          <router-link :to="{ name: 'Cyber' }" @click="closeMenu">Cyber</router-link>
+          <router-link :to="{ name: 'Discover' }" @click="closeMenu">Discover</router-link>
         </nav>
       </div>
 
@@ -75,12 +76,18 @@ export default {
     },
     closeMenu() {
       this.isMenuOpen = false;
-    }
+    },
+    openCart() {
+    this.$router.push({ name: "Cart" });
+  }
   }
 };
 </script>
 
 <style scoped>
+/* =======================
+   Navbar Base
+======================= */
 .navbar {
   background: #222;
   color: #fff;
@@ -92,47 +99,92 @@ export default {
 
 .navbar-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* =======================
+   Logo
+======================= */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background-image: url('/images/oclokBg.jpg');
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  animation: moveBackground 15s linear infinite;
+  cursor: pointer;
+}
+
+.logo img {
+  height: 40px;
 }
 
 .logo h2 {
   margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: #ff6600;
+  white-space: nowrap;
+}
+
+/* =======================
+   Navigation
+======================= */
+.cta-buttons {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .nav-links {
   display: flex;
-  gap: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #fff;
+  color: #fff !important;
   font-weight: 500;
-  transition: color 0.3s;
+  background: transparent !important;
+  border: none !important;
+  transition: color 0.25s ease, font-weight 0.25s ease;
 }
 
-.nav-links a.router-link-active {
-  font-weight: bold;
-  color: #ff6600;
+.nav-links a.router-link-active,
+.nav-links a.router-link-exact-active {
+  color: #6d28d9 !important;
+  font-weight: 700;
+  background: transparent !important;
 }
 
 .nav-links a:hover {
-  color: #ff6600;
+  color: #6d28d9 !important;
 }
 
+.nav-links a:focus,
+.nav-links a:focus-visible {
+  color: #6d28d9 !important;
+  font-weight: 700;
+  background: transparent !important;
+  outline: none;
+}
+
+/* =======================
+   Actions (Search & Cart)
+======================= */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* Search */
 .nav-search {
   display: flex;
-  align-items: center;
   gap: 5px;
 }
 
@@ -145,17 +197,12 @@ export default {
 .nav-search button {
   padding: 6px 10px;
   background: #ff6600;
-  color: white;
   border: none;
   border-radius: 5px;
+  color: #fff;
   cursor: pointer;
 }
 
-.nav-search button:hover {
-  background: #e55d00;
-}
-
-/* Cart Icon */
 .cart-icon {
   position: relative;
   font-size: 1.5rem;
@@ -168,13 +215,14 @@ export default {
   right: -10px;
   background: #ff6600;
   color: #fff;
-  font-size: 0.8rem;
-  font-weight: bold;
+  font-size: 0.75rem;
   padding: 2px 6px;
   border-radius: 50%;
 }
 
-/* Hamburger (mobile) */
+/* =======================
+   Hamburger
+======================= */
 .hamburger {
   display: none;
   font-size: 22px;
@@ -184,22 +232,30 @@ export default {
   cursor: pointer;
 }
 
-/* Mobile view */
+/* =======================
+   Mobile View
+======================= */
 @media (max-width: 768px) {
+  .navbar-container {
+    flex-wrap: wrap;
+  }
+
   .hamburger {
     display: block;
+  }
+
+  .cta-buttons {
+    width: 100%;
+    order: 3;
   }
 
   .nav-links {
     display: none;
     flex-direction: column;
-    gap: 15px;
     width: 100%;
     background: #333;
     padding: 15px;
-    position: absolute;
-    top: 60px;
-    left: 0;
+    border-radius: 10px;
   }
 
   .nav-links.active {
@@ -208,17 +264,20 @@ export default {
 
   .nav-actions {
     width: 100%;
-    margin-top: 10px;
+    order: 2;
     justify-content: space-between;
   }
+}
 
-  .nav-search input {
-    flex: 1;
-    width: 70%;
+/* =======================
+   Animation
+======================= */
+@keyframes moveBackground {
+  from {
+    background-position: 0 0;
   }
-
-.cta-buttons { margin:20px; display:flex; gap:10px; flex-wrap:wrap; }
-.cta-buttons button { background:#ff6600; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
-.cta-buttons button:hover { background:#cc5200; }
+  to {
+    background-position: 300px 0;
+  }
 }
 </style>
