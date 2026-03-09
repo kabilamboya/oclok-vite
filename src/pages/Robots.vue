@@ -80,8 +80,15 @@ const robotAssistants = computed(() => {
 </script>
 
 <template>
+
+  <section class="hero" aria-hidden="false">
+      <div class="hero-text">
+        <h1>Don't just imagine a smart world...</h1>
+        <p>Live it with us!</p>
+      </div>
+  </section>
   <main class="robots-page">
-    <section class="hero">
+    <section class="heros">
       <div class="hero-copy">
       <img src="/images/ROBOto.jpg" alt="Robot assistant concept" />
         <p class="eyebrow">Robot Assistant Knowledge Base</p>
@@ -180,7 +187,7 @@ const robotAssistants = computed(() => {
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
-.hero {
+.heros {
   background:
     radial-gradient(circle at 10% 10%, rgba(53, 214, 166, 0.25), transparent 45%),
     linear-gradient(145deg, #121926 0%, #0d121a 100%);
@@ -193,7 +200,7 @@ const robotAssistants = computed(() => {
   align-items: center;
 }
 
-.hero img {
+.heros img {
   width: 100%;
   height: 300px;
   object-fit: cover;

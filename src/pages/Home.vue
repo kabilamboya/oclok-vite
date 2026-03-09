@@ -1,14 +1,14 @@
 <template>
   <div class="page">
+  <section class="hero" aria-hidden="false">
     <!-- Header -->
-    <header class="header">
       <div class="header-container">
         <h1>Welcome to <strong> O!clok services </strong></h1>
         <div class="background-notanimated">
         <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
         </div>
       </div>
-    </header>
+    </section>
 
       <!-- Tabs -->
           <div class="tabs">
@@ -204,13 +204,8 @@ onBeforeUnmount(() => {
 .header-container h1 {
   margin-left: 5px; /* FIXED */
   font-size: 2rem;
-  color: #000000;
+  color: #000;
   white-space: nowrap;
-}
-
-/* Header wrapper */
-.header {
-  width: 100%;
 }
 
 /* Header container – ONE ROW */

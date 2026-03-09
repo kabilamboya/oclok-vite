@@ -1,91 +1,259 @@
 /* =========================================================
-   GLOBAL BASE STYLES
+   Oclok GLOBAL STYLES – PRIMARY COLOR SYSTEM (2026)
+   Orange = MAIN / Primary
+   Teal Green = Secondary
+   Purple = Supportive
+   Black + White = Text & Surfaces
+========================================================= */
+
+:root {
+  /* ==================== MAIN / PRIMARY ==================== */
+  --primary-orange: #ff7a00;
+  --primary-orange-hover: #e56600;
+  --primary-orange-border: #cc5a00;
+
+  /* ==================== SECONDARY ==================== */
+  --secondary-teal: #0f9d8a;
+  --secondary-teal-hover: #0b7f6f;
+  --secondary-teal-border: #09695c;
+
+  /* ==================== SUPPORTIVE ==================== */
+  --support-purple: #6d28d9;
+
+  /* ==================== TEXT & BACKGROUNDS ==================== */
+  --text-black: #111111;
+  --text-white: #ffffff;
+  --text-muted-light: #555555;
+  --text-muted-dark: #afbac8;
+
+  /* ==================== LIGHT MODE ==================== */
+  --bg-light: #fefdf9;
+  --panel-light: #ffffff;
+  --line-light: #e5e5e5;
+
+  /* ==================== DARK MODE ==================== */
+  --bg-dark: #0f1218;
+  --panel-dark: #171b23;
+  --soft-panel-dark: #1d2330;
+  --line-dark: #2c3442;
+}
+
+/* =========================================================
+   BASE STYLES
 ========================================================= */
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #fefdf9;
-  color: #222;
+  font-family: 'Poppins', system-ui, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-black);
   margin: 0;
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
 }
 
-/* Root defaults */
+.hero {
+  padding: 48px 20px;
+  text-align: center;
+  background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light mode adjustments */
+/* Light mode (system preference) */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    background-color: var(--bg-light);
+    color: var(--text-black);
   }
 }
 
-/* Anchor */
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: none;
-}
-a:hover {
-  color: #535bf2;
-}
-
-/* Buttons */
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  color: white;
-}
-button:hover { border-color: #646cff; }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-/* App wrapper */
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
 /* =========================================================
-   SECTION HEADINGS
+   DARK MODE (Global enforcement – matches your screenshot)
 ========================================================= */
 
-h1, h2 {
-  font-weight: 700;
-  color: #2c2c2c;
-  margin-bottom: 1rem;
+@media (prefers-color-scheme: dark) {
+  :root {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+  }
+
+  body, #app, main, section, article, aside, header, footer, nav, .card,
+  .discover-page, .pictorial-card, .zone-item, .pricing-item {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+  }
+
+  .card, .hero-panel, .panel, .pictorial-card, .zone-item, .pricing-item {
+    background: var(--panel-dark);
+    border-color: var(--line-dark);
+  }
+
+  .navbar {
+    background: var(--bg-dark) !important;
+  }
+
+  h1, h2, h3 {
+    color: var(--text-white);
+  }
+
+  .card h3 { color: var(--text-white); }
+  .card p { color: var(--text-muted-dark); }
 }
 
-/* Elevate title sizes */
-h1 { font-size: 3.2em; line-height: 1.1; }
+/* =========================================================
+   TYPOGRAPHY & HEADINGS (Orange = main brand colour)
+========================================================= */
+
+h1, h2, h3 {
+  font-weight: 700;
+  color: inherit;
+}
+
+h2 {
+  color: var(--primary-orange); /* Main colour for all h2 headings */
+}
 
 /* =========================================================
-   CARDS GRID
+   LINKS (Supportive purple)
+========================================================= */
+
+a {
+  font-weight: 500;
+  color: var(--support-purple);
+  text-decoration: none;
+}
+a:hover, a:focus {
+  color: #8b3dff;
+}
+
+/* =========================================================
+   BUTTONS – Primary (Orange) & Secondary (Teal)
+========================================================= */
+
+/* SECONDARY buttons = Teal Green */
+:is(
+  button,
+  input[type='button'],
+  input[type='submit'],
+  .btn,
+  a.btn,
+  [role='button'],
+  a[class*='-btn'],
+  a[class*='button'],
+  button[class*='-btn'],
+  button[class*='button']
+) {
+  background-color: var(--secondary-teal) !important;
+  border-color: var(--secondary-teal-border) !important;
+  color: var(--text-white) !important;
+}
+
+:is(
+  button,
+  .btn
+):hover {
+  background-color: var(--secondary-teal-hover) !important;
+}
+
+/* PRIMARY / CTA buttons = Orange (main colour) */
+:is(
+  button[type='submit'],
+  input[type='submit'],
+  .btn.primary,
+  button.primary,
+  a.primary,
+  .cta-button,
+  .watch-button,
+  button.cta,
+  a.cta,
+  button[class*='cta'],
+  a[class*='cta'],
+  button[class*='action'],
+  a[class*='action']
+) {
+  background-color: var(--primary-orange) !important;
+  border-color: var(--primary-orange-border) !important;
+  color: var(--text-white) !important;
+}
+
+:is(
+  button[type='submit'],
+  .btn.primary,
+  button.primary,
+  a.primary,
+  .cta
+):hover {
+  background-color: var(--primary-orange-hover) !important;
+}
+
+button:disabled,
+.btn:disabled {
+  opacity: 0.65 !important;
+}
+
+/* =========================================================
+   TEXT PALETTE ENFORCEMENT
+========================================================= */
+
+/* Default readable text */
+:is(body, #app, main, section, article, aside, header, footer, nav, div, form) {
+  color: var(--text-black);
+}
+
+/* White text in dark UI areas */
+:is(
+  .navbar,
+  .nav-links,
+  .nav-actions,
+  .cyber-layout,
+  .cyber-main,
+  .cyber-content,
+  .cyber-sidebar,
+  .writer-page,
+  .mockups-page,
+  .gallery-page,
+  .footer,
+  .chatbot-window
+) {
+  color: var(--text-white) !important;
+}
+
+/* Muted / helper text = Supportive purple */
+:is(.muted, .meta, .subtitle, .description, .note, .empty, .text-muted, .helper-text, .secondary-text, small) {
+  color: var(--support-purple) !important;
+}
+
+/* Purple for active states */
+:is(
+  .router-link-active,
+  .router-link-exact-active,
+  .active-link,
+  .nav-links a:hover,
+  .nav-links a:focus,
+  .tab.active
+) {
+  color: var(--support-purple) !important;
+}
+
+::placeholder {
+  color: var(--support-purple);
+  opacity: 0.85;
+}
+
+/* =========================================================
+   CARDS GRID (accent borders preserved)
 ========================================================= */
 
 .cards-container {
@@ -98,33 +266,31 @@ h1 { font-size: 3.2em; line-height: 1.1; }
 
 .card {
   flex: 0 0 calc(20% - 14.4px);
-  background: #fff;
+  background: var(--panel-light);
   border-radius: 18px;
   padding: 1.5rem;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   text-align: center;
   transition: 0.3s ease;
-  border-top: 6px solid #43a047;
+  border-top: 6px solid var(--secondary-teal);
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
 }
 
 /* Accent borders */
-.card:nth-child(1) { border-top-color: #ff6f00; }
+.card:nth-child(1) { border-top-color: var(--primary-orange); }
 .card:nth-child(2) { border-top-color: #fdd835; }
-.card:nth-child(3) { border-top-color: #43a047; }
-.card:nth-child(4) { border-top-color: #8e24aa; }
-.card:nth-child(5) { border-top-color: #ff6f00; }
+.card:nth-child(3) { border-top-color: var(--secondary-teal); }
+.card:nth-child(4) { border-top-color: var(--support-purple); }
+.card:nth-child(5) { border-top-color: var(--primary-orange); }
 .card:nth-child(6) { border-top-color: #fdd835; }
 
-/* Hover state */
 .card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 26px rgba(0,0,0,0.15);
 }
 
-/* Card Image */
 .card img {
   width: 80px;
   height: 80px;
@@ -132,23 +298,20 @@ h1 { font-size: 3.2em; line-height: 1.1; }
   margin-bottom: 1rem;
 }
 
-/* Card Title */
 .card h3 {
   font-size: 1.3rem;
   margin: 0.5rem 0;
-  color: #2c2c2c;
   font-weight: 600;
 }
 
-/* Subtitle */
 .card p {
-  color: #555;
+  color: var(--text-muted-light);
   font-size: 0.95rem;
   line-height: 1.4;
 }
 
 /* =========================================================
-   SECTION BACKGROUND PATTERN
+   SECTION BACKGROUND & HEADINGS
 ========================================================= */
 
 section {
@@ -158,28 +321,17 @@ section {
   background-size: 200px;
 }
 
-/* =========================================================
-   RESPONSIVE BREAKPOINTS
-========================================================= */
-
-/* 4 per row */
-@media (max-width: 1200px) {
-  .card { flex: 0 0 calc(25% - 15px); }
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
 }
 
-/* 3 per row */
-@media (max-width: 900px) {
-  .card { flex: 0 0 calc(33.333% - 13px); }
-}
-
-/* 2 per row */
-@media (max-width: 600px) {
-  .card { flex: 0 0 calc(50% - 10px); }
-}
-
-/* 1 per row */
-@media (max-width: 400px) {
-  .card { flex: 0 0 100%; }
+/* Dark mode section override */
+@media (prefers-color-scheme: dark) {
+  section {
+    background: var(--bg-dark);
+  }
 }
 
 /* =========================================================
@@ -217,7 +369,7 @@ section {
   top: 50%;
   transform: translateY(-50%);
   background: rgba(0,0,0,0.5);
-  color: white;
+  color: var(--text-white);
   border: none;
   font-size: 2rem;
   cursor: pointer;
@@ -236,182 +388,29 @@ section {
 }
 
 /* =========================================================
-   GLOBAL THEME ENFORCEMENT
-   ========================================================= */
+   RESPONSIVE BREAKPOINTS
+========================================================= */
 
-:root {
-  --oclok-primary-orange: #ff7a00;
-  --oclok-primary-orange-hover: #e56600;
-  --oclok-primary-orange-border: #cc5a00;
-  --oclok-teal-green: #0f9d8a;
-  --oclok-teal-green-hover: #0b7f6f;
-  --oclok-teal-green-border: #09695c;
-  --oclok-text-white: #ffffff;
-  --oclok-text-black: #111111;
-  --oclok-text-purple: #6d28d9;
-  --oclok-readable-purple: #6d28d9;
+@media (max-width: 1200px) {
+  .card { flex: 0 0 calc(25% - 15px); }
 }
-
-/* Default controls: teal green */
-:is(
-  button,
-  input[type='button'],
-  input[type='submit'],
-  .btn,
-  a.btn,
-  [role='button'],
-  a[class*='-btn'],
-  a[class*='button'],
-  button[class*='-btn'],
-  button[class*='button']
-) {
-  background-color: var(--oclok-teal-green) !important;
-  border-color: var(--oclok-teal-green-border) !important;
-  color: #ffffff !important;
+@media (max-width: 900px) {
+  .card { flex: 0 0 calc(33.333% - 13px); }
 }
-
-:is(
-  button,
-  input[type='button'],
-  input[type='submit'],
-  .btn,
-  a.btn,
-  [role='button'],
-  a[class*='-btn'],
-  a[class*='button'],
-  button[class*='-btn'],
-  button[class*='button']
-):hover {
-  background-color: var(--oclok-teal-green-hover) !important;
-  border-color: var(--oclok-teal-green-border) !important;
+@media (max-width: 600px) {
+  .card { flex: 0 0 calc(50% - 10px); }
 }
-
-/* CTA / action controls: orange */
-:is(
-  button[type='submit'],
-  input[type='submit'],
-  .btn.primary,
-  button.primary,
-  a.primary,
-  .cta-button,
-  .watch-button,
-  button.cta,
-  a.cta,
-  button[class*='cta'],
-  a[class*='cta'],
-  button[class*='action'],
-  a[class*='action']
-) {
-  background-color: var(--oclok-primary-orange) !important;
-  border-color: var(--oclok-primary-orange-border) !important;
-  color: #ffffff !important;
-}
-
-:is(
-  button[type='submit'],
-  input[type='submit'],
-  .btn.primary,
-  button.primary,
-  a.primary,
-  .cta-button,
-  .watch-button,
-  button.cta,
-  a.cta,
-  button[class*='cta'],
-  a[class*='cta'],
-  button[class*='action'],
-  a[class*='action']
-):hover {
-  background-color: var(--oclok-primary-orange-hover) !important;
-  border-color: var(--oclok-primary-orange-border) !important;
-}
-
-:is(
-  button,
-  .btn,
-  a.btn,
-  [role='button'],
-  [class*='-btn'],
-  [class*='button']
-):disabled {
-  opacity: 0.65 !important;
-}
-
-/* Improve readability for low-contrast helper text */
-:is(.muted, .meta, .subtitle, .description, .note, .empty, .text-muted, .helper-text, .secondary-text, small) {
-  color: var(--oclok-readable-purple) !important;
+@media (max-width: 400px) {
+  .card { flex: 0 0 100%; }
 }
 
 /* =========================================================
-   TEXT PALETTE ENFORCEMENT
-   Allowed text colors: white, black, purple
-   ========================================================= */
+   APP WRAPPER
+========================================================= */
 
-/* Default readable text on light surfaces */
-:is(body, #app, main, section, article, aside, header, footer, nav, div, form) {
-  color: var(--oclok-text-black);
-}
-
-/* Normalize text to inherit container color */
-:is(
-  h1, h2, h3, h4, h5, h6,
-  p, span, li, label, a, strong, b, em, i, small,
-  td, th, dt, dd, legend, blockquote, cite, time,
-  input, textarea, select, option
-) {
-  color: inherit !important;
-}
-
-/* White text in dark UI areas */
-:is(
-  .navbar,
-  .nav-links,
-  .nav-actions,
-  .cyber-layout,
-  .cyber-main,
-  .cyber-content,
-  .cyber-sidebar,
-  .writer-page,
-  .mockups-page,
-  .gallery-page,
-  .footer,
-  .footer-container,
-  .footer-grid,
-  .footer-bottom,
-  .chatbot-window,
-  .chatbot-header,
-  .chatbot-body,
-  .chatbot-input,
-  .tools-panel,
-  .workspace-panel,
-  .viewer-side
-) {
-  color: var(--oclok-text-white) !important;
-}
-
-/* Purple emphasis and state text */
-:is(
-  .muted,
-  .meta,
-  .subtitle,
-  .description,
-  .note,
-  .empty,
-  .text-muted,
-  .helper-text,
-  .secondary-text,
-  .router-link-active,
-  .router-link-exact-active,
-  .active-link,
-  .nav-links a:hover,
-  .nav-links a:focus,
-  .nav-links a:focus-visible,
-  .tab.active
-) {
-  color: var(--oclok-text-purple) !important;
-}
-
-::placeholder {
-  color: var(--oclok-text-purple) !important;
-  opacity: 0.9;
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }

@@ -3,6 +3,11 @@
     <div class="navbar-container">
       <!-- Logo -->
       <div class="logo">
+        <img 
+          src="/images/oclokLogo.png" 
+          alt="Oclok Logo" 
+          loading="lazy"
+        />
         <h2>O!clok</h2>
       </div>
 
@@ -15,7 +20,7 @@
           <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
           <router-link :to="{ name: 'Products' }" @click="closeMenu">Store</router-link>
           <router-link :to="{ name: 'Media' }" @click="closeMenu">Media</router-link>
-          <router-link :to="{ name: 'Technicians' }" @click="closeMenu">Doctor</router-link>
+          <router-link :to="{ name: 'Technicians' }" @click="closeMenu">Technicians</router-link>
           <router-link :to="{ name: 'Robots' }" @click="closeMenu">Dynamics</router-link>
           <router-link :to="{ name: 'Cyber' }" @click="closeMenu">Cyber</router-link>
           <router-link :to="{ name: 'Discover' }" @click="closeMenu">Discover</router-link>
@@ -82,7 +87,9 @@ export default {
   }
   }
 };
+
 </script>
+
 
 <style scoped>
 /* =======================
@@ -96,104 +103,86 @@ export default {
   top: 0;
   z-index: 1000;
 }
-
 .navbar-container {
   display: flex;
   align-items: center;
   gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 /* =======================
-   Logo
+   Logo — NOW PERFECTLY SIDE-BY-SIDE
 ======================= */
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 8px 14px;
   border-radius: 10px;
-  background-image: url('/images/oclokBg.jpg');
-  background-repeat: repeat-x;
-  background-size: auto 100%;
-  animation: moveBackground 15s linear infinite;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
-
+.logo:hover {
+  transform: scale(1.03);
+}
 .logo img {
-  height: 40px;
+  height: 42px;
+  width: auto;
 }
-
 .logo h2 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.55rem;
   font-weight: 700;
   color: #ff6600;
   white-space: nowrap;
+  letter-spacing: -0.5px;
 }
 
 /* =======================
-   Navigation
+   Navigation + Actions (unchanged except small cleanups)
 ======================= */
 .cta-buttons {
   flex: 1;
   display: flex;
   justify-content: center;
 }
-
 .nav-links {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
-
 .nav-links a {
   text-decoration: none;
   color: #fff !important;
   font-weight: 500;
-  background: transparent !important;
-  border: none !important;
-  transition: color 0.25s ease, font-weight 0.25s ease;
+  transition: color 0.25s ease;
 }
-
 .nav-links a.router-link-active,
 .nav-links a.router-link-exact-active {
   color: #6d28d9 !important;
   font-weight: 700;
-  background: transparent !important;
 }
-
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a:focus {
   color: #6d28d9 !important;
 }
 
-.nav-links a:focus,
-.nav-links a:focus-visible {
-  color: #6d28d9 !important;
-  font-weight: 700;
-  background: transparent !important;
-  outline: none;
-}
-
-/* =======================
-   Actions (Search & Cart)
-======================= */
+/* Search & Cart */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 15px;
 }
-
 .nav-search {
   display: flex;
   gap: 5px;
 }
-
 .nav-search input {
   padding: 6px 10px;
   border-radius: 5px;
   border: none;
 }
-
 .nav-search button {
   padding: 6px 10px;
   background: #ff6600;
@@ -202,13 +191,11 @@ export default {
   color: #fff;
   cursor: pointer;
 }
-
 .cart-icon {
   position: relative;
   font-size: 1.5rem;
   cursor: pointer;
 }
-
 .cart-icon .badge {
   position: absolute;
   top: -8px;
@@ -220,9 +207,7 @@ export default {
   border-radius: 50%;
 }
 
-/* =======================
-   Hamburger
-======================= */
+/* Hamburger */
 .hamburger {
   display: none;
   font-size: 22px;
@@ -239,16 +224,13 @@ export default {
   .navbar-container {
     flex-wrap: wrap;
   }
-
   .hamburger {
     display: block;
   }
-
   .cta-buttons {
     width: 100%;
     order: 3;
   }
-
   .nav-links {
     display: none;
     flex-direction: column;
@@ -257,27 +239,19 @@ export default {
     padding: 15px;
     border-radius: 10px;
   }
-
   .nav-links.active {
     display: flex;
   }
-
   .nav-actions {
     width: 100%;
     order: 2;
     justify-content: space-between;
   }
-}
-
-/* =======================
-   Animation
-======================= */
-@keyframes moveBackground {
-  from {
-    background-position: 0 0;
+  .logo img {
+    height: 36px; /* slightly smaller on mobile */
   }
-  to {
-    background-position: 300px 0;
+  .logo h2 {
+    font-size: 1.4rem;
   }
 }
 </style>

@@ -1,8 +1,14 @@
 <template>
+  <section class="hero" aria-hidden="false">
+        <div class="hero-text">
+          <h1>Cyber Studio Workspace</h1>
+          <p>Header and sidebar stay fixed. Use this interactive area to satisfy your cafe needs</p>
+        </div>
+  </section>
   <CyberLayout>
     <template #header>
       <h1>Cyber Studio Workspace</h1>
-      <p>Header and sidebar stay fixed. The remaining area is your active creation canvas.</p>
+      <p>Header and sidebar stay fixed. Use this interactive area to satisfy your cafe needs</p>
     </template>
 
     <div class="workspace-root">

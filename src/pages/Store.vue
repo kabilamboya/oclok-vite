@@ -91,7 +91,6 @@
       @checkout="goToCheckout"
     />
 
-    <footer class="footer"></footer>
   </div>
 </template>
 

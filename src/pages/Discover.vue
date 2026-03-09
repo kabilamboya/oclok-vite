@@ -316,6 +316,14 @@ async function submitMembershipWhatsApp() {
 </script>
 
 <template>
+
+  <section class="hero" aria-hidden="false">
+      <div class="hero-text">
+        <h1>Relax! Let Us run your errands</h1>
+        <p>Our delibois bet on convenience.</p>
+      </div>
+  </section>
+
   <main class="discover-page">
     <section class="delibois-hero">
       <div class="hero-copy">

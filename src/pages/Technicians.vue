@@ -1,6 +1,13 @@
 <template>
+
+  <section class="hero" aria-hidden="false">
+    <div class="hero-text">
+      <h1>Our Certified O!clok Doctors</h1>
+      <p>Available remotely at your convenience</p>
+    </div>
+  </section>
+
   <div class="page">
-    <h1 class="title">Our Certified O!clok Doctors</h1>
 
     <div class="filters">
       <input
@@ -72,10 +79,6 @@
 
       <button class="clear-btn" @click="clearBookings">Clear All</button>
     </div>
-
-    <footer class="footer">
-      <p>(c) {{ new Date().getFullYear() }} O!clok Services - All Rights Reserved.</p>
-    </footer>
   </div>
 </template>
 
@@ -338,11 +341,4 @@ export default {
   margin-top: 1rem;
 }
 
-.footer {
-  margin-top: auto;
-  padding: 1.2rem 0;
-  text-align: center;
-  border-top: 1px solid #ddd;
-  color: #666;
-}
 </style>

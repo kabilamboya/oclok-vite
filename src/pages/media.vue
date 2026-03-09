@@ -1,4 +1,10 @@
 <template>
+  <section class="hero" aria-hidden="false">
+      <div class="hero-text">
+        <h1>Stories that makes you wanna live some more!</h1>
+        <p>Tell It or Tell Us!</p>
+      </div>
+  </section>
   <div class="media-page">
     <header class="media-header">
       <section class="youtube-section">
