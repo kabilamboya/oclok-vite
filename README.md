@@ -1,19 +1,50 @@
-# Vue 3 + Vite
+# O!clok Services Website (Vue 3 + Vite)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This project is the front‑end for O!clok Services: a multi‑page site that combines a smart‑commerce store, technicians directory, discovery listings, and a creative “Cyber Studio” workspace. It’s built with Vue 3 and Vite and uses local JSON data plus localStorage for lightweight persistence.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+**Key Features**
+- Home page with About/Mission/Vision and featured services.
+- Store with product listings, product detail, cart, and checkout flow.
+- Technicians directory with profiles and ratings.
+- Discover page for places and Delibois errand requests.
+- Robots knowledge hub and device highlights.
+- Cyber Studio tools: writing canvas, mockup studio, and gallery.
+- Floating chatbot for product/services/technician guidance.
 
-## Cyber Frontend Integration
+**Main Routes**
+- `/` Home
+- `/products` Store
+- `/products/:id` Product detail
+- `/technicians` Technicians listing
+- `/technicians/:slug` Technician detail
+- `/discover` Discover listings and Delibois requests
+- `/discover/:slug` Discover detail
+- `/robots` Robot assistants hub
+- `/cyber/creator` Canvas workspace
+- `/cyber/writer` AI prompt studio
+- `/cyber/mockups` Mockup studio
+- `/cyber/gallery` Mockup gallery
+- `/checkout` Cart checkout
 
-Set these env values for the frontend app:
+**Data Sources**
+- `src/data/products.json` Store catalog data
+- `src/data/technicians.json` Technician profiles
+- `src/data/places.json` Discover listings
+- `src/data/services.json` Service highlights
 
-- `VITE_BACKEND_URL=http://localhost:5000`
-- `VITE_SUPABASE_URL=...`
-- `VITE_SUPABASE_ANON_KEY=...`
+**Local Persistence**
+- Cart, Cyber mockups, and Delibois forms use `localStorage` via `src/lib/localStore.js` and `src/services/*.js`.
 
-Cyber pages under `/cyber/*` now use backend APIs for:
+**Getting Started**
+1. Install dependencies: `npm install`
+2. Start dev server: `npm run dev`
+3. Build for production: `npm run build`
+4. Preview build: `npm run preview`
 
-- AI prompt generation and training
-- Mockup metadata management
-- Usage analytics summary
+**Project Structure**
+- `src/pages` Page‑level routes
+- `src/components` Shared UI components
+- `src/layouts` Cyber Studio layout and helpers
+- `public/images` and `src/assets/images` Image assets
+
+If you want a backend integration layer or API wiring, we can add it and document env variables here.
