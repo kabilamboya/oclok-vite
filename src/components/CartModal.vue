@@ -10,10 +10,10 @@
 
       <div v-else class="cart-items">
         <div class="cart-item" v-for="item in cart" :key="item.id">
-          <img :src="item.image" alt="item.name" />
+          <img :src="item.image" :alt="item.name || 'Cart item'" />
           <div class="details">
             <h3>{{ item.name }}</h3>
-            <p>Ksh {{ item.price }} x {{ item.quantity }}</p>
+            <p>Ksh {{ formatMoney(item.price) }} x {{ item.quantity || 0 }}</p>
             <div class="actions">
               <button @click="$emit('decrease', item.id)">−</button>
               <button @click="$emit('increase', item.id)">+</button>
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div class="total">
-          <p>Total: Ksh {{ total }}</p>
+          <p>Total: Ksh {{ formatMoney(total) }}</p>
         </div>
         <button class="checkout-btn" @click="$emit('checkout')">Checkout</button>
       </div>
@@ -32,12 +32,31 @@
 
 <script>
 export default {
-  props: ['cart', 'isOpen'],
+  props: {
+    cart: {
+      type: Array,
+      default: () => [],
+    },
+    isOpen: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     total() {
-      return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    }
-  }
+      return this.cart.reduce((sum, item) => {
+        const price = Number(item?.price) || 0;
+        const qty = Number(item?.quantity) || 0;
+        return sum + price * qty;
+      }, 0);
+    },
+  },
+  methods: {
+    formatMoney(value) {
+      const numeric = Number(value) || 0;
+      return numeric.toLocaleString();
+    },
+  },
 }
 </script>
 

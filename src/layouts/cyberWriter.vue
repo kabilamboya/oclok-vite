@@ -23,20 +23,17 @@
 <script setup>
 import { ref } from "vue"
 import { createDocument } from "@/services/documents.service"
-import { supabase } from "@/lib/supabase"
+import { getLocalUserId } from "@/lib/localStore"
 
 const title = ref("")
 const content = ref("")
+const userId = ref(getLocalUserId("cyber_guest_user_id"))
 
 const save = async () => {
-  const user = (await supabase.auth.getUser()).data.user
-
-  if (!user) return alert("Login required")
-
   await createDocument({
     title: title.value,
     content: content.value,
-    user_id: user.id,
+    user_id: userId.value,
   })
 
   title.value = ""

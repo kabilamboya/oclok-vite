@@ -58,16 +58,6 @@
       </div>
     </section>
 
-    <section id="testimonials" class="card">
-      <h2>Testimonials</h2>
-      <ul class="testimonial-list">
-        <li v-for="item in testimonials" :key="item.username">
-          <strong>{{ item.username }}</strong>
-          <p>{{ item.feedback }}</p>
-        </li>
-      </ul>
-    </section>
-
     <section id="certifications" class="card">
       <h2>Certifications</h2>
       <ul class="cert-list">
@@ -120,7 +110,6 @@ const navItems = [
   { id: 'about', label: 'About' },
   { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Projects' },
-  { id: 'testimonials', label: 'Testimonials' },
   { id: 'certifications', label: 'Certifications' },
   { id: 'blogs', label: 'Blogs' },
   { id: 'chat', label: 'Chat' },
@@ -160,21 +149,6 @@ const ongoingProjects = [
     title: 'Automation Assistant Integrations',
     description: 'Extending chatbot and WhatsApp-based service workflows for customer operations.',
     time: 'Ongoing',
-  },
-];
-
-const testimonials = [
-  {
-    username: '@johndoe',
-    feedback: 'Professional execution and clear communication from concept to delivery.',
-  },
-  {
-    username: '@janedoe',
-    feedback: 'Fast turnaround and quality implementation on business-critical updates.',
-  },
-  {
-    username: '@alexsmith',
-    feedback: 'Reliable collaborator with practical technical solutions.',
   },
 ];
 
@@ -342,7 +316,6 @@ const prevBlog = () => {
   color: #374151;
 }
 
-.testimonial-list,
 .cert-list {
   list-style: none;
   margin: 0;
@@ -351,7 +324,6 @@ const prevBlog = () => {
   gap: 0.65rem;
 }
 
-.testimonial-list li,
 .cert-list li {
   border: 1px solid #e5e7eb;
   border-radius: 10px;

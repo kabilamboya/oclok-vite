@@ -194,7 +194,14 @@ export default {
       }
 
       localStorage.setItem("cart", JSON.stringify(cart));
-      alert(`${this.product.name} added to cart.`);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("cart:updated"));
+        window.dispatchEvent(
+          new CustomEvent("cart:notify", {
+            detail: { message: `${this.product.name} added to cart` },
+          })
+        );
+      }
     },
   },
 };

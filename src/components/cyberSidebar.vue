@@ -1,29 +1,52 @@
 <template>
   <aside class="cyber-sidebar">
-    <h2 class="sidebar-title">O!clok Cyber</h2>
-    <h2 class="canvas-title">Canvas</h2>
-
-    <div class="sidebar-cta-group">
-      <router-link to="/cyber/creator" class="sidebar-cta primary-cta">
-        Writing Canvas
-      </router-link>
-      <router-link to="/cyber/mockups" class="sidebar-cta secondary-cta">
-        Design Canvas
-      </router-link>
-    </div>
+    <h2 class="sidebar-title" aria-label="O!clok Cyber" title="O!clok Cyber">O!</h2>
 
     <nav class="sidebar-nav">
+      <!-- CREATE Section -->
       <span class="nav-section">CREATE</span>
-      <router-link to="/cyber/creator" class="nav-link" active-class="active-link">
-        AI Prompt Studio
+      <router-link
+        to="/cyber/creator"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="Writing Canvas"
+        title="Writing Canvas"
+      >
+        <i class="fas fa-pen"></i>
+        <span class="nav-label">Writing Canvas</span>
+      </router-link>
+      <router-link
+        to="/cyber/writer"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="AI Prompt Studio"
+        title="AI Prompt Studio"
+      >
+        <i class="fas fa-robot"></i>
+        <span class="nav-label">AI Prompt Studio</span>
       </router-link>
 
+      <!-- DESIGN Section -->
       <span class="nav-section">DESIGN</span>
-      <router-link to="/cyber/mockups" class="nav-link" active-class="active-link">
-        Mockups
+      <router-link
+        to="/cyber/mockups"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="Design Canvas"
+        title="Design Canvas"
+      >
+        <i class="fas fa-paint-brush"></i>
+        <span class="nav-label">Design Canvas</span>
       </router-link>
-      <router-link to="/cyber/gallery" class="nav-link" active-class="active-link">
-        Gallery
+      <router-link
+        to="/cyber/gallery"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="Gallery"
+        title="Gallery"
+      >
+        <i class="fas fa-images"></i>
+        <span class="nav-label">Gallery</span>
       </router-link>
     </nav>
   </aside>
@@ -33,105 +56,53 @@
 
 <style scoped>
 .cyber-sidebar {
-  width: 220px;
+  width: 72px;
   flex-shrink: 0;
-  position: sticky;
-  top: 0;
   height: 100vh;
-  overflow-y: auto;
   background-color: #1a1a1a;
-  padding: 2rem 1rem;
+  padding: 1.2rem 0.6rem;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #2a2a2a;
   font-family: "Inter", sans-serif;
+  align-items: center;
 }
 
 .sidebar-title {
-  font-size: 1.4rem;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  font-weight: bold;
-}
-
-.canvas-title {
-  font-size: 1rem;
-  color: #ffffff;
-  margin: 0 0 0.85rem;
-  text-align: center;
-  font-weight: 700;
-}
-
-.sidebar-cta-group {
-  display: grid;
-  gap: 0.55rem;
-  margin-bottom: 1rem;
-}
-
-.sidebar-cta {
-  display: block;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 700;
-  padding: 0.55rem 0.75rem;
-  text-align: center;
-  transition: all 0.25s ease;
-}
-
-.primary-cta {
-  background-color: #ffd600;
-  color: #121212;
-}
-
-.primary-cta:hover {
-  transform: translateY(-2px);
-}
-
-.secondary-cta {
-  border: 1px solid #ffd600;
+  font-size: 1.1rem;
   color: #ffd600;
-}
-
-.secondary-cta:hover {
-  background-color: rgba(255, 214, 0, 0.15);
+  text-align: center;
+  margin-bottom: 1.2rem;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  width: 100%;
+  align-items: center;
 }
 
 .nav-section {
-  position: relative;
-  font-size: 0.7rem;
-  letter-spacing: 1.5px;
-  opacity: 0.6;
-  margin: 1.5rem 0 0.5rem;
-}
-
-.nav-section::after {
-  content: "";
-  display: block;
-  height: 1px;
-  background: #ff6600;
-  margin-top: 0.5rem;
+  display: none;
 }
 
 .nav-link {
   color: #f0f0f0;
   text-decoration: none;
   font-weight: 600;
-  padding: 0.55rem 0.8rem;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0.4rem;
+  border-radius: 12px;
   transition: all 0.25s ease;
+  display: grid;
+  place-items: center;
 }
 
 .nav-link:hover {
   background-color: rgba(255, 214, 0, 0.15);
   color: #ffd600;
-  transform: translateX(4px);
 }
 
 .active-link {
@@ -140,36 +111,11 @@
   box-shadow: 0 0 12px rgba(255, 214, 0, 0.4);
 }
 
-@media (max-width: 768px) {
-  .cyber-sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    flex-direction: column;
-    justify-content: flex-start;
-    border-right: none;
-    border-bottom: 1px solid #2a2a2a;
-    padding: 1rem 0.5rem;
-  }
+.nav-label {
+  display: none;
+}
 
-  .sidebar-title,
-  .canvas-title {
-    text-align: center;
-  }
-
-  .sidebar-cta-group {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .nav-section {
-    display: none;
-  }
+.nav-link i {
+  font-size: 1.05rem;
 }
 </style>

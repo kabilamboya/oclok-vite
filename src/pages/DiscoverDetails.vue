@@ -10,6 +10,14 @@ const place = computed(() =>
   places.find(p => p.slug === route.params.slug)
 )
 
+const galleryImages = computed(() => {
+  if (!place.value) return []
+  if (Array.isArray(place.value.images) && place.value.images.length) {
+    return place.value.images
+  }
+  return place.value.image ? [place.value.image] : []
+})
+
 // Safety net
 if (!place.value) {
   router.replace('/discover')
@@ -19,15 +27,15 @@ if (!place.value) {
 const currentIndex = ref(0)
 
 function nextImage() {
-  if (place.value && place.value.images) {
-    currentIndex.value = (currentIndex.value + 1) % place.value.images.length
+  if (galleryImages.value.length) {
+    currentIndex.value = (currentIndex.value + 1) % galleryImages.value.length
   }
 }
 
 function prevImage() {
-  if (place.value && place.value.images) {
+  if (galleryImages.value.length) {
     currentIndex.value =
-      (currentIndex.value - 1 + place.value.images.length) % place.value.images.length
+      (currentIndex.value - 1 + galleryImages.value.length) % galleryImages.value.length
   }
 }
 
@@ -44,14 +52,26 @@ function bookService(type) {
     <h1>{{ place.name }}</h1>
     <p class="location">{{ place.location }}</p>
 
-    <!-- Carousel -->
-    <div class="carousel" v-if="place.images && place.images.length">
-      <button class="nav prev" @click="prevImage">‹</button>
-      <img :src="place.images[currentIndex]" :alt="place.name" />
-      <button class="nav next" @click="nextImage">›</button>
+        <!-- Carousel -->
+    <div class="carousel" v-if="galleryImages.length">
+      <button
+        v-if="galleryImages.length > 1"
+        class="nav prev"
+        @click="prevImage"
+      >
+        &lsaquo;
+      </button>
+      <img :src="galleryImages[currentIndex]" :alt="place.name" />
+      <button
+        v-if="galleryImages.length > 1"
+        class="nav next"
+        @click="nextImage"
+      >
+        &rsaquo;
+      </button>
       <div class="dots">
         <span
-          v-for="(img, index) in place.images"
+          v-for="(img, index) in galleryImages"
           :key="index"
           :class="{ active: index === currentIndex }"
           @click="currentIndex = index"
@@ -111,6 +131,8 @@ function bookService(type) {
 }
 .carousel img {
   width: 100%;
+  height: clamp(220px, 40vw, 420px);
+  object-fit: cover;
   border-radius: 12px;
 }
 .nav {

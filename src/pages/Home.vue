@@ -29,7 +29,10 @@
         <div class="about-text">
           <!-- Tab Panels -->
           <div class="tab-panels">
-            <div v-show="activeTab==='about'" class="tab-content animate-on-scroll">
+            <div
+              v-show="activeTab==='about'"
+              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'about' }]"
+            >
               <h2>About Us</h2>
               <p>
                 At <strong>O!clok Services</strong> we provide reliable delivery services using both trained human couriers and emerging autonomous systems, alongside digital marketing,
@@ -41,7 +44,10 @@
               </p>
             </div>
 
-            <div v-show="activeTab==='mission'" class="tab-content animate-on-scroll">
+            <div
+              v-show="activeTab==='mission'"
+              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'mission' }]"
+            >
               <h2>Our Mission</h2>
               <p>
                 To provide convenient, efficient, and technology-enabled delivery and digital services that empower individuals
@@ -53,7 +59,10 @@
               </p>
             </div>
 
-            <div v-show="activeTab==='vision'" class="tab-content animate-on-scroll">
+            <div
+              v-show="activeTab==='vision'"
+              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'vision' }]"
+            >
               <h2>Our Vision</h2>
               <p>
                 To become a leading smart logistics and digital services platform, shaping the future of delivery,
@@ -204,7 +213,7 @@ onBeforeUnmount(() => {
 .header-container h1 {
   margin-left: 5px; /* FIXED */
   font-size: 2rem;
-  color: #000;
+  color: #ffffff;
   white-space: nowrap;
 }
 
@@ -286,6 +295,7 @@ onBeforeUnmount(() => {
   align-items: flex-start; /* align top */
   padding: 15px;     /* less padding */
   background: #fff;
+  color: #111;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
@@ -310,11 +320,13 @@ onBeforeUnmount(() => {
 .tab-content h2 {
   margin: 0 0 10px 0;   /* reduce top/bottom margin */
   font-size: 1.5rem;    /* slightly smaller */
+  color: #ff6600;
 }
 
 .tab-content p {
   margin: 5px 0;        /* tighter spacing */
   line-height: 1.4;     /* slightly compact */
+  color: #333;
 }
 
 /* Social Icons */
@@ -327,7 +339,7 @@ onBeforeUnmount(() => {
 }
 
 .tabs { display:flex; gap:10px; justify-content:flex-end; margin-right:100px; margin-bottom:20px; }
-.tabs button { background:#ffcc99; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold; transition: background 0.3s; }
+.tabs button { background:#ffcc99; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold; transition: background 0.3s; color:#111; }
 .tabs button.active, .tabs button:hover { background:#ff6600; color:#fff; }
 .tab-content { transition: all 0.6s ease; opacity:0; transform:translateX(40px); }
 .tab-content.show { opacity:1; transform:translateX(0); }

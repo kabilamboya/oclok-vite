@@ -10,7 +10,8 @@ const Products = () => import('../pages/Store.vue');
 const ProductDetail = () => import('../pages/ProductDetail.vue');
 const AccountPage = () => import('../pages/AccountPage.vue');
 const Cyber = () => import('../pages/Cyber.vue');
-const Creator = () => import('../pages/Creator/Writer.vue');
+const Creator = () => import('../pages/Creator/CanvasWorkspace.vue');
+const Writer = () => import('../pages/Creator/Writer.vue');
 const Mockups = () => import('../pages/Creator/Mockups.vue');
 const Gallery = () => import('../pages/Creator/Gallery.vue');
 const Discover = () => import('../pages/Discover.vue');
@@ -39,6 +40,7 @@ const routes = [
     children: [
       { path: '', redirect: 'creator' }, // default
       { path: 'creator', name: 'Creator', component: Creator },
+      { path: 'writer', name: 'Writer', component: Writer },
       { path: 'mockups', name: 'Mockups', component: Mockups },
       { path: 'gallery', name: 'Gallery', component: Gallery }
     ]
@@ -48,7 +50,7 @@ const routes = [
   { path: '/discover/:slug', name: 'DiscoverDetails', component: DiscoverDetails, props: true },
   { path: '/robots', name: 'Robots', component: Robots },
   { path: '/search', name: 'Search', component: SearchResults },
-  { path: '/checkout', name: 'Checkout', component: CheckOut, props: () => ({ cart: JSON.parse(localStorage.getItem('cart')) || [] }) },
+  { path: '/checkout', name: 'Checkout', component: CheckOut },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ];
 

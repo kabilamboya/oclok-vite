@@ -12,14 +12,14 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { getPrintQueue } from "./services/printQueue.service"
-import { supabase } from "./lib/supabase"
+import { getPrintQueue } from "@/services/printQueue.service"
+import { getLocalUserId } from "@/lib/localStore"
 
 const queue = ref([])
+const userId = getLocalUserId("cyber_guest_user_id")
 
 onMounted(async () => {
-  const user = (await supabase.auth.getUser()).data.user
-  const { data } = await getPrintQueue(user.id)
-  queue.value = data
+  const { data } = await getPrintQueue(userId)
+  queue.value = data || []
 })
 </script>

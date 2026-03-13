@@ -1,32 +1,45 @@
-const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+import { createId, readStore, writeStore } from "@/lib/localStore";
 
-const request = async (path, options = {}) => {
-  const response = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+const ORDERS_KEY = "oclok_delibois_orders";
+const MEMBERSHIPS_KEY = "oclok_delibois_memberships";
 
-  const isJson = response.headers.get('content-type')?.includes('application/json');
-  const data = isJson ? await response.json() : null;
-
-  if (!response.ok) {
-    throw new Error(data?.error || data?.message || `Request failed: ${response.status}`);
-  }
-
-  return data;
+const readArray = (key) => {
+  const value = readStore(key, []);
+  return Array.isArray(value) ? value : [];
 };
 
-export const createDeliboisMembership = (payload) =>
-  request('/api/delibois/memberships', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
+const writeArray = (key, value) => {
+  writeStore(key, value);
+};
 
-export const createDeliboisOrder = (payload) =>
-  request('/api/delibois/orders', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
+export const createDeliboisMembership = async (payload = {}) => {
+  const memberships = readArray(MEMBERSHIPS_KEY);
+  const createdAt = new Date().toISOString();
+
+  const record = {
+    id: createId("membership"),
+    created_at: createdAt,
+    ...payload,
+  };
+
+  memberships.unshift(record);
+  writeArray(MEMBERSHIPS_KEY, memberships);
+  return record;
+};
+
+export const createDeliboisOrder = async (payload = {}) => {
+  const orders = readArray(ORDERS_KEY);
+  const createdAt = new Date().toISOString();
+
+  const record = {
+    id: createId("order"),
+    created_at: createdAt,
+    order_type: payload.orderType || payload.order_type || "",
+    orderType: payload.orderType || payload.order_type || "",
+    ...payload,
+  };
+
+  orders.unshift(record);
+  writeArray(ORDERS_KEY, orders);
+  return record;
+};

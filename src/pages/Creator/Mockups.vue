@@ -14,6 +14,23 @@
       </form>
 
       <div class="tool-section">
+        <h3>Quick Templates</h3>
+        <div class="template-grid">
+          <button
+            v-for="template in templates"
+            :key="template.id"
+            type="button"
+            :class="['template-card', { active: selectedTemplateId === template.id }]"
+            @click="loadTemplate(template)"
+          >
+            <img :src="template.url" :alt="template.name" />
+            <span>{{ template.name }}</span>
+          </button>
+        </div>
+        <p class="tool-hint">Start with the T-shirt base, then upload or layer your design.</p>
+      </div>
+
+      <div class="tool-section">
         <h3>Canvas Tools</h3>
         <div class="tool-grid icon-tool-grid">
           <button
@@ -201,7 +218,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { Canvas as FabricCanvas, Circle, FabricImage, PencilBrush, Rect, Textbox } from 'fabric';
-import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { getLocalUserId } from '@/lib/localStore';
 import {
   createCyberMockup,
   listCyberMockups,
@@ -250,6 +267,16 @@ const form = reactive({
   promptUsed: '',
 });
 
+const templates = [
+  { id: 'tshirt', name: 'T-Shirt', url: '/mockups/tshirt.png' },
+  { id: 'mug', name: 'Mug', url: '/images/SMARTcoffee.jpg' },
+  { id: 'book', name: 'Book', url: '/images/CMSBOOKlet.jpg' },
+  { id: 'billboard', name: 'Billboard', url: '/images/BiGmage.jpg' },
+  { id: 'umbrella', name: 'Umbrella', url: '/images/SMARTgarden.png' },
+];
+
+const selectedTemplateId = ref(templates[0]?.id || null);
+
 let spinTimer = null;
 
 const viewerCardStyle = computed(() => ({
@@ -262,16 +289,7 @@ const parseTags = (value) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const resolveGuestUserId = () => {
-  const fallback = `guest_${Date.now().toString(36)}`;
-  if (typeof window === 'undefined') return fallback;
-
-  const key = 'cyber_guest_user_id';
-  const existing = window.localStorage.getItem(key);
-  if (existing) return existing;
-  window.localStorage.setItem(key, fallback);
-  return fallback;
-};
+const resolveGuestUserId = () => getLocalUserId("cyber_guest_user_id");
 
 const readFileAsDataUrl = (fileInput) =>
   new Promise((resolve, reject) => {
@@ -280,6 +298,26 @@ const readFileAsDataUrl = (fileInput) =>
     reader.onerror = () => reject(new Error('Unable to read selected image file.'));
     reader.readAsDataURL(fileInput);
   });
+
+const handleHeaderExport = () => {
+  downloadCanvas();
+};
+
+const handleHeaderRefresh = () => {
+  loadMockups();
+};
+
+const registerHeaderActions = () => {
+  if (typeof window === "undefined") return;
+  window.addEventListener("cyber:mockups-export", handleHeaderExport);
+  window.addEventListener("cyber:mockups-refresh", handleHeaderRefresh);
+};
+
+const unregisterHeaderActions = () => {
+  if (typeof window === "undefined") return;
+  window.removeEventListener("cyber:mockups-export", handleHeaderExport);
+  window.removeEventListener("cyber:mockups-refresh", handleHeaderRefresh);
+};
 
 const resetViewer = () => {
   viewer.rotationY = 0;
@@ -368,9 +406,18 @@ const loadBackgroundIntoCanvas = async (url) => {
 };
 
 const loadMockupIntoStudio = async (url, id = null) => {
+  selectedTemplateId.value = null;
   selectedMockupId.value = id;
   viewerImageUrl.value = url;
   await loadBackgroundIntoCanvas(url);
+};
+
+const loadTemplate = async (template) => {
+  if (!template) return;
+  selectedTemplateId.value = template.id;
+  selectedMockupId.value = null;
+  viewerImageUrl.value = template.url;
+  await loadBackgroundIntoCanvas(template.url);
 };
 
 const addTextLayer = () => {
@@ -479,24 +526,7 @@ const onUpload = async () => {
 
   try {
     const owner = userId.value || resolveGuestUserId();
-    const safeName = file.value.name.replace(/\s+/g, '-');
-    const storagePath = `${owner}/${Date.now()}-${safeName}`;
-    let mockupUrl = '';
-
-    if (isSupabaseConfigured) {
-      const { error: uploadError } = await supabase.storage
-        .from('mockups')
-        .upload(storagePath, file.value);
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicData } = supabase.storage.from('mockups').getPublicUrl(storagePath);
-      mockupUrl = publicData?.publicUrl || '';
-    }
-
-    if (!mockupUrl) {
-      mockupUrl = await readFileAsDataUrl(file.value);
-    }
+    const mockupUrl = await readFileAsDataUrl(file.value);
 
     const created = await createCyberMockup({
       userId: owner,
@@ -573,20 +603,16 @@ watch(
 
 onMounted(async () => {
   initCanvas();
-  let resolvedUserId = resolveGuestUserId();
-
-  try {
-    const { data, error } = await supabase.auth.getUser();
-    if (!error && data?.user?.id) resolvedUserId = data.user.id;
-  } catch {
-    // Guest mode is sufficient for local mockup workflow.
-  }
-
-  userId.value = resolvedUserId;
+  userId.value = resolveGuestUserId();
   await loadMockups();
+  if (!viewerImageUrl.value && templates.length) {
+    await loadTemplate(templates[0]);
+  }
+  registerHeaderActions();
 });
 
 onBeforeUnmount(() => {
+  unregisterHeaderActions();
   if (spinTimer) clearInterval(spinTimer);
   if (studioCanvas.value) {
     studioCanvas.value.dispose();
@@ -599,7 +625,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .mockups-page {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 1rem;
   height: 100%;
   min-height: 0;
@@ -610,7 +636,7 @@ onBeforeUnmount(() => {
   background: #151515;
   border: 1px solid #2e2e2e;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.85rem;
 }
 
 .muted {
@@ -879,6 +905,40 @@ button.secondary {
   gap: 0.45rem;
   margin-top: 0.65rem;
   flex-wrap: wrap;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.template-card {
+  background: #0f0f0f;
+  border: 1px solid #2f2f2f;
+  color: #f7f7f7;
+  border-radius: 10px;
+  padding: 0.4rem;
+  text-align: left;
+}
+
+.template-card img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+}
+
+.template-card span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+}
+
+.template-card.active {
+  border-color: #ff6600;
+  box-shadow: 0 0 0 1px rgba(255, 102, 0, 0.6);
 }
 
 .error {

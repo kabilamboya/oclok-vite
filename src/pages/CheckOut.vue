@@ -2,13 +2,13 @@
   <div class="checkout-page">
     <h1>Checkout</h1>
 
-    <div v-if="cart.length === 0">
+    <div v-if="cartItems.length === 0">
       <p>Your cart is empty!</p>
       <button @click="$router.push('/products')">Back to Shop</button>
     </div>
 
     <div v-else>
-      <div class="checkout-items" v-for="item in cart" :key="item.id">
+      <div class="checkout-items" v-for="item in cartItems" :key="item.id">
         <div class="item-preview">
           <img :src="item.thumbnail || item.image" alt="Product Image" />
         </div>
@@ -16,8 +16,8 @@
         <div class="item-details">
           <h3>{{ item.title || item.name }}</h3>
           <p>
-            Ksh {{ item.price }} × {{ item.quantity }} =
-            <strong>Ksh {{ item.price * item.quantity }}</strong>
+            Ksh {{ formatMoney(item.price) }} × {{ item.quantity || 0 }} =
+            <strong>Ksh {{ formatMoney(lineTotal(item)) }}</strong>
           </p>
 
           <p v-if="item.file">PDF Document</p>
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <p class="total">Total: Ksh {{ total }}</p>
+      <p class="total">Total: Ksh {{ formatMoney(total) }}</p>
 
       <h2>Payment Details</h2>
 
@@ -42,33 +42,70 @@
 
 <script>
 export default {
-  props: ["cart"],
-
   data() {
     return {
       customer: { name: "", phone: "", email: "" },
+      cartItems: [],
     };
   },
 
   computed: {
     total() {
-      return this.cart.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
+      return this.cartItems.reduce((sum, item) => {
+        const price = Number(item?.price) || 0;
+        const qty = Number(item?.quantity) || 0;
+        return sum + price * qty;
+      }, 0);
     },
   },
 
   methods: {
+    syncCartFromStorage() {
+      try {
+        const stored = JSON.parse(localStorage.getItem("cart") || "[]");
+        this.cartItems = Array.isArray(stored) ? stored : [];
+      } catch (_error) {
+        this.cartItems = [];
+      }
+    },
+    lineTotal(item) {
+      const price = Number(item?.price) || 0;
+      const qty = Number(item?.quantity) || 0;
+      return price * qty;
+    },
+    formatMoney(value) {
+      const numeric = Number(value) || 0;
+      return numeric.toLocaleString();
+    },
     submitOrder() {
-      alert(`Order confirmed for ${this.customer.name}! Total: Ksh ${this.total}`);
-
       // Clear cart
       localStorage.removeItem("cart");
+      this.cartItems = [];
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("cart:updated"));
+        window.dispatchEvent(
+          new CustomEvent("cart:notify", {
+            detail: { message: `Order confirmed for ${this.customer.name}` },
+          })
+        );
+      }
 
       // Redirect user
       this.$router.push("/products");
     },
+  },
+
+  mounted() {
+    this.syncCartFromStorage();
+    if (typeof window !== "undefined") {
+      window.addEventListener("cart:updated", this.syncCartFromStorage);
+    }
+  },
+
+  beforeUnmount() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("cart:updated", this.syncCartFromStorage);
+    }
   },
 };
 </script>

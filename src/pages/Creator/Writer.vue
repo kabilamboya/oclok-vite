@@ -1,56 +1,16 @@
 <template>
   <section class="writer-page">
-    <div class="panel editor-panel">
-      <div class="editor-head">
-        <div>
-          <h2>Writing Canvas</h2>
-          <p class="muted">Built-in rich text editor for campaign drafts, scripts, and social copy.</p>
-        </div>
-
-        <div class="rte-toolbar" role="toolbar" aria-label="Editor toolbar">
-          <button class="tool-btn" type="button" aria-label="Bold" title="Bold" @click="runEditorCommand('bold')">
-            <i class="fas fa-bold"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Italic" title="Italic" @click="runEditorCommand('italic')">
-            <i class="fas fa-italic"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Underline" title="Underline" @click="runEditorCommand('underline')">
-            <i class="fas fa-underline"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Bullet list" title="Bullet list" @click="runEditorCommand('insertUnorderedList')">
-            <i class="fas fa-list-ul"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Numbered list" title="Numbered list" @click="runEditorCommand('insertOrderedList')">
-            <i class="fas fa-list-ol"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Insert link" title="Insert link" @click="insertLink">
-            <i class="fas fa-link"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Undo" title="Undo" @click="runEditorCommand('undo')">
-            <i class="fas fa-rotate-left"></i>
-          </button>
-          <button class="tool-btn" type="button" aria-label="Redo" title="Redo" @click="runEditorCommand('redo')">
-            <i class="fas fa-rotate-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <div
-        ref="editorElement"
-        class="rte-canvas"
-        contenteditable="true"
-        role="textbox"
-        aria-multiline="true"
-        data-placeholder="Start writing your campaign content here..."
-        @input="onEditorInput"
-      ></div>
-
-      <div class="editor-actions">
-        <button class="secondary" type="button" @click="copyDraft">Copy Draft</button>
-        <button class="secondary" type="button" @click="clearDraft">Clear</button>
-        <button type="button" @click="applyDraftToTraining">Use Draft For Training</button>
-      </div>
-    </div>
+    <CreatorEditor
+      ref="editorRef"
+      class="panel"
+      title="Writing Canvas"
+      subtitle="Built-in rich text editor for campaign drafts, scripts, and social copy."
+      placeholder="Start writing your campaign content here..."
+      :assets="assets"
+      asset-title="Assets"
+      use-draft-label="Use Draft For Training"
+      @use-draft="applyDraftToTraining"
+    />
 
     <div class="panel controls-panel">
       <h2>AI Prompt Studio</h2>
@@ -129,20 +89,21 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import CreatorEditor from '@/components/CreatorEditor.vue';
 import {
   generateBrandPrompt,
   getPromptUsageSummary,
   listPromptTraining,
   savePromptTraining,
 } from '@/services/cyber.service';
-import { supabase } from '@/lib/supabase';
+import { getLocalUserId } from '@/lib/localStore';
 
 const userId = ref(null);
 const generating = ref(false);
 const savingTraining = ref(false);
 const errorMessage = ref('');
-const editorElement = ref(null);
+const editorRef = ref(null);
 
 const form = reactive({
   brandName: '',
@@ -176,16 +137,7 @@ const topBrands = computed(() =>
     .slice(0, 5),
 );
 
-const resolveGuestUserId = () => {
-  const fallback = `guest_${Date.now().toString(36)}`;
-  if (typeof window === 'undefined') return fallback;
-
-  const key = 'cyber_guest_user_id';
-  const existing = window.localStorage.getItem(key);
-  if (existing) return existing;
-  window.localStorage.setItem(key, fallback);
-  return fallback;
-};
+const resolveGuestUserId = () => getLocalUserId("cyber_guest_user_id");
 
 const tagsFrom = (value) =>
   value
@@ -193,42 +145,50 @@ const tagsFrom = (value) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-const onEditorInput = () => {
-  // No-op for now; keeping event hook for future autosave.
-};
+const assets = [
+  { id: "logo", name: "Oclok Logo", url: "/images/oclokLogo.png" },
+  { id: "tshirt", name: "Tshirt Mockup", url: "/mockups/tshirt.png" },
+  { id: "cyber", name: "Cyber", url: "/images/cyber.png" },
+];
 
-const runEditorCommand = (command, value = null) => {
-  if (!editorElement.value) return;
-  editorElement.value.focus();
-  document.execCommand(command, false, value);
-};
-
-const insertLink = () => {
-  const url = window.prompt('Paste link URL');
-  if (!url) return;
-  runEditorCommand('createLink', url);
-};
-
-const getEditorText = () => editorElement.value?.innerText?.trim() || '';
+const getEditorText = () => editorRef.value?.getText() || "";
 
 const copyDraft = async () => {
-  const text = getEditorText();
-  if (!text) return;
-  await navigator.clipboard.writeText(text);
+  if (!editorRef.value?.copyDraft) return;
+  await editorRef.value.copyDraft();
 };
 
 const clearDraft = () => {
-  if (!editorElement.value) return;
-  editorElement.value.innerHTML = '';
+  editorRef.value?.clearDraft?.();
 };
 
-const applyDraftToTraining = () => {
-  training.preferredOutput = getEditorText();
+const applyDraftToTraining = (text) => {
+  training.preferredOutput = text ?? getEditorText();
 };
 
 const insertResultIntoEditor = () => {
-  if (!editorElement.value || !result.value?.prompt) return;
-  editorElement.value.innerText = result.value.prompt;
+  if (!result.value?.prompt) return;
+  editorRef.value?.setText?.(result.value.prompt);
+};
+
+const handleHeaderCopy = () => {
+  copyDraft();
+};
+
+const handleHeaderClear = () => {
+  clearDraft();
+};
+
+const registerHeaderActions = () => {
+  if (typeof window === "undefined") return;
+  window.addEventListener("cyber:writer-copy", handleHeaderCopy);
+  window.addEventListener("cyber:writer-clear", handleHeaderClear);
+};
+
+const unregisterHeaderActions = () => {
+  if (typeof window === "undefined") return;
+  window.removeEventListener("cyber:writer-copy", handleHeaderCopy);
+  window.removeEventListener("cyber:writer-clear", handleHeaderClear);
 };
 
 const onGenerate = async () => {
@@ -293,17 +253,13 @@ const refreshUsage = async () => {
 };
 
 onMounted(async () => {
-  let resolvedUserId = resolveGuestUserId();
-
-  try {
-    const { data, error } = await supabase.auth.getUser();
-    if (!error && data?.user?.id) resolvedUserId = data.user.id;
-  } catch {
-    // Fall back to guest mode when Supabase auth is unavailable.
-  }
-
-  userId.value = resolvedUserId;
+  userId.value = resolveGuestUserId();
   await Promise.all([refreshTraining(), refreshUsage()]);
+  registerHeaderActions();
+});
+
+onBeforeUnmount(() => {
+  unregisterHeaderActions();
 });
 </script>
 
@@ -312,7 +268,7 @@ onMounted(async () => {
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
   gap: 0.9rem;
 }
 
@@ -324,64 +280,9 @@ onMounted(async () => {
   min-height: 0;
 }
 
-.editor-panel {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 0.7rem;
-}
-
-.editor-head {
-  display: grid;
-  gap: 0.65rem;
-}
-
 .muted {
   color: #9ca3af;
   margin: 0.2rem 0 0;
-}
-
-.rte-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.tool-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  border: 1px solid #ffd600 !important;
-  background: transparent !important;
-  color: #ffffff !important;
-  padding: 0 !important;
-  display: grid;
-  place-items: center;
-  font-size: 0.95rem;
-}
-
-.tool-btn:hover {
-  background: rgba(255, 214, 0, 0.18) !important;
-}
-
-.rte-canvas {
-  background: #0f0f0f;
-  border: 1px solid #303030;
-  border-radius: 10px;
-  padding: 0.9rem;
-  overflow: auto;
-  outline: none;
-  line-height: 1.5;
-}
-
-.rte-canvas:empty::before {
-  content: attr(data-placeholder);
-  color: #6b7280;
-}
-
-.editor-actions {
-  display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
 }
 
 .controls-panel {
@@ -489,10 +390,6 @@ pre {
 @media (max-width: 1100px) {
   .writer-page {
     grid-template-columns: 1fr;
-  }
-
-  .editor-panel {
-    min-height: 420px;
   }
 }
 

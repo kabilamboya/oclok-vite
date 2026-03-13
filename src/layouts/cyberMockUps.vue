@@ -6,7 +6,7 @@
 
     <ul>
       <li v-for="m in mockups" :key="m.id">
-        <img :src="m.file_url" width="120" />
+        <img :src="m.url" width="120" />
       </li>
     </ul>
   </section>
@@ -14,36 +14,37 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { supabase } from "@/lib/supabase"
+import { createCyberMockup, listCyberMockups } from "@/services/cyber.service"
+import { getLocalUserId } from "@/lib/localStore"
 
 const mockups = ref([])
+const userId = getLocalUserId("cyber_guest_user_id")
 
-const upload = async (e) => {
-  const file = e.target.files[0]
-  const user = (await supabase.auth.getUser()).data.user
-
-  const path = `${user.id}/${Date.now()}-${file.name}`
-
-  await supabase.storage.from("mockups").upload(path, file)
-
-  const url = supabase.storage.from("mockups").getPublicUrl(path).data.publicUrl
-
-  await supabase.from("mockups").insert({
-    file_url: url,
-    user_id: user.id,
+const readFileAsDataUrl = (fileInput) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error("Unable to read selected image file."))
+    reader.readAsDataURL(fileInput)
   })
 
-  load()
+const upload = async (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const url = await readFileAsDataUrl(file)
+  await createCyberMockup({
+    userId,
+    name: file.name.replace(/\.[^/.]+$/, ""),
+    url,
+    status: "draft",
+  })
+
+  await load()
 }
 
 const load = async () => {
-  const user = (await supabase.auth.getUser()).data.user
-  const { data } = await supabase
-    .from("mockups")
-    .select("*")
-    .eq("user_id", user.id)
-
-  mockups.value = data
+  mockups.value = await listCyberMockups({ userId })
 }
 
 onMounted(load)

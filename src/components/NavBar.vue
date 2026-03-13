@@ -3,9 +3,9 @@
     <div class="navbar-container">
       <!-- Logo -->
       <div class="logo">
-        <img 
-          src="/images/oclokLogo.png" 
-          alt="Oclok Logo" 
+        <img
+          src="/images/oclokLogo.png"
+          alt="Oclok Logo"
           loading="lazy"
         />
         <h2>O!clok</h2>
@@ -41,9 +41,19 @@
         </div>
 
         <!-- Cart Icon -->
-        <div class="cart-icon" @click="openCart">
-          🛒
-          <span v-if="cartCount > 0" class="badge">{{ cartCount }}</span>
+        <div class="cart-wrap">
+          <div class="cart-icon" :class="{ pulse: cartPulse }" @click="openCart">
+            🛒
+            <span v-if="cartCount > 0" class="badge">{{ cartCount }}</span>
+            <span
+              v-if="showCartToast"
+              class="cart-toast"
+              role="status"
+              aria-live="polite"
+            >
+              {{ cartToastMessage }}
+            </span>
+          </div>
         </div>
 
       </div>
@@ -63,10 +73,41 @@ export default {
   data() {
     return {
       searchQuery: "",
-      isMenuOpen: false
+      isMenuOpen: false,
+      showCartToast: false,
+      cartToastMessage: "",
+      cartPulse: false,
+      toastTimer: null
     };
   },
+  mounted() {
+    if (typeof window === "undefined") return;
+    window.addEventListener("cart:notify", this.handleCartNotify);
+  },
+  beforeUnmount() {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("cart:notify", this.handleCartNotify);
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+      this.toastTimer = null;
+    }
+  },
   methods: {
+    handleCartNotify(event) {
+      const message = event?.detail?.message || "Added to cart";
+      this.showToast(message);
+    },
+    showToast(message) {
+      this.cartToastMessage = message;
+      this.showCartToast = true;
+      this.cartPulse = true;
+
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => {
+        this.showCartToast = false;
+        this.cartPulse = false;
+      }, 2200);
+    },
     handleSearch() {
       if (this.searchQuery.trim()) {
         this.$router.push({
@@ -83,13 +124,12 @@ export default {
       this.isMenuOpen = false;
     },
     openCart() {
-    this.$router.push({ name: "Cart" });
-  }
+      this.$emit("open-cart");
+    }
   }
 };
 
 </script>
-
 
 <style scoped>
 /* =======================
@@ -191,10 +231,21 @@ export default {
   color: #fff;
   cursor: pointer;
 }
+.cart-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 .cart-icon {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.5rem;
   cursor: pointer;
+}
+.cart-icon.pulse {
+  animation: cartPulse 0.5s ease;
 }
 .cart-icon .badge {
   position: absolute;
@@ -205,6 +256,25 @@ export default {
   font-size: 0.75rem;
   padding: 2px 6px;
   border-radius: 50%;
+}
+.cart-toast {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: -6px;
+  background: #111827;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 1200;
+  transform: translateX(10%);
 }
 
 /* Hamburger */
@@ -252,6 +322,18 @@ export default {
   }
   .logo h2 {
     font-size: 1.4rem;
+  }
+}
+
+@keyframes cartPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>

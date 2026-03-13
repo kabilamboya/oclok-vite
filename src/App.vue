@@ -37,26 +37,69 @@ export default {
       cartOpen: false
     };
   },
+  mounted() {
+    this.syncCartFromStorage();
+    if (typeof window !== "undefined") {
+      window.addEventListener("cart:updated", this.syncCartFromStorage);
+    }
+  },
+  beforeUnmount() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("cart:updated", this.syncCartFromStorage);
+    }
+  },
   methods: {
+    syncCartFromStorage() {
+      if (typeof window === "undefined") return;
+      try {
+        const stored = JSON.parse(localStorage.getItem("cart") || "[]");
+        this.cart = Array.isArray(stored) ? stored : [];
+      } catch (_error) {
+        this.cart = [];
+      }
+    },
+    notifyCart(message) {
+      if (typeof window === "undefined") return;
+      window.dispatchEvent(new CustomEvent("cart:updated"));
+      if (message) {
+        window.dispatchEvent(new CustomEvent("cart:notify", { detail: { message } }));
+      }
+    },
     // Add item to cart
     addToCart(product) {
       const existing = this.cart.find(p => p.id === product.id);
       if (existing) existing.quantity++;
       else this.cart.push({ ...product, quantity: 1 });
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+      }
+      this.notifyCart(`${product?.name || "Item"} added to cart`);
     },
     // Increase quantity
     increaseQty(id) {
       const item = this.cart.find(p => p.id === id);
       if (item) item.quantity++;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+      }
+      this.notifyCart();
     },
     // Decrease quantity
     decreaseQty(id) {
       const item = this.cart.find(p => p.id === id);
       if (item && item.quantity > 1) item.quantity--;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+      }
+      this.notifyCart();
     },
     // Remove from cart
     removeFromCart(id) {
       this.cart = this.cart.filter(p => p.id !== id);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(this.cart));
+      }
+      this.notifyCart();
     },
     // Go to checkout page
     goToCheckout() {

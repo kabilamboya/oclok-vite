@@ -143,7 +143,7 @@ a:hover, a:focus {
 ========================================================= */
 
 /* SECONDARY buttons = Teal Green */
-:is(
+body:not(.cyber-mode) :is(
   button,
   input[type='button'],
   input[type='submit'],
@@ -160,7 +160,7 @@ a:hover, a:focus {
   color: var(--text-white) !important;
 }
 
-:is(
+body:not(.cyber-mode) :is(
   button,
   .btn
 ):hover {
@@ -168,7 +168,7 @@ a:hover, a:focus {
 }
 
 /* PRIMARY / CTA buttons = Orange (main colour) */
-:is(
+body:not(.cyber-mode) :is(
   button[type='submit'],
   input[type='submit'],
   .btn.primary,
@@ -188,7 +188,7 @@ a:hover, a:focus {
   color: var(--text-white) !important;
 }
 
-:is(
+body:not(.cyber-mode) :is(
   button[type='submit'],
   .btn.primary,
   button.primary,
@@ -208,8 +208,14 @@ button:disabled,
 ========================================================= */
 
 /* Default readable text */
-:is(body, #app, main, section, article, aside, header, footer, nav, div, form) {
-  color: var(--text-black);
+@media (prefers-color-scheme: light) {
+  body:not(.cyber-mode) {
+    color: var(--text-black);
+  }
+
+  body:not(.cyber-mode) :is(#app, main, section, article, aside, header, footer, nav, div, form) {
+    color: var(--text-black);
+  }
 }
 
 /* White text in dark UI areas */
@@ -231,12 +237,12 @@ button:disabled,
 }
 
 /* Muted / helper text = Supportive purple */
-:is(.muted, .meta, .subtitle, .description, .note, .empty, .text-muted, .helper-text, .secondary-text, small) {
+body:not(.cyber-mode) :is(.muted, .meta, .subtitle, .description, .note, .empty, .text-muted, .helper-text, .secondary-text, small) {
   color: var(--support-purple) !important;
 }
 
 /* Purple for active states */
-:is(
+body:not(.cyber-mode) :is(
   .router-link-active,
   .router-link-exact-active,
   .active-link,
@@ -314,7 +320,7 @@ button:disabled,
    SECTION BACKGROUND & HEADINGS
 ========================================================= */
 
-section {
+body:not(.cyber-mode) section {
   padding: 2rem;
   background: linear-gradient(135deg, #fffaf3 0%, #fefae0 100%);
   background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
@@ -329,7 +335,7 @@ h1 {
 
 /* Dark mode section override */
 @media (prefers-color-scheme: dark) {
-  section {
+  body:not(.cyber-mode) section {
     background: var(--bg-dark);
   }
 }
@@ -408,9 +414,16 @@ h1 {
    APP WRAPPER
 ========================================================= */
 
-#app {
+body:not(.cyber-mode) #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+body.cyber-mode #app {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }

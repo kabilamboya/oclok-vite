@@ -81,14 +81,12 @@ const robotAssistants = computed(() => {
 
 <template>
 
-  <section class="hero" aria-hidden="false">
+  <main class="robots-page">
+    <section class="heros">
       <div class="hero-text">
         <h1>Don't just imagine a smart world...</h1>
         <p>Live it with us!</p>
       </div>
-  </section>
-  <main class="robots-page">
-    <section class="heros">
       <div class="hero-copy">
       <img src="/images/ROBOto.jpg" alt="Robot assistant concept" />
         <p class="eyebrow">Robot Assistant Knowledge Base</p>

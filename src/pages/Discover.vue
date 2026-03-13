@@ -615,16 +615,18 @@ async function submitMembershipWhatsApp() {
         </div>
       </div>
 
-      <div v-if="filtered.length" class="grid">
-        <PlaceCard
-          v-for="place in filtered"
-          :key="place.id"
-          :place="place"
-        />
-      </div>
-      <div v-else class="empty-state">
-        <h3>No places matched your search</h3>
-        <p>Try another keyword or switch category to "All".</p>
+      <div class="places-scroll" role="region" aria-label="Discover places list">
+        <div v-if="filtered.length" class="grid">
+          <PlaceCard
+            v-for="place in filtered"
+            :key="place.id"
+            :place="place"
+          />
+        </div>
+        <div v-else class="empty-state">
+          <h3>No places matched your search</h3>
+          <p>Try another keyword or switch category to "All".</p>
+        </div>
       </div>
     </section>
   </main>
@@ -1053,8 +1055,30 @@ async function submitMembershipWhatsApp() {
   gap: 12px;
 }
 
-.empty-state {
+.places-scroll {
   margin-top: 14px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  border-radius: 12px;
+}
+
+.places-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.places-scroll::-webkit-scrollbar-thumb {
+  background: #2f3746;
+  border-radius: 999px;
+}
+
+.places-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.empty-state {
+  margin-top: 0;
   border: 1px dashed #42506a;
   border-radius: 10px;
   padding: 18px;
@@ -1099,6 +1123,10 @@ async function submitMembershipWhatsApp() {
   .pictorial-grid,
   .form-grid.two {
     grid-template-columns: 1fr;
+  }
+
+  .places-scroll {
+    max-height: 320px;
   }
 }
 </style>

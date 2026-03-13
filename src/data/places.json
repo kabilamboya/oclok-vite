@@ -6,7 +6,7 @@
     "location": "Dunga Beach, Kisumu",
     "category": "Restaurant",
     "rating": 4.5,
-    "image": "/images/dunga.jpg",
+    "image": "/images/KISUMU1.jpeg",
     "description": "A beautiful lakeside experience offering local dishes, sunsets, and boat rides."
   },
   {
@@ -16,7 +16,7 @@
     "location": "Milimani, Kisumu",
     "category": "Attraction",
     "rating": 4.3,
-    "image": "/images/achieng-oneko.jpg",
+    "image": "/images/KISUMU2.jpeg",
     "description": "A historic cultural site honoring one of Kenya’s freedom heroes with serene gardens."
   },
   {
@@ -26,7 +26,7 @@
     "location": "Achieng Oneko Road, Kisumu",
     "category": "Hotel & Lounge",
     "rating": 4.6,
-    "image": "/images/acacia.jpg",
+    "image": "/images/KISUMU3.jpeg",
     "description": "Luxury rooftop dining and drinks with panoramic views of Kisumu City."
   },
   {
@@ -36,7 +36,7 @@
     "location": "Dunga, Kisumu",
     "category": "Restaurant",
     "rating": 4.4,
-    "image": "/images/tilapia-beach.jpg",
+    "image": "/images/KISUMU4.jpeg",
     "description": "Popular for fresh tilapia, lake breeze, and relaxed outdoor seating."
   },
   {
@@ -46,7 +46,7 @@
     "location": "Nyerere Road, Kisumu",
     "category": "Attraction",
     "rating": 4.5,
-    "image": "/images/impala.jpg",
+    "image": "/images/KISUMU5.jpeg",
     "description": "A lakeside wildlife sanctuary ideal for nature walks, picnics, and family visits."
   },
   {
@@ -56,7 +56,7 @@
     "location": "Dunga Beach, Kisumu",
     "category": "Nature",
     "rating": 4.4,
-    "image": "/images/dunga-boardwalk.jpg",
+    "image": "/images/KISUMU6.jpeg",
     "description": "A scenic eco-boardwalk offering bird watching and sunset photography."
   },
   {
@@ -66,7 +66,7 @@
     "location": "Milimani, Kisumu",
     "category": "Restaurant",
     "rating": 4.2,
-    "image": "/images/laughing-buddha.jpg",
+    "image": "/images/KISUMU7.jpeg",
     "description": "A cozy restaurant serving Asian-inspired dishes in a relaxed environment."
   },
   {
@@ -76,7 +76,7 @@
     "location": "Kisumu CBD",
     "category": "Entertainment",
     "rating": 4.1,
-    "image": "/images/mega-city.jpg",
+    "image": "/images/KISUMU8.jpeg",
     "description": "An urban hangout spot with city views, eateries, and nightlife energy."
   },
   {
@@ -86,7 +86,7 @@
     "location": "Dunga Area, Kisumu",
     "category": "Nature",
     "rating": 4.3,
-    "image": "/images/hippo-point.jpg",
+    "image": "/images/KISUMU9.jpeg",
     "description": "A calm lakeside spot known for occasional hippo sightings and quiet views."
   },
   {
@@ -96,7 +96,7 @@
     "location": "Milimani Estate, Kisumu",
     "category": "Lounge",
     "rating": 4.0,
-    "image": "/images/car-wash-lounge.jpg",
+    "image": "/images/KISUMU10.jpeg",
     "description": "A laid-back social spot combining car wash services, food, music, and drinks."
   },
   {
@@ -106,7 +106,7 @@
   "location": "Nyerere Road, Kisumu",
   "category": "Culture",
   "rating": 4.4,
-  "image": "/images/kisumu-museum.jpg",
+  "image": "/images/KISUMU11.jpeg",
   "description": "A cultural museum showcasing Luo heritage, traditional homesteads, and regional history."
 },
 {
@@ -116,7 +116,37 @@
   "location": "Milimani, Kisumu",
   "category": "Lounge",
   "rating": 4.2,
-  "image": "/images/victoria-terrace.jpg",
+  "image": "/images/KISUMU12.jpeg",
+  "description": "An elegant rooftop lounge offering city views, cocktails, and evening entertainment."
+},
+{
+  "id": 13,
+  "name": "Victoria Terrace Lounge",
+  "slug": "victoria-terrace-lounge",
+  "location": "Milimani, Kisumu",
+  "category": "Lounge",
+  "rating": 4.2,
+  "image": "/images/KISUMU13.jpeg",
+  "description": "An elegant rooftop lounge offering city views, cocktails, and evening entertainment."
+},
+{
+  "id": 14,
+  "name": "Victoria Terrace Lounge",
+  "slug": "victoria-terrace-lounge",
+  "location": "Milimani, Kisumu",
+  "category": "Lounge",
+  "rating": 4.2,
+  "image": "/images/KISUMU14.jpeg",
+  "description": "An elegant rooftop lounge offering city views, cocktails, and evening entertainment."
+},
+{
+  "id": 15,
+  "name": "Victoria Terrace Lounge",
+  "slug": "victoria-terrace-lounge",
+  "location": "Milimani, Kisumu",
+  "category": "Lounge",
+  "rating": 4.2,
+  "image": "/images/KISUMU15.jpeg",
   "description": "An elegant rooftop lounge offering city views, cocktails, and evening entertainment."
 }
 ]

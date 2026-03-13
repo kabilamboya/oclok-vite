@@ -30,15 +30,63 @@ const loading = ref(false);
 const errorMessage = ref('');
 const gallery = ref([]);
 
+const fallbackGallery = [
+  {
+    id: 'static-tshirt',
+    name: 'T-Shirt Mockup',
+    category: 'Apparel',
+    status: 'approved',
+    url: '/mockups/tshirt.png',
+  },
+  {
+    id: 'static-mug',
+    name: 'Mug Mockup',
+    category: 'Merch',
+    status: 'approved',
+    url: '/images/SMARTcoffee.jpg',
+  },
+  {
+    id: 'static-book',
+    name: 'Book Cover Mockup',
+    category: 'Print',
+    status: 'approved',
+    url: '/images/CMSBOOKlet.jpg',
+  },
+  {
+    id: 'static-billboard',
+    name: 'Billboard Mockup',
+    category: 'Outdoor',
+    status: 'approved',
+    url: '/images/BiGmage.jpg',
+  },
+  {
+    id: 'static-umbrella',
+    name: 'Umbrella Mockup',
+    category: 'Merch',
+    status: 'approved',
+    url: '/images/SMARTgarden.png',
+  },
+];
+
+const mergeGallery = (items = []) => {
+  const merged = new Map();
+  [...items, ...fallbackGallery].forEach((item) => {
+    const key = item.url || item.id;
+    merged.set(key, { ...item, id: item.id || key });
+  });
+  return Array.from(merged.values());
+};
+
 const loadGallery = async () => {
   loading.value = true;
   errorMessage.value = '';
 
   try {
     const data = await listCyberMockups({ status: 'approved' });
-    gallery.value = data;
+    gallery.value = mergeGallery(data);
   } catch (error) {
     errorMessage.value = error.message || 'Unable to load gallery';
+    gallery.value = mergeGallery([]);
   } finally {
     loading.value = false;
   }

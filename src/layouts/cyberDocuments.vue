@@ -25,21 +25,20 @@ import {
   deleteDocument,
 } from "@/services/documents.service"
 import { addToPrintQueue } from "@/services/printQueue.service"
-import { supabase } from "@/lib/supabase"
+import { getLocalUserId } from "@/lib/localStore"
 
 const documents = ref([])
+const userId = ref(getLocalUserId("cyber_guest_user_id"))
 
 onMounted(async () => {
-  const user = (await supabase.auth.getUser()).data.user
-  const { data } = await getDocuments(user.id)
-  documents.value = data
+  const { data } = await getDocuments(userId.value)
+  documents.value = data || []
 })
 
 const sendToPrint = async (documentId) => {
-  const user = (await supabase.auth.getUser()).data.user
   await addToPrintQueue({
     document_id: documentId,
-    user_id: user.id,
+    user_id: userId.value,
   })
   alert("Added to print queue")
 }

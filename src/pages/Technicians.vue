@@ -1,11 +1,6 @@
 <template>
 
-  <section class="hero" aria-hidden="false">
-    <div class="hero-text">
-      <h1>Our Certified O!clok Doctors</h1>
-      <p>Available remotely at your convenience</p>
-    </div>
-  </section>
+
 
   <div class="page">
 
@@ -25,46 +20,37 @@
       </select>
     </div>
 
-    <div class="cards">
-      <div
-        v-for="tech in paginatedTechnicians"
-        :key="tech.id"
-        class="card"
-        @click="goToTech(tech)"
-      >
-        <img
-          v-if="tech.image"
-          :src="tech.image"
-          :alt="tech.name"
-          class="avatar"
-          loading="lazy"
-        />
-
-        <h3>{{ tech.name }}</h3>
-        <p class="spec">{{ tech.specialty }}</p>
-
-        <div class="rating" :aria-label="`Rating: ${averageRating(tech).toFixed(1)} / 5`">
-          <span
-            v-for="i in 5"
-            :key="i"
-            class="star"
-            :class="{ filled: i <= Math.round(averageRating(tech)) }"
-          >*</span>
-          <small>{{ averageRating(tech).toFixed(1) }}</small>
+      <section class="hero" aria-hidden="false">
+        <div class="hero-text">
+          <h1>Our Certified O!clok Doctors</h1>
+          <p>Available remotely at your convenience</p>
         </div>
+      </section>
 
-        <button
-          class="book-btn"
-          @click.stop="bookTechnician(tech)"
-        >
-          Book
-        </button>
-      </div>
+    <div class="cards">
+      <CardList
+        :card-items="paginatedTechnicians"
+        type="technician"
+        :clickable="true"
+        primary-label="Book"
+        secondary-label="Email"
+        :show-projects="false"
+        :show-rating="true"
+        @select="goToTech"
+        @primary="bookTechnician"
+      />
     </div>
 
-    <div class="pagination" v-if="totalPages > 1">
+    <div class="pagination" v-if="totalPages > 1" aria-label="Pagination">
       <button :disabled="currentPage === 1" @click="currentPage--">Prev</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        v-for="page in visiblePages"
+        :key="page"
+        :class="['page-btn', { active: page === currentPage }]"
+        @click="goToPage(page)"
+      >
+        {{ page }}
+      </button>
       <button :disabled="currentPage === totalPages" @click="currentPage++">Next</button>
     </div>
 
@@ -82,17 +68,13 @@
   </div>
 </template>
 
-<script>
-import techniciansData from "../data/technicians.json";
+  <script>
+  import CardList from "../components/CardList.vue";
+  import techniciansData from "../data/technicians.json";
 
-const defaultRatings = {
-  app: 0,
-  skills: 0,
-  customer: 0,
-};
-
-export default {
+  export default {
   name: "Technicians",
+  components: { CardList },
 
   data() {
     return {
@@ -101,7 +83,7 @@ export default {
       selectedSpecialty: "",
       bookings: [],
       currentPage: 1,
-      itemsPerPage: 30,
+      itemsPerPage: 8,
     };
   },
 
@@ -130,6 +112,21 @@ export default {
     paginatedTechnicians() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       return this.filteredTechnicians.slice(start, start + this.itemsPerPage);
+    },
+
+    visiblePages() {
+      const total = this.totalPages;
+      const current = this.currentPage;
+      const delta = 2;
+      const start = Math.max(1, current - delta);
+      const end = Math.min(total, current + delta);
+      const pages = [];
+
+      for (let page = start; page <= end; page += 1) {
+        pages.push(page);
+      }
+
+      return pages;
     },
   },
 
@@ -165,14 +162,9 @@ export default {
       this.$router.push(`/technicians/${routeKey}`);
     },
 
-    averageRating(tech) {
-      const ratings = tech?.ratings || defaultRatings;
-      const values = Object.values(ratings)
-        .map((value) => Number(value))
-        .filter((value) => Number.isFinite(value));
-
-      if (!values.length) return 0;
-      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    goToPage(page) {
+      this.currentPage = page;
+      console.log("[pagination][technicians] page ->", this.currentPage);
     },
 
     bookTechnician(tech) {
@@ -187,13 +179,26 @@ export default {
   },
 
   mounted() {
+    const normalizeRating = (value) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return 0;
+      const rounded = Math.round(numeric);
+      if (rounded <= 0) return 0;
+      return Math.min(5, Math.max(3, rounded));
+    };
+
+    const ratingFromExperience = (experience) => {
+      const years = Number(experience);
+      if (!Number.isFinite(years)) return 3;
+      if (years >= 10) return 5;
+      if (years >= 6) return 4;
+      return 3;
+    };
+
     this.technicians = (techniciansData || []).map((tech) => ({
       ...tech,
       slug: tech.slug || this.createSlug(tech.name) || String(tech.id),
-      ratings: {
-        ...defaultRatings,
-        ...(tech.ratings || {}),
-      },
+      rating: normalizeRating(tech.rating ?? ratingFromExperience(tech.experience)),
     }));
   },
 };
@@ -240,63 +245,13 @@ export default {
 }
 
 .cards {
+  margin-bottom: 1.5rem;
+}
+
+.cards .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 1.5rem;
-}
-
-.card {
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 0.8rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  transition: 0.25s ease;
-  text-align: center;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-}
-
-.spec {
-  color: #666;
-  font-size: 0.95rem;
-}
-
-.rating {
-  margin: 0.4rem 0;
-}
-
-.star {
-  color: #ccc;
-  font-size: 1rem;
-}
-
-.star.filled {
-  color: #ffb400;
-}
-
-.book-btn {
-  background: #ffcc00;
-  border: none;
-  padding: 0.45rem 1.2rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.book-btn:hover {
-  background: #ffd633;
 }
 
 .pagination {
@@ -304,6 +259,8 @@ export default {
   display: flex;
   gap: 1.2rem;
   font-weight: 600;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .pagination button {
@@ -316,6 +273,31 @@ export default {
 
 .pagination button:disabled {
   background: #ddd;
+}
+
+.page-btn {
+  min-width: 40px;
+  background: #fff !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.45rem;
+}
+
+.page-btn.active {
+  background: var(--support-purple, #6d28d9) !important;
+  color: #fff !important;
+  border-color: var(--support-purple, #6d28d9) !important;
+}
+
+.page-btn:hover,
+.page-btn:focus-visible {
+  border-color: var(--support-purple, #6d28d9) !important;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.25);
+}
+
+.page-btn:focus-visible {
+  outline: 2px solid transparent;
 }
 
 .booking-summary {

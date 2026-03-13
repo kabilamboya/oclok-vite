@@ -1,11 +1,5 @@
 <template>
   <div class="products-page">
-    <section class="hero" aria-hidden="false">
-      <div class="hero-text">
-        <h1>O!clok Store - delivered by Delibois</h1>
-        <p>Explore smart and innovative solutions designed for you.</p>
-      </div>
-    </section>
 
     <div class="filters" role="search" aria-label="Product filters">
       <input
@@ -32,75 +26,44 @@
         <p>No products match your search.</p>
       </div>
 
-      <div
-        v-if="!loading"
-        v-for="product in paginatedProducts"
-        :key="product.id"
-        class="product-card"
-      >
-        <RouterLink :to="`/products/${product.id}`" class="image-link" :aria-label="`Open ${product.name} details`">
-          <img
-            :src="product.image"
-            :alt="product.name"
-            class="product-image"
-            loading="lazy"
-            @error="onProductImageError"
-          />
-        </RouterLink>
-
-        <div class="info">
-          <h3 class="product-title">{{ product.name }}</h3>
-          <p class="category">{{ product.category }}</p>
-          <p class="price">Ksh {{ product.price.toLocaleString() }}</p>
-
-          <div class="card-actions">
-            <button class="add-cart-btn" @click="addToCart(product)" :aria-label="`Add ${product.name} to cart`">
-              Add to Cart
-            </button>
-
-            <RouterLink :to="`/products/${product.id}`" class="details-link" aria-label="View details">
-              View
-            </RouterLink>
-          </div>
-        </div>
-      </div>
+      <CardList
+        v-if="!loading && filteredProducts.length"
+        :card-items="paginatedProducts"
+        type="product"
+        :clickable="true"
+        primary-label="Add to Cart"
+        secondary-label="View"
+        :show-rating="false"
+        :show-experience="false"
+        @primary="addToCart"
+        @secondary="goToProduct"
+        @select="goToProduct"
+      />
     </div>
 
     <div v-if="!loading && totalPages > 1" class="pagination" aria-label="Pagination">
       <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        v-for="page in visiblePages"
+        :key="page"
+        :class="['page-btn', { active: page === currentPage }]"
+        @click="goToPage(page)"
+      >
+        {{ page }}
+      </button>
       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
     </div>
-
-    <button
-      class="floating-cart"
-      @click="openCart"
-      :aria-label="`Open cart with ${cartCount} items`"
-      v-if="cartCount > 0"
-    >
-      Cart <span class="badge">{{ cartCount }}</span>
-    </button>
-
-    <CartModal
-      :cart="cart"
-      :isOpen="isCartOpen"
-      @close="closeCart"
-      @increase="increaseQty"
-      @decrease="decreaseQty"
-      @remove="removeItem"
-      @checkout="goToCheckout"
-    />
 
   </div>
 </template>
 
-<script>
-import CartModal from "../components/CartModal.vue";
-import productsData from "../data/products.json";
+  <script>
+  import CardList from "../components/CardList.vue";
+  import productsData from "../data/products.json";
 
-export default {
+  export default {
   name: "ProductsPage",
-  components: { CartModal },
+  components: { CardList },
 
   data() {
     return {
@@ -111,7 +74,6 @@ export default {
       currentPage: 1,
       pageSize: 12,
       cart: JSON.parse(localStorage.getItem("cart")) || [],
-      isCartOpen: false,
     };
   },
 
@@ -140,9 +102,21 @@ export default {
       return this.filteredProducts.slice(start, start + this.pageSize);
     },
 
-    cartCount() {
-      return this.cart.reduce((sum, i) => sum + (i.quantity || 1), 0);
+    visiblePages() {
+      const total = this.totalPages;
+      const current = this.currentPage;
+      const delta = 2;
+      const start = Math.max(1, current - delta);
+      const end = Math.min(total, current + delta);
+      const pages = [];
+
+      for (let page = start; page <= end; page += 1) {
+        pages.push(page);
+      }
+
+      return pages;
     },
+
   },
 
   watch: {
@@ -163,22 +137,35 @@ export default {
       };
     },
 
-    onProductImageError(event) {
-      event.target.style.display = "none";
+    goToProduct(product) {
+      if (!product?.id) return;
+      this.$router.push(`/products/${product.id}`);
     },
 
     nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++;
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        console.log("[pagination][store] next ->", this.currentPage);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
 
     prevPage() {
-      if (this.currentPage > 1) this.currentPage--;
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        console.log("[pagination][store] prev ->", this.currentPage);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
 
     onFilterChange() {
       this.currentPage = 1;
+    },
+
+    goToPage(page) {
+      this.currentPage = page;
+      console.log("[pagination][store] page ->", this.currentPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
 
     addToCart(product) {
@@ -199,7 +186,7 @@ export default {
         });
       }
 
-      this.saveCart();
+      this.saveCart(`${product?.name || "Item"} added to cart`);
       try {
         window.navigator.vibrate?.(10);
       } catch (_error) {
@@ -207,8 +194,14 @@ export default {
       }
     },
 
-    saveCart() {
+    saveCart(message) {
       localStorage.setItem("cart", JSON.stringify(this.cart));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("cart:updated"));
+        if (message) {
+          window.dispatchEvent(new CustomEvent("cart:notify", { detail: { message } }));
+        }
+      }
     },
 
     openCart() {
@@ -256,7 +249,7 @@ export default {
     }, 500);
   },
 };
-</script>
+  </script>
 
 <style scoped>
 .hero {
@@ -290,99 +283,11 @@ export default {
   box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
 }
 
-.products-grid {
+.products-grid .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 18px;
   padding: 10px;
-}
-
-.product-card {
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: white;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-}
-
-.image-link {
-  display: block;
-  width: 100%;
-  flex: 0 0 auto;
-}
-
-.product-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  display: block;
-}
-
-.info {
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  justify-content: space-between;
-}
-
-.product-title {
-  font-size: 1rem;
-  margin: 0 0 6px 0;
-  font-weight: 700;
-}
-
-.category {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-bottom: 8px;
-}
-
-.price {
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 12px;
-}
-
-.card-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.add-cart-btn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  background: #10b981;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 700;
-  flex: 1 1 auto;
-}
-
-.add-cart-btn:hover {
-  background: #0ea46e;
-  transform: translateY(-1px);
-}
-
-.details-link {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  background: transparent;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-  font-weight: 600;
 }
 
 .skeleton {
@@ -408,6 +313,33 @@ export default {
   align-items: center;
   gap: 12px;
   padding: 18px 0;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 40px;
+  background: #fff !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.45rem;
+  font-weight: 600;
+}
+
+.page-btn.active {
+  background: var(--support-purple, #6d28d9) !important;
+  color: #fff !important;
+  border-color: var(--support-purple, #6d28d9) !important;
+}
+
+.page-btn:hover,
+.page-btn:focus-visible {
+  border-color: var(--support-purple, #6d28d9) !important;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.25);
+}
+
+.page-btn:focus-visible {
+  outline: 2px solid transparent;
 }
 
 .floating-cart {

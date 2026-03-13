@@ -5,21 +5,86 @@
 
     <!-- Main Area -->
     <div class="cyber-main">
-      <!-- Header -->
-      <header class="cyber-header">
-        <slot name="header" />
-      </header>
-
-      <!-- Dynamic Content -->
+      <!-- Dynamic Workspace Content -->
       <main class="cyber-content">
-        <slot />
+        <div class="workspace-root">
+          <router-view />
+        </div>
       </main>
+
+      <!-- Footer -->
+      <footer class="cyber-footer">
+        <slot name="header" />
+        <div v-if="headerActions.length" class="header-actions">
+          <button
+            v-for="action in headerActions"
+            :key="action.label"
+            :class="['btn', action.type || 'primary']"
+            @click="action.handler"
+          >
+            {{ action.label }}
+          </button>
+        </div>
+      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed, onBeforeUnmount, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import CyberSidebar from "../components/cyberSidebar.vue";
+
+const route = useRoute();
+
+onMounted(() => {
+  if (typeof document === "undefined") return;
+  document.body.classList.add("cyber-mode");
+});
+
+onBeforeUnmount(() => {
+  if (typeof document === "undefined") return;
+  document.body.classList.remove("cyber-mode");
+});
+
+const dispatchHeaderEvent = (name) => () => {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(name));
+};
+
+// Header actions driven by the current cyber route
+const headerActions = computed(() => {
+  switch (route.name) {
+    case "Mockups":
+      return [
+        {
+          label: "Export PNG",
+          type: "secondary",
+          handler: dispatchHeaderEvent("cyber:mockups-export"),
+        },
+        {
+          label: "Refresh Mockups",
+          type: "primary",
+          handler: dispatchHeaderEvent("cyber:mockups-refresh"),
+        },
+      ];
+    case "Writer":
+      return [
+        {
+          label: "Copy Draft",
+          type: "secondary",
+          handler: dispatchHeaderEvent("cyber:writer-copy"),
+        },
+        {
+          label: "Clear Draft",
+          type: "secondary",
+          handler: dispatchHeaderEvent("cyber:writer-clear"),
+        },
+      ];
+    default:
+      return [];
+  }
+});
 </script>
 
 <style scoped>
@@ -35,72 +100,77 @@ import CyberSidebar from "../components/cyberSidebar.vue";
 
 /* MAIN AREA */
 .cyber-main {
-  flex: 1; /* remaining width */
+  flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-width: 0;
-  padding: 0.75rem;
+  padding: 0.4rem;
 }
 
 /* HEADER */
-.cyber-header {
+.cyber-footer {
   flex-shrink: 0;
   text-align: left;
-  margin-bottom: 0.6rem;
-  padding: 0.2rem 0.35rem;
-}
-
-.cyber-header h1 {
-  font-size: 2rem;
-  color: #ffd600;
-}
-
-.cyber-header p {
-  opacity: 0.8;
-  margin-top: 0.5rem;
-}
-
-:deep(.header-actions) {
-  margin-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.3rem 0.5rem;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-:deep(.btn) {
-  padding: 0.6rem 1.4rem;
-  border-radius: 10px;
+.cyber-footer h1 {
+  font-size: 1.25rem;
+  color: #ffd600;
+  margin: 0;
+}
+
+.cyber-footer p {
+  display: none;
+}
+
+/* Header actions buttons */
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.btn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.25s ease;
+  font-size: 0.85rem;
 }
 
-:deep(.btn.primary) {
+.btn.primary {
   background-color: #ffd600;
   color: #121212;
 }
 
-:deep(.btn.primary:hover) {
+.btn.primary:hover {
   transform: translateY(-2px);
 }
 
-:deep(.btn.secondary) {
+.btn.secondary {
   border: 1px solid #ffd600;
   color: #ffd600;
 }
 
-:deep(.btn.secondary:hover) {
+.btn.secondary:hover {
   background-color: rgba(255, 214, 0, 0.15);
 }
 
 /* CONTENT AREA */
 .cyber-content {
-  flex: 1; /* fills remaining space */
+  flex: 1;
   min-height: 0;
-  padding: 0.55rem;
+  padding: 0.35rem;
   display: flex;
-  overflow: hidden;
+  overflow: auto;
   border-radius: 14px;
   background:
     linear-gradient(transparent 24px, rgba(255,255,255,0.03) 25px),
@@ -108,16 +178,21 @@ import CyberSidebar from "../components/cyberSidebar.vue";
   background-size: 25px 25px;
 }
 
-:deep(.workspace-root) {
+/* Workspace container */
+.workspace-root {
   flex: 1;
   min-height: 0;
   display: flex;
+  gap: 0.4rem;
 }
 
-:deep(.workspace-root > *) {
+.workspace-root > * {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  padding: 0.65rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 /* RESPONSIVE */
