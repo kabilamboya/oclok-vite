@@ -47,4 +47,3 @@ This project is the front‑end for O!clok Services: a multi‑page site that co
 - `src/layouts` Cyber Studio layout and helpers
 - `public/images` and `src/assets/images` Image assets
 
-If you want a backend integration layer or API wiring, we can add it and document env variables here.
