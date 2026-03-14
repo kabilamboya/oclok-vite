@@ -51,7 +51,8 @@ const membershipBenefits = [
 ];
 
 const supportedCities = ["Kisumu", "Nairobi", "Homa Bay", "Intercounty"];
-const whatsappNumber = "254732379292";
+const whatsappNumber = "254732379292"; // WhatsApp international format
+const phoneDisplay = "+254 0732379292"; // Display format for call/booking
 const orderTypes = [
   "Package pick-up and delivery",
   "Grocery and shopping errand",
@@ -649,6 +650,38 @@ async function submitMembershipWhatsApp() {
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
+.hero {
+  background: 
+    linear-gradient(135deg, rgba(15, 18, 24, 0.75) 0%, rgba(21, 26, 35, 0.85) 100%),
+    url('/images/delivery.jpg') center / cover no-repeat;
+  border-radius: 18px;
+  padding: 64px 24px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  margin-bottom: 22px;
+}
+
+.hero-text {
+  max-width: 600px;
+}
+
+.hero-text h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.hero-text p {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  color: var(--muted);
+}
+
 .delibois-hero {
   background:
     radial-gradient(circle at right top, rgba(255, 138, 44, 0.35), transparent 48%),
@@ -1107,6 +1140,11 @@ async function submitMembershipWhatsApp() {
   .pictorial-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .hero {
+    min-height: 280px;
+    padding: 48px 18px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1116,6 +1154,16 @@ async function submitMembershipWhatsApp() {
 
   .delibois-hero {
     padding: 16px;
+  }
+
+  .hero {
+    min-height: 240px;
+    padding: 36px 14px;
+    margin-bottom: 14px;
+  }
+
+  .hero-text h1 {
+    margin-bottom: 8px;
   }
 
   .zone-grid,

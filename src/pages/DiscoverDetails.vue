@@ -39,9 +39,20 @@ function prevImage() {
   }
 }
 
-// Booking function
+// Booking configuration
+const phoneNumber = "+254 0732379292";
+const whatsappNumber = "254732379292";
+
+// Booking via WhatsApp
 function bookService(type) {
-  alert(`Booking ${type} for ${place.value.name}`)
+  const message = `I would like to book ${type} for ${place.value.name}`;
+  const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+// Direct call to book
+function callToBook() {
+  window.location.href = `tel:${phoneNumber.replace(/\s+/g, "")}`;
 }
 </script>
 
@@ -89,6 +100,10 @@ function bookService(type) {
     <!-- Booking Options -->
     <div class="booking">
       <h2>Book Services</h2>
+      <div class="booking-contact">
+        <p>📱 <strong>WhatsApp:</strong> <button class="contact-link" @click="bookService('information')">+254 0732379292</button></p>
+        <p>📞 <strong>Call:</strong> <a href="tel:+254732379292" class="contact-link">+254 0732379292</a></p>
+      </div>
       <div class="buttons">
         <button @click="bookService('Driver')">🚗 Book Driver</button>
         <button @click="bookService('Tour Guide')">🧭 Book Tour Guide</button>
@@ -178,6 +193,31 @@ function bookService(type) {
 .booking h2 {
   margin-bottom: 1rem;
   font-size: 1.3rem;
+}
+.booking-contact {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #ff6600;
+}
+.booking-contact p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+.contact-link {
+  background: #ff6600;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+.contact-link:hover {
+  background: #e55a00;
 }
 .buttons {
   display: flex;

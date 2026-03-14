@@ -5,6 +5,9 @@
 
     <!-- Main Area -->
     <div class="cyber-main">
+      <!-- Top Toolbar -->
+      <TopToolbar @delete-element="dispatchDeleteEvent" />
+      
       <!-- Dynamic Workspace Content -->
       <main class="cyber-content">
         <div class="workspace-root">
@@ -34,6 +37,7 @@
 import { computed, onBeforeUnmount, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import CyberSidebar from "../components/cyberSidebar.vue";
+import TopToolbar from "../components/TopToolbar.vue";
 
 const route = useRoute();
 
@@ -50,6 +54,11 @@ onBeforeUnmount(() => {
 const dispatchHeaderEvent = (name) => () => {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(name));
+};
+
+const dispatchDeleteEvent = () => {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("cyber:delete-element"));
 };
 
 // Header actions driven by the current cyber route

@@ -191,16 +191,42 @@ const robotAssistants = computed(() => {
     linear-gradient(145deg, #121926 0%, #0d121a 100%);
   border: 1px solid var(--line);
   border-radius: 18px;
-  padding: 18px;
+  padding: 32px;
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   align-items: center;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-text h1 {
+  margin: 0 0 16px;
+  line-height: 1.2;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+}
+
+.hero-text p {
+  margin: 0;
+  color: var(--accent);
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-weight: 700;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .heros img {
   width: 100%;
-  height: 300px;
+  height: 280px;
   object-fit: cover;
   border-radius: 14px;
   border: 1px solid #2f3a4c;
@@ -215,30 +241,36 @@ const robotAssistants = computed(() => {
   color: #9cefd5;
 }
 
-.hero h1 {
-  margin: 10px 0 10px;
-  line-height: 1.2;
-  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+.hero-copy h1 {
+  margin: 0;
+  line-height: 1.3;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 800;
 }
 
-.hero p {
+.hero-copy > p {
   margin: 0;
   color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .hero-actions {
-  margin-top: 16px;
+  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .cta {
   text-decoration: none;
   border-radius: 10px;
   font-weight: 700;
-  padding: 10px 14px;
-  border: 1px solid transparent;
+  padding: 12px 20px;
+  border: 2px solid transparent;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
 .cta.primary {
@@ -246,9 +278,19 @@ const robotAssistants = computed(() => {
   color: #081218;
 }
 
+.cta.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(53, 214, 166, 0.3);
+}
+
 .cta.ghost {
-  border-color: #4f617c;
-  color: var(--text);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cta.ghost:hover {
+  background: rgba(53, 214, 166, 0.1);
+  transform: translateY(-2px);
 }
 
 .knowledge-grid,
@@ -416,8 +458,10 @@ const robotAssistants = computed(() => {
 }
 
 @media (max-width: 980px) {
-  .hero {
+  .heros {
     grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px;
   }
 
   .use-case-grid {
@@ -438,8 +482,34 @@ const robotAssistants = computed(() => {
     padding: 14px 12px 24px;
   }
 
+  .heros {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .hero-text h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero-text p {
+    font-size: 1.2rem;
+  }
+
+  .hero-copy h1 {
+    font-size: 1.2rem;
+  }
+
+  .heros img {
+    height: 200px;
+  }
+
   .use-case-grid {
     grid-template-columns: 1fr;
+  }
+
+  .cta {
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 }
 </style>

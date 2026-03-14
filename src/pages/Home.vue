@@ -338,9 +338,35 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 
-.tabs { display:flex; gap:10px; justify-content:flex-end; margin-right:100px; margin-bottom:20px; }
-.tabs button { background:#ffcc99; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold; transition: background 0.3s; color:#111; }
-.tabs button.active, .tabs button:hover { background:#ff6600; color:#fff; }
+.tabs { 
+  display: flex; 
+  gap: 10px; 
+  justify-content: flex-end; 
+  margin-right: 100px; 
+  margin-bottom: 20px; 
+}
+
+.tabs button { 
+  background: #ffcc99 !important;
+  border: none; 
+  padding: 10px 18px; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  transition: all 0.3s ease; 
+  color: #111 !important;
+}
+
+.tabs button:hover { 
+  background: #ff6600 !important;
+  color: #fff !important;
+}
+
+.tabs button.active { 
+  background: #ff6600 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.5) !important;
+}
 .tab-content { transition: all 0.6s ease; opacity:0; transform:translateX(40px); }
 .tab-content.show { opacity:1; transform:translateX(0); }
 .animate-on-scroll { opacity:0; transform:translateY(30px); transition: all 0.8s ease-out; }

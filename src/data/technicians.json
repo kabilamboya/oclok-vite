@@ -2,12 +2,12 @@
   {
     "id": 1,
     "slug": "kabila-mboya",
-    "name": "Kabila Mboya",
-    "specialty": "Electrical Systems",
+    "name": "Laurent Mboya",
+    "specialty": "Telecommunication Systems",
     "image": "/images/Mboya.JPG",
     "experience": 5,
     "color": "blue",
-    "bio": "James is a certified electrician with over 5 years of experience in commercial and residential systems.",
+    "bio": "Laurent is a professional Technical Support Assistant with over 5 years of experience in start-up environments.",
     "contact": {
       "phone": "+254 732 379 292",
       "email": "kabilamboya@gmail.com"    },

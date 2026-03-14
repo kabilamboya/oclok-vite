@@ -6,24 +6,24 @@
       <!-- CREATE Section -->
       <span class="nav-section">CREATE</span>
       <router-link
-        to="/cyber/creator"
+        to="/cyber/prompts"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="AI Prompt Training"
+        title="AI Prompt Training"
+      >
+        <i class="fas fa-brain"></i>
+        <span class="nav-label">Train Prompts</span>
+      </router-link>
+      <router-link
+        to="/cyber/writer"
         class="nav-link"
         active-class="active-link"
         aria-label="Writing Canvas"
         title="Writing Canvas"
       >
         <i class="fas fa-pen"></i>
-        <span class="nav-label">Writing Canvas</span>
-      </router-link>
-      <router-link
-        to="/cyber/writer"
-        class="nav-link"
-        active-class="active-link"
-        aria-label="AI Prompt Studio"
-        title="AI Prompt Studio"
-      >
-        <i class="fas fa-robot"></i>
-        <span class="nav-label">AI Prompt Studio</span>
+        <span class="nav-label">Writer</span>
       </router-link>
 
       <!-- DESIGN Section -->
@@ -36,7 +36,7 @@
         title="Design Canvas"
       >
         <i class="fas fa-paint-brush"></i>
-        <span class="nav-label">Design Canvas</span>
+        <span class="nav-label">Mockups</span>
       </router-link>
       <router-link
         to="/cyber/gallery"

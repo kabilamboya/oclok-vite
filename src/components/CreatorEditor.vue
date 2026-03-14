@@ -6,43 +6,41 @@
         <p v-if="subtitle" class="muted">{{ subtitle }}</p>
       </div>
 
-      <div class="rte-toolbar" role="toolbar" aria-label="Editor toolbar">
-        <button class="tool-btn" type="button" aria-label="Bold" title="Bold" @click="runEditorCommand('bold')">
-          <i class="fas fa-bold"></i>
-        </button>
-        <button class="tool-btn" type="button" aria-label="Italic" title="Italic" @click="runEditorCommand('italic')">
-          <i class="fas fa-italic"></i>
-        </button>
-        <button class="tool-btn" type="button" aria-label="Underline" title="Underline" @click="runEditorCommand('underline')">
-          <i class="fas fa-underline"></i>
-        </button>
-        <button
-          class="tool-btn"
-          type="button"
-          aria-label="Bullet list"
-          title="Bullet list"
-          @click="runEditorCommand('insertUnorderedList')"
-        >
+      <div class="rte-toolbar">
+        <button class="tool-btn" @click="runEditorCommand('bold')"><i class="fas fa-bold"></i></button>
+        <button class="tool-btn" @click="runEditorCommand('italic')"><i class="fas fa-italic"></i></button>
+        <button class="tool-btn" @click="runEditorCommand('underline')"><i class="fas fa-underline"></i></button>
+
+        <button class="tool-btn" @click="runEditorCommand('insertUnorderedList')">
           <i class="fas fa-list-ul"></i>
         </button>
-        <button
-          class="tool-btn"
-          type="button"
-          aria-label="Numbered list"
-          title="Numbered list"
-          @click="runEditorCommand('insertOrderedList')"
-        >
+
+        <button class="tool-btn" @click="runEditorCommand('insertOrderedList')">
           <i class="fas fa-list-ol"></i>
         </button>
-        <button class="tool-btn" type="button" aria-label="Insert link" title="Insert link" @click="insertLink">
+
+        <button class="tool-btn" @click="insertLink">
           <i class="fas fa-link"></i>
         </button>
-        <button class="tool-btn" type="button" aria-label="Undo" title="Undo" @click="runEditorCommand('undo')">
+
+        <button class="tool-btn" @click="runEditorCommand('undo')">
           <i class="fas fa-rotate-left"></i>
         </button>
-        <button class="tool-btn" type="button" aria-label="Redo" title="Redo" @click="runEditorCommand('redo')">
+
+        <button class="tool-btn" @click="runEditorCommand('redo')">
           <i class="fas fa-rotate-right"></i>
         </button>
+
+        <div class="font-size-control">
+          <label>Size: <span class="size-value">{{ fontSize }}px</span></label>
+          <input
+            v-model.number="fontSize"
+            type="range"
+            min="12"
+            max="72"
+            @input="applyFontSize"
+          />
+        </div>
       </div>
     </div>
 
@@ -52,20 +50,15 @@
           ref="editorElement"
           class="rte-canvas"
           contenteditable="true"
-          role="textbox"
-          aria-multiline="true"
+          tabindex="0"
           :data-placeholder="placeholder"
           @input="onEditorInput"
         ></div>
 
         <div v-if="showActions" class="editor-actions">
-          <button class="secondary" type="button" @click="copyDraft">{{ copyLabel }}</button>
-          <button class="secondary" type="button" @click="clearDraft">{{ clearLabel }}</button>
-          <button
-            v-if="useDraftLabel"
-            type="button"
-            @click="emitUseDraft"
-          >
+          <button class="secondary" @click="copyDraft">{{ copyLabel }}</button>
+          <button class="secondary" @click="clearDraft">{{ clearLabel }}</button>
+          <button v-if="useDraftLabel" @click="emitUseDraft">
             {{ useDraftLabel }}
           </button>
         </div>
@@ -73,11 +66,11 @@
 
       <aside v-if="hasAssets" class="asset-panel">
         <h3>{{ assetTitle }}</h3>
+
         <div class="asset-list">
           <button
             v-for="asset in assets"
             :key="asset.id || asset.url"
-            type="button"
             class="asset-item"
             @click="insertAsset(asset.url)"
           >
@@ -91,147 +84,219 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { ref, computed, onMounted } from "vue"
+
+const STORAGE_KEY = "creator-editor-draft"
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: "Writing Canvas",
-  },
-  subtitle: {
-    type: String,
-    default: "",
-  },
+  title: { type: String, default: "Writing Canvas" },
+  subtitle: { type: String, default: "" },
   placeholder: {
     type: String,
-    default: "Start writing your campaign content here...",
+    default: "Start writing your campaign content here..."
   },
-  assets: {
-    type: Array,
-    default: () => [],
-  },
-  assetTitle: {
-    type: String,
-    default: "Assets",
-  },
-  showActions: {
-    type: Boolean,
-    default: true,
-  },
-  copyLabel: {
-    type: String,
-    default: "Copy Draft",
-  },
-  clearLabel: {
-    type: String,
-    default: "Clear",
-  },
-  useDraftLabel: {
-    type: String,
-    default: "Use Draft For Training",
-  },
-});
+  assets: { type: Array, default: () => [] },
+  assetTitle: { type: String, default: "Assets" },
+  showActions: { type: Boolean, default: true },
+  copyLabel: { type: String, default: "Copy Draft" },
+  clearLabel: { type: String, default: "Clear" },
+  useDraftLabel: { type: String, default: "Use Draft For Training" }
+})
 
-const emit = defineEmits(["use-draft", "copy", "clear", "input"]);
+const emit = defineEmits(["input", "copy", "clear", "use-draft"])
 
-const editorElement = ref(null);
+const editorElement = ref(null)
+const fontSize = ref(16)
 
-const hasAssets = computed(() => Array.isArray(props.assets) && props.assets.length > 0);
-
-const getEditorText = () => editorElement.value?.innerText?.trim() || "";
-
-const setText = (value = "") => {
-  if (!editorElement.value) return;
-  editorElement.value.innerText = value;
-};
+const hasAssets = computed(
+  () => Array.isArray(props.assets) && props.assets.length > 0
+)
 
 const focusEditor = () => {
-  editorElement.value?.focus();
-};
+  editorElement.value?.focus()
+}
+
+const getEditorContent = () => {
+  return editorElement.value?.innerHTML?.trim() || ""
+}
+
+const setText = (value = "") => {
+  if (!editorElement.value) return
+  editorElement.value.innerHTML = value
+}
+
+const insertContent = (content = "") => {
+  if (!editorElement.value) return
+  editorElement.value.innerHTML += `<p>${content}</p>`
+  focusEditor()
+}
 
 const runEditorCommand = (command, value = null) => {
-  if (!editorElement.value) return;
-  focusEditor();
-  document.execCommand(command, false, value);
-};
+  focusEditor()
+  document.execCommand(command, false, value)
+}
 
 const insertLink = () => {
-  const url = window.prompt("Paste link URL");
-  if (!url) return;
-  runEditorCommand("createLink", url);
-};
+  const url = window.prompt("Paste link URL")
+  if (!url) return
+  runEditorCommand("createLink", url)
+}
+
+const applyFontSize = () => {
+  focusEditor()
+
+  document.execCommand("fontSize", false, "7")
+
+  const fonts = editorElement.value.getElementsByTagName("font")
+
+  for (let font of fonts) {
+    if (font.size === "7") {
+      font.removeAttribute("size")
+      font.style.fontSize = fontSize.value + "px"
+    }
+  }
+}
 
 const insertAsset = (url) => {
-  if (!editorElement.value || !url) return;
-  focusEditor();
+  if (!url) return
+  focusEditor()
+
   try {
-    document.execCommand("insertImage", false, url);
-  } catch (_error) {
-    const img = document.createElement("img");
-    img.src = url;
-    img.alt = "Asset";
-    img.style.maxWidth = "100%";
-    img.style.display = "block";
-    img.style.margin = "0.5rem 0";
-    editorElement.value.appendChild(img);
+    document.execCommand("insertImage", false, url)
+  } catch {
+    const img = document.createElement("img")
+    img.src = url
+    img.style.maxWidth = "100%"
+    img.style.display = "block"
+    img.style.margin = "10px 0"
+    editorElement.value.appendChild(img)
   }
-};
+}
 
 const copyDraft = async () => {
-  const text = getEditorText();
-  if (!text) return;
-  await navigator.clipboard.writeText(text);
-  emit("copy", text);
-};
+  const text = getEditorContent()
+
+  if (!text) return
+
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    console.warn("Clipboard copy failed")
+  }
+
+  emit("copy", text)
+}
 
 const clearDraft = () => {
-  if (!editorElement.value) return;
-  editorElement.value.innerHTML = "";
-  emit("clear");
-};
+  if (!editorElement.value) return
+
+  editorElement.value.innerHTML = ""
+  localStorage.removeItem(STORAGE_KEY)
+
+  emit("clear")
+}
 
 const emitUseDraft = () => {
-  emit("use-draft", getEditorText());
-};
+  emit("use-draft", getEditorContent())
+}
+
+const saveDraft = () => {
+  const content = getEditorContent()
+  localStorage.setItem(STORAGE_KEY, content)
+}
+
+const loadDraft = () => {
+  const draft = localStorage.getItem(STORAGE_KEY)
+
+  if (draft && editorElement.value) {
+    editorElement.value.innerHTML = draft
+  }
+}
+
+const commands = {
+  "/h1": () => document.execCommand("formatBlock", false, "h1"),
+  "/h2": () => document.execCommand("formatBlock", false, "h2"),
+  "/quote": () => document.execCommand("formatBlock", false, "blockquote"),
+  "/list": () => document.execCommand("insertUnorderedList")
+}
+
+const handleSlashCommands = () => {
+  const text = editorElement.value.innerText
+  const lastLine = text.split("\n").pop()
+
+  if (commands[lastLine]) {
+    commands[lastLine]()
+
+    editorElement.value.innerText = text.replace(lastLine, "")
+  }
+}
+
+const handleDrop = (e) => {
+  e.preventDefault()
+
+  const file = e.dataTransfer.files[0]
+
+  if (!file || !file.type.startsWith("image/")) return
+
+  const reader = new FileReader()
+
+  reader.onload = (event) => {
+    insertAsset(event.target.result)
+  }
+
+  reader.readAsDataURL(file)
+}
 
 const onEditorInput = () => {
-  emit("input", getEditorText());
-};
+  handleSlashCommands()
+  saveDraft()
+
+  emit("input", getEditorContent())
+}
+
+onMounted(() => {
+  loadDraft()
+  focusEditor()
+
+  const el = editorElement.value
+
+  el.addEventListener("dragover", (e) => e.preventDefault())
+  el.addEventListener("drop", handleDrop)
+})
 
 defineExpose({
-  getText: getEditorText,
+  getText: getEditorContent,
   setText,
+  insertContent,
   copyDraft,
   clearDraft,
   runEditorCommand,
   insertAsset,
-  focusEditor,
-});
+  focusEditor
+})
 </script>
 
 <style scoped>
 .creator-editor {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.9rem;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
   height: 100%;
-  min-height: 0;
 }
 
 .editor-head {
   display: grid;
-  gap: 0.65rem;
+  gap: .6rem;
 }
 
 .muted {
   color: #9ca3af;
-  margin: 0.2rem 0 0;
 }
 
 .rte-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: .4rem;
 }
 
 .tool-btn {
@@ -240,41 +305,39 @@ defineExpose({
   border-radius: 8px;
   border: 1px solid #ffd600;
   background: transparent;
-  color: #ffffff;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  font-size: 0.95rem;
+  color: white;
   cursor: pointer;
 }
 
 .tool-btn:hover {
-  background: rgba(255, 214, 0, 0.18);
+  background: rgba(255,214,0,.15);
+}
+
+.font-size-control {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-left: .5rem;
+}
+
+.size-value {
+  color: #ffd600;
+  font-weight: bold;
 }
 
 .editor-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 220px);
-  gap: 0.9rem;
-  min-height: 0;
-}
-
-.editor-panel {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 0.7rem;
-  min-height: 0;
+  grid-template-columns: 1fr 220px;
+  gap: 1rem;
 }
 
 .rte-canvas {
   background: #0f0f0f;
   border: 1px solid #303030;
   border-radius: 10px;
-  padding: 0.9rem;
+  padding: 1rem;
+  min-height: 300px;
   overflow: auto;
-  outline: none;
-  line-height: 1.5;
-  min-height: 280px;
 }
 
 .rte-canvas:empty::before {
@@ -284,71 +347,51 @@ defineExpose({
 
 .editor-actions {
   display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .5rem;
 }
 
 .editor-actions button {
+  background: #ffd600;
   border: none;
   border-radius: 8px;
-  background: #ffd600;
-  color: #131313;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0.62rem 0.9rem;
+  padding: .6rem .9rem;
+  font-weight: bold;
 }
 
 .editor-actions button.secondary {
-  border: 1px solid #ffd600;
   background: transparent;
-  color: #ffffff;
+  border: 1px solid #ffd600;
+  color: white;
 }
 
 .asset-panel {
-  background: #111111;
+  background: #111;
   border: 1px solid #2a2a2a;
   border-radius: 10px;
-  padding: 0.8rem;
-  overflow: auto;
-}
-
-.asset-panel h3 {
-  margin: 0;
-  font-size: 0.95rem;
+  padding: .8rem;
 }
 
 .asset-list {
   display: grid;
-  gap: 0.55rem;
-  margin-top: 0.6rem;
+  gap: .5rem;
+  margin-top: .5rem;
 }
 
 .asset-item {
   display: flex;
+  gap: .4rem;
   align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
+  background: #0f0f0f;
   border: 1px solid #2a2a2a;
   border-radius: 8px;
-  padding: 0.4rem;
-  background: #0f0f0f;
-  color: #f8f8f8;
+  padding: .4rem;
+  cursor: pointer;
 }
 
 .asset-item img {
   width: 40px;
   height: 40px;
   object-fit: cover;
-  border-radius: 5px;
-}
-
-.asset-item span {
-  font-size: 0.85rem;
-}
-
-@media (max-width: 1100px) {
-  .editor-body {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

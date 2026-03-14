@@ -1,275 +1,256 @@
 <template>
-  <section class="writer-page">
-    <CreatorEditor
-      ref="editorRef"
-      class="panel"
-      title="Writing Canvas"
-      subtitle="Built-in rich text editor for campaign drafts, scripts, and social copy."
-      placeholder="Start writing your campaign content here..."
-      :assets="assets"
-      asset-title="Assets"
-      use-draft-label="Use Draft For Training"
-      @use-draft="applyDraftToTraining"
+  <div class="writer-container">
+    <!-- Shared Toolbar with Zoom -->
+    <CreatorToolbar
+      :initial-zoom="zoom"
+      :editor-content="getEditorText()"
+      current-page="writer"
+      @zoom-change="handleZoomChange"
+      @tool-selected="handleToolSelected"
+      @draft-saved="handleDraftSaved"
     />
 
-    <div class="panel controls-panel">
-      <h2>AI Prompt Studio</h2>
-      <p class="muted">Generate campaign-ready prompts and feed outcomes back to training.</p>
+    <section class="writer-page" :style="{ transform: `scale(${zoom / 100})`, transformOrigin: '0 0' }">
+      <CreatorEditor
+        ref="editorRef"
+        class="panel editor-panel"
+        title="Writing Canvas with RTE"
+        subtitle="Rich Text Editor for AI scripts, campaign drafts, and professional content generation."
+        placeholder="Start writing your AI script or campaign content here..."
+        use-draft-label="Save Draft"
+        @use-draft="applyDraftToTraining"
+      />
 
-      <form class="prompt-form" @submit.prevent="onGenerate">
-        <input v-model="form.brandName" type="text" placeholder="Brand name" required />
-        <input v-model="form.campaignGoal" type="text" placeholder="Campaign goal" required />
-        <input v-model="form.audience" type="text" placeholder="Target audience" />
-        <input v-model="form.tone" type="text" placeholder="Tone (e.g. premium, playful, direct)" />
-        <input v-model="form.platform" type="text" placeholder="Platform (e.g. Instagram, TikTok, Web)" />
-        <input v-model="form.keywords" type="text" placeholder="Keywords separated by commas" />
-        <textarea v-model="form.context" rows="4" placeholder="Extra brand context"></textarea>
-        <button type="submit" :disabled="generating">{{ generating ? 'Generating...' : 'Generate Prompt' }}</button>
-      </form>
-
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-
-      <article v-if="result" class="result">
-        <h3>Generated Master Prompt</h3>
-        <pre>{{ result.prompt }}</pre>
-
-        <button class="secondary" type="button" @click="insertResultIntoEditor">Load Prompt Into Canvas</button>
-
-        <h4>Prompt Variations</h4>
-        <ul>
-          <li v-for="variation in result.variations" :key="variation">{{ variation }}</li>
-        </ul>
-
-        <h4>Suggested Assets</h4>
-        <div class="chips">
-          <span v-for="asset in result.suggestedAssets" :key="asset">{{ asset }}</span>
+      <!-- File Upload & Shapes Panel for RTE -->
+      <aside class="panel tools-panel">
+        <div class="panel-header">
+          <h2>RTE Tools & Imports</h2>
+          <router-link to="/cyber/prompts" class="learn-prompts-btn" title="Learn AI prompting">
+            <i class="fas fa-sparkles"></i>
+          </router-link>
         </div>
-      </article>
 
-      <h3>Training and Usage</h3>
-      <form class="training-form" @submit.prevent="onSaveTraining">
-        <textarea
-          v-model="training.preferredOutput"
-          rows="4"
-          placeholder="Paste your improved output to train future prompts"
-          required
-        ></textarea>
-        <input v-model="training.tags" type="text" placeholder="Training tags separated by commas" />
-        <input v-model="training.notes" type="text" placeholder="Notes (optional)" />
-        <input v-model.number="training.rating" type="number" min="1" max="5" />
-        <button type="submit" :disabled="savingTraining || !result">
-          {{ savingTraining ? 'Saving...' : 'Save Training Example' }}
-        </button>
-      </form>
-
-      <div class="usage-grid">
-        <div>
-          <h4>Total Prompts</h4>
-          <p class="metric">{{ usage.totalPrompts }}</p>
+        <!-- File Upload Section -->
+        <div class="section-container">
+          <h3>📁 File Upload</h3>
+          <p class="muted">Import text files to your editor</p>
+          <form class="upload-form" @submit.prevent="handleFileUpload">
+            <input 
+              ref="fileInput"
+              type="file" 
+              accept=".txt,.md,.doc,.docx" 
+              @change="onFileSelected"
+              class="file-input"
+            />
+            <button type="submit" :disabled="!selectedFile || uploading" class="upload-btn">
+              {{ uploading ? 'Uploading...' : 'Import File' }}
+            </button>
+          </form>
         </div>
-        <div>
-          <h4>Top Brands</h4>
-          <ul>
-            <li v-for="item in topBrands" :key="item.name">{{ item.name }} ({{ item.count }})</li>
-            <li v-if="topBrands.length === 0">No usage yet</li>
-          </ul>
-        </div>
-      </div>
 
-      <h4>Recent Training Samples</h4>
-      <ul class="training-list">
-        <li v-for="sample in trainingList" :key="sample.id">
-          <strong>{{ sample.tags?.join(', ') || 'No tags' }}</strong>
-          <p>{{ sample.preferred_output || sample.preferredOutput }}</p>
-        </li>
-        <li v-if="trainingList.length === 0">No training samples yet</li>
-      </ul>
-    </div>
-  </section>
+        <!-- Shapes & Elements Section -->
+        <div class="section-container">
+          <h3>🔷 Shapes & Elements</h3>
+          <p class="muted">Insert formatting shapes</p>
+          
+          <div class="color-control">
+            <label>Color:</label>
+            <input type="color" v-model="shapeColor" class="color-picker">
+          </div>
+          
+          <div class="shapes-grid">
+            <button 
+              class="shape-btn" 
+              @click="insertShape('quote')" 
+              title="Insert quote shape"
+            >
+              <i class="fas fa-quote-left"></i> Quote
+            </button>
+            <button 
+              class="shape-btn" 
+              @click="insertShape('box')" 
+              title="Insert text box"
+            >
+              <i class="fas fa-square"></i> Box
+            </button>
+            <button 
+              class="shape-btn" 
+              @click="insertShape('highlight')" 
+              title="Insert highlight"
+            >
+              <i class="fas fa-highlighter"></i> Highlight
+            </button>
+            <button 
+              class="shape-btn" 
+              @click="insertShape('divider')" 
+              title="Insert divider"
+            >
+              <i class="fas fa-minus"></i> Divider
+            </button>
+          </div>
+        </div>
+
+        <!-- Templates Section -->
+        <div class="section-container">
+          <h3>📋 Quick Templates</h3>
+          <div class="template-buttons">
+            <button class="template-btn" @click="insertTemplate('email')">
+              <i class="fas fa-envelope"></i> Email
+            </button>
+            <button class="template-btn" @click="insertTemplate('social')">
+              <i class="fas fa-share-alt"></i> Social
+            </button>
+            <button class="template-btn" @click="insertTemplate('script')">
+              <i class="fas fa-microphone"></i> Script
+            </button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import CreatorEditor from '@/components/CreatorEditor.vue';
-import {
-  generateBrandPrompt,
-  getPromptUsageSummary,
-  listPromptTraining,
-  savePromptTraining,
-} from '@/services/cyber.service';
 import { getLocalUserId } from '@/lib/localStore';
 
-const userId = ref(null);
-const generating = ref(false);
-const savingTraining = ref(false);
-const errorMessage = ref('');
 const editorRef = ref(null);
+const fileInput = ref(null);
+const zoom = ref(100);
+const selectedFile = ref(null);
+const uploading = ref(false);
+const shapeColor = ref('#ff6600');
 
-const form = reactive({
-  brandName: '',
-  campaignGoal: '',
-  audience: '',
-  tone: '',
-  platform: '',
-  keywords: '',
-  context: '',
-});
+const templates = {
+  email: `Subject: [Your Subject Here]
 
-const training = reactive({
-  preferredOutput: '',
-  tags: '',
-  notes: '',
-  rating: 5,
-});
+Hi [Name],
 
-const result = ref(null);
-const trainingList = ref([]);
-const usage = ref({
-  totalPrompts: 0,
-  topBrands: {},
-  recent: [],
-});
+[Your message here]
 
-const topBrands = computed(() =>
-  Object.entries(usage.value.topBrands || {})
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5),
-);
+Best regards,
+[Your Name]`,
+  
+  social: `📱 [Hook or attention-grabber]
 
-const resolveGuestUserId = () => getLocalUserId("cyber_guest_user_id");
+[Main message - 2-3 lines]
 
-const tagsFrom = (value) =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
+[Call-to-action]
 
-const assets = [
-  { id: "logo", name: "Oclok Logo", url: "/images/oclokLogo.png" },
-  { id: "tshirt", name: "Tshirt Mockup", url: "/mockups/tshirt.png" },
-  { id: "cyber", name: "Cyber", url: "/images/cyber.png" },
-];
+#oclok #[relevant hashtags]`,
+  
+  script: `[SCENE DESCRIPTION]
+
+CHARACTER: [Dialogue here]
+
+[Action or description]
+
+CHARACTER: [Response]`,
+};
+
+const shapeTemplates = {
+  quote: `"[Your quote here]"
+— [Attribution]`,
+  
+  box: `┌────────────────────┐
+│ [Important Info]   │
+└────────────────────┘`,
+  
+  highlight: `⭐ [HIGHLIGHTED TEXT]`,
+  
+  divider: `════════════════════════════════════`,
+};
+
+// Add color wrapper for shapes with memo of color applied
+const wrapShapeWithColor = (content) => {
+  return `\n[COLOR: ${shapeColor.value}]\n${content}\n[/COLOR]\n`;
+};
+
+// File Upload Handler
+const onFileSelected = (event) => {
+  selectedFile.value = event.target.files?.[0] || null;
+};
+
+const handleFileUpload = async () => {
+  if (!selectedFile.value) return;
+  
+  uploading.value = true;
+  try {
+    const text = await selectedFile.value.text();
+    editorRef.value?.insertContent?.(text);
+    
+    // Reset file input
+    selectedFile.value = null;
+    if (fileInput.value) fileInput.value.value = '';
+  } catch (error) {
+    console.error('Error reading file:', error);
+    alert('Error reading file. Please try again.');
+  } finally {
+    uploading.value = false;
+  }
+};
+
+// Shape Insertion
+const insertShape = (shapeType) => {
+  const shapeContent = shapeTemplates[shapeType] || '';
+  if (editorRef.value) {
+    const current = editorRef.value?.getText?.() || '';
+    const coloredContent = wrapShapeWithColor(shapeContent);
+    editorRef.value?.setText?.(current + coloredContent);
+  }
+};
 
 const getEditorText = () => editorRef.value?.getText() || "";
 
-const copyDraft = async () => {
-  if (!editorRef.value?.copyDraft) return;
-  await editorRef.value.copyDraft();
-};
-
-const clearDraft = () => {
-  editorRef.value?.clearDraft?.();
-};
-
 const applyDraftToTraining = (text) => {
-  training.preferredOutput = text ?? getEditorText();
+  console.log('Draft applied to training:', text);
+  // Here you could send the draft to your AI training service
 };
 
-const insertResultIntoEditor = () => {
-  if (!result.value?.prompt) return;
-  editorRef.value?.setText?.(result.value.prompt);
+const insertTemplate = (templateType) => {
+  const templateContent = templates[templateType] || '';
+  editorRef.value?.setText?.(templateContent);
 };
 
-const handleHeaderCopy = () => {
-  copyDraft();
+const handleZoomChange = (newZoom) => {
+  zoom.value = newZoom;
 };
 
-const handleHeaderClear = () => {
-  clearDraft();
+const handleToolSelected = (toolId) => {
+  console.log('Tool selected:', toolId);
 };
 
-const registerHeaderActions = () => {
-  if (typeof window === "undefined") return;
-  window.addEventListener("cyber:writer-copy", handleHeaderCopy);
-  window.addEventListener("cyber:writer-clear", handleHeaderClear);
+const handleDraftSaved = (draftData) => {
+  console.log('Draft auto-saved:', draftData);
 };
 
-const unregisterHeaderActions = () => {
-  if (typeof window === "undefined") return;
-  window.removeEventListener("cyber:writer-copy", handleHeaderCopy);
-  window.removeEventListener("cyber:writer-clear", handleHeaderClear);
-};
-
-const onGenerate = async () => {
-  generating.value = true;
-  errorMessage.value = '';
-
-  try {
-    result.value = await generateBrandPrompt({
-      ...form,
-      userId: userId.value,
-      keywords: tagsFrom(form.keywords),
-    });
-    await refreshUsage();
-  } catch (error) {
-    errorMessage.value = error.message || 'Unable to generate prompt';
-  } finally {
-    generating.value = false;
-  }
-};
-
-const onSaveTraining = async () => {
-  if (!result.value) return;
-  savingTraining.value = true;
-  errorMessage.value = '';
-
-  try {
-    const saved = await savePromptTraining({
-      userId: userId.value,
-      inputPrompt: result.value.prompt,
-      preferredOutput: training.preferredOutput,
-      tags: tagsFrom(training.tags),
-      notes: training.notes,
-      rating: training.rating,
-    });
-
-    trainingList.value = [saved, ...trainingList.value].slice(0, 20);
-    training.preferredOutput = '';
-    training.tags = '';
-    training.notes = '';
-    training.rating = 5;
-  } catch (error) {
-    errorMessage.value = error.message || 'Unable to save training example';
-  } finally {
-    savingTraining.value = false;
-  }
-};
-
-const refreshTraining = async () => {
-  try {
-    trainingList.value = await listPromptTraining();
-  } catch {
-    trainingList.value = [];
-  }
-};
-
-const refreshUsage = async () => {
-  try {
-    usage.value = await getPromptUsageSummary();
-  } catch {
-    usage.value = { totalPrompts: 0, topBrands: {}, recent: [] };
-  }
-};
-
-onMounted(async () => {
-  userId.value = resolveGuestUserId();
-  await Promise.all([refreshTraining(), refreshUsage()]);
-  registerHeaderActions();
+onMounted(() => {
+  const userId = getLocalUserId("cyber_guest_user_id");
+  console.log('Writer page loaded for user:', userId);
 });
 
 onBeforeUnmount(() => {
-  unregisterHeaderActions();
+  // Clean up
 });
 </script>
 
 <style scoped>
-.writer-page {
+
+.writer-container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.writer-page {
+  flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.5fr);
   gap: 0.9rem;
+  overflow: auto;
+  height: 100%;
 }
 
 .panel {
@@ -280,13 +261,394 @@ onBeforeUnmount(() => {
   min-height: 0;
 }
 
-.muted {
-  color: #9ca3af;
-  margin: 0.2rem 0 0;
+.editor-panel {
+  overflow: auto;
 }
 
-.controls-panel {
-  overflow: auto;
+.tools-panel {
+  border-left: 1px solid #2a2a2a;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 8px;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.panel-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0;
+  flex: 1;
+}
+
+.learn-prompts-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: #ff6600;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+}
+
+.learn-prompts-btn:hover {
+  background: rgba(255, 102, 0, 0.1);
+  color: #ff8533;
+}
+
+.muted {
+  color: #9ca3af;
+  margin: 0.2rem 0 0.8rem;
+  font-size: 0.85rem;
+}
+
+.section-container {
+  margin-bottom: 1.4rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 102, 0, 0.1);
+}
+
+.section-container:last-child {
+  border-bottom: none;
+}
+
+.section-container h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0 0 0.6rem 0;
+}
+
+/* File Upload Styles */
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.file-input {
+  padding: 0.6rem;
+  border: 1px dashed #ff6600;
+  border-radius: 6px;
+  background: rgba(255, 102, 0, 0.05);
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.file-input:hover {
+  background: rgba(255, 102, 0, 0.1);
+  border-color: #ff8533;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+  color: #fff;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.upload-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Shapes Grid */
+.shapes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.shape-btn {
+  background: #253a52;
+  border: 1px solid #2a2a2a;
+  color: #b0b0b0;
+  padding: 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.shape-btn:hover {
+  border-color: #ff6600;
+  background: #1a2942;
+  color: #ff6600;
+}
+
+.shape-btn i {
+  font-size: 1rem;
+}
+
+/* Color Control */
+.color-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem;
+  background: rgba(255, 214, 0, 0.08);
+  border: 1px solid rgba(255, 214, 0, 0.2);
+  border-radius: 6px;
+}
+
+.color-control label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffd600;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.color-picker {
+  width: 50px;
+  height: 40px;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.color-picker:hover {
+  border-color: #ffd600;
+}
+
+/* AI Section Styles */
+.ai-section {
+  background: rgba(255, 102, 0, 0.05);
+  border: 1px solid rgba(255, 102, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.4rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #b0b0b0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  background: #0f0f0f;
+  color: #f8f8f8;
+  font-size: 0.85rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff6600;
+  box-shadow: 0 0 8px rgba(255, 102, 0, 0.2);
+}
+
+textarea.form-input {
+  resize: vertical;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.generate-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+  color: #fff;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.4rem;
+}
+
+.generate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+}
+
+.generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Template Buttons */
+.template-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+.template-btn {
+  width: 100%;
+  background: #1a2942;
+  border: 1px solid #2a2a2a;
+  color: #e0e0e0;
+  padding: 0.7rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.template-btn:hover {
+  background: #253a52;
+  border-color: #ff6600;
+  color: #ff6600;
+}
+
+/* Info Box */
+.info-box {
+  background: rgba(255, 102, 0, 0.08);
+  border: 1px solid rgba(255, 102, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  color: #b0b0b0;
+  line-height: 1.5;
+}
+
+.info-box h4 {
+  margin: 0 0 0.4rem 0;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.info-box p {
+  margin: 0;
+}
+
+.info-box a {
+  color: #ff6600;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.info-box a:hover {
+  color: #ff8533;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .writer-page {
+    grid-template-columns: 1fr;
+  }
+  
+  .tools-panel {
+    max-height: 50vh;
+  }
+}
+
+.assets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+}
+
+.asset-item {
+  aspect-ratio: 1;
+  background: #0f172a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: grab;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asset-item:hover {
+  border-color: #ff6600;
+  background: #0f172a;
+  box-shadow: 0 0 12px rgba(255, 102, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.asset-item:active {
+  cursor: grabbing;
+}
+
+.asset-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.template-btn {
+  width: 100%;
+  background: #1a2942;
+  border: 1px solid #2a2a2a;
+  color: #e0e0e0;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.6rem;
+}
+
+.template-btn:hover {
+  background: #253a52;
+  border-color: #ff6600;
+  color: #ff6600;
+}
+
+.info-box {
+  background: rgba(255, 102, 0, 0.08);
+  border: 1px solid rgba(255, 102, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  color: #b0b0b0;
+  line-height: 1.5;
 }
 
 .prompt-form,
@@ -327,75 +689,29 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.result {
-  margin-top: 0.9rem;
-  border-top: 1px solid #2a2a2a;
-  padding-top: 0.9rem;
-}
-
-pre {
-  white-space: pre-wrap;
-  background: #0f0f0f;
-  border: 1px solid #303030;
-  border-radius: 8px;
-  padding: 0.7rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.chips span {
-  font-size: 0.82rem;
-  border: 1px solid #3a3a3a;
-  border-radius: 999px;
-  padding: 0.35rem 0.65rem;
-}
-
-.usage-grid {
-  margin-top: 0.9rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.metric {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #ffd600;
-}
-
-.training-list {
-  margin-top: 0.75rem;
-  display: grid;
-  gap: 0.55rem;
-  list-style: none;
-  padding: 0;
-}
-
-.training-list li {
-  border: 1px solid #2f2f2f;
-  border-radius: 8px;
-  padding: 0.62rem;
-  background: #111111;
-}
-
-.error {
-  color: #fca5a5;
-  margin-top: 0.8rem;
-}
-
 @media (max-width: 1100px) {
   .writer-page {
     grid-template-columns: 1fr;
   }
+
+  .assets-panel {
+    max-height: none;
+    border-top: 1px solid #2a2a2a;
+  }
 }
 
 @media (max-width: 768px) {
-  .usage-grid {
-    grid-template-columns: 1fr;
+  .assets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .template-btn {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .assets-panel {
+    padding: 0.8rem;
   }
 }
 </style>

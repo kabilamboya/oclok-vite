@@ -1,966 +1,603 @@
 <template>
-  <section class="mockups-page">
+<section class="mockups-wrapper">
+
+  <CreatorToolbar
+    @zoom-change="handleZoomChange"
+    @tool-selected="selectedTool = $event"
+  />
+
+  <div class="mockups-page">
+
+    <!-- LEFT SIDEBAR -->
     <aside class="panel tools-panel">
-      <h2>Mockup Studio</h2>
-      <p class="muted">Side panel tools for canvas editing, upload, and interaction control.</p>
 
-      <form class="upload-form" @submit.prevent="onUpload">
-        <input v-model="form.name" type="text" placeholder="Mockup name" required />
-        <input v-model="form.category" type="text" placeholder="Category (social, banner, web, print)" />
-        <input v-model="form.tags" type="text" placeholder="Tags separated by commas" />
-        <textarea v-model="form.promptUsed" rows="3" placeholder="Prompt used for this mockup"></textarea>
-        <input type="file" accept="image/*" @change="onFileChange" required />
-        <button type="submit" :disabled="uploading || !file">{{ uploading ? 'Uploading...' : 'Upload Mockup' }}</button>
-      </form>
-
-      <div class="tool-section">
-        <h3>Quick Templates</h3>
-        <div class="template-grid">
-          <button
-            v-for="template in templates"
-            :key="template.id"
-            type="button"
-            :class="['template-card', { active: selectedTemplateId === template.id }]"
-            @click="loadTemplate(template)"
-          >
-            <img :src="template.url" :alt="template.name" />
-            <span>{{ template.name }}</span>
-          </button>
-        </div>
-        <p class="tool-hint">Start with the T-shirt base, then upload or layer your design.</p>
+      <div class="tools-header">
+        <h2>Mockup Studio</h2>
       </div>
 
+      <p class="muted">Create and edit mockups.</p>
+
+      <!-- Upload -->
       <div class="tool-section">
-        <h3>Canvas Tools</h3>
-        <div class="tool-grid icon-tool-grid">
-          <button
-            class="secondary icon-tool"
-            type="button"
-            aria-label="Add text layer"
-            title="Add text layer"
-            @click="addTextLayer"
-          >
-            <i class="fas fa-font"></i>
+        <h3>Upload</h3>
+
+        <form class="upload-form" @submit.prevent="onUpload">
+
+          <input v-model="form.name" placeholder="Name" required>
+
+          <input type="file" accept="image/*" @change="onFileChange">
+
+          <button type="submit">
+            Upload
           </button>
-          <button
-            class="secondary icon-tool"
-            type="button"
-            aria-label="Add block layer"
-            title="Add block layer"
-            @click="addRectLayer"
-          >
-            <i class="fas fa-square"></i>
-          </button>
-          <button
-            class="secondary icon-tool"
-            type="button"
-            aria-label="Add badge layer"
-            title="Add badge layer"
-            @click="addCircleLayer"
-          >
-            <i class="fas fa-circle"></i>
-          </button>
-          <button
-            class="secondary icon-tool"
-            type="button"
-            aria-label="Delete selected layer"
-            title="Delete selected layer"
-            @click="removeSelectedLayer"
-          >
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-        <p class="tool-hint">Text, block, badge, and delete selected layer.</p>
+
+        </form>
       </div>
 
+      <!-- Tools -->
       <div class="tool-section">
-        <h3>Brush and Draw</h3>
-        <div class="inline-row compact-tools">
-          <button
-            class="secondary icon-tool"
-            type="button"
-            :aria-label="drawingMode ? 'Disable drawing mode' : 'Enable drawing mode'"
-            :title="drawingMode ? 'Disable drawing mode' : 'Enable drawing mode'"
-            @click="toggleDrawingMode"
-          >
-            <i :class="drawingMode ? 'fas fa-pen-slash' : 'fas fa-pen'"></i>
+        <h3>Tools</h3>
+
+        <div class="tool-grid">
+
+          <button @click="addTextLayer">
+            Text
           </button>
-          <button
-            class="secondary icon-tool"
-            type="button"
-            aria-label="Clear canvas layers"
-            title="Clear canvas layers"
-            @click="clearCanvasObjects"
-          >
-            <i class="fas fa-broom"></i>
+
+          <button @click="addRectLayer">
+            Rectangle
           </button>
+
+          <button @click="addCircleLayer">
+            Circle
+          </button>
+
+          <button @click="removeSelectedLayer">
+            Delete
+          </button>
+
         </div>
-        <p class="tool-hint">{{ drawingMode ? 'Drawing mode is on.' : 'Drawing mode is off.' }}</p>
+
+      </div>
+
+      <!-- Shape Color Customization -->
+      <div class="tool-section">
+        <h3>🎨 Shape Colors</h3>
+
         <label>
-          Brush Size
-          <input v-model.number="brushSize" type="range" min="1" max="48" />
+          Rectangle Color
+          <input type="color" v-model="shapeColors.rect" title="Choose rectangle color">
         </label>
+
         <label>
-          Brush Color
-          <input v-model="brushColor" type="color" class="color-input" />
+          Circle Color
+          <input type="color" v-model="shapeColors.circle" title="Choose circle color">
         </label>
+
+        <p class="muted" style="font-size: 0.85rem; margin-top: 8px;">Apply before adding shapes</p>
       </div>
 
+      <!-- Text formatting -->
       <div class="tool-section">
-        <h3>Selected Layer</h3>
+        <h3>Text</h3>
+
+        <div class="rte-controls">
+
+          <button @click="applyTextFormat('bold')">B</button>
+
+          <button @click="applyTextFormat('italic')">I</button>
+
+          <button @click="applyTextFormat('underline')">U</button>
+
+        </div>
+
+        <label>
+          Color
+          <input type="color" v-model="textFormat.color">
+        </label>
+
+        <label>
+          Size
+          <input type="range" min="12" max="100"
+          v-model.number="textFormat.fontSize">
+        </label>
+
+        <button @click="applySelectedTextFormat">
+          Apply
+        </button>
+
+      </div>
+
+      <!-- Drawing -->
+      <div class="tool-section">
+
+        <h3>Brush</h3>
+
+        <button @click="toggleDrawingMode">
+          Draw
+        </button>
+
+        <button @click="clearCanvasObjects">
+          Clear
+        </button>
+
+        <label>
+          Size
+          <input type="range" min="1" max="48"
+          v-model.number="brushSize">
+        </label>
+
+        <label>
+          Color
+          <input type="color" v-model="brushColor">
+        </label>
+
+      </div>
+
+      <!-- Layer -->
+      <div class="tool-section">
+
+        <h3>🎨 Element Color</h3>
+
+        <label>
+          Fill Color
+          <input type="color" v-model="elementColor" @input="applyElementColor" title="Change selected element color">
+        </label>
+
+      </div>
+
+      <!-- Layer Controls -->
+
         <label>
           Opacity
-          <input v-model.number="layerControls.opacity" type="range" min="10" max="100" @input="applyLayerControls" />
+          <input type="range"
+          min="10"
+          max="100"
+          v-model.number="layerControls.opacity"
+          @input="applyLayerControls">
         </label>
+
         <label>
           Scale
-          <input v-model.number="layerControls.scale" type="range" min="20" max="220" @input="applyLayerControls" />
+          <input type="range"
+          min="20"
+          max="220"
+          v-model.number="layerControls.scale"
+          @input="applyLayerControls">
         </label>
+
         <label>
-          Rotation
-          <input v-model.number="layerControls.angle" type="range" min="-180" max="180" @input="applyLayerControls" />
+          Rotate
+          <input type="range"
+          min="-180"
+          max="180"
+          v-model.number="layerControls.angle"
+          @input="applyLayerControls">
         </label>
+
       </div>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </aside>
 
+    <!-- WORKSPACE -->
     <div class="panel workspace-panel">
+
       <div class="header-row">
-        <h3>Interactive Canvas and 360 View</h3>
+
+        <h3>Canvas Workspace</h3>
+
         <div class="header-actions">
-          <button class="secondary icon-tool" type="button" aria-label="Export PNG" title="Export PNG" @click="downloadCanvas">
-            <i class="fas fa-file-export"></i>
+
+          <button @click="downloadCanvas">
+            Export
           </button>
-          <button class="secondary icon-tool" type="button" aria-label="Refresh mockups" title="Refresh mockups" @click="loadMockups">
-            <i class="fas fa-rotate"></i>
-          </button>
+
         </div>
+
       </div>
 
       <div class="workspace-grid">
+
         <div class="canvas-stage">
           <canvas ref="canvasElement" width="1280" height="720"></canvas>
         </div>
 
-        <div class="viewer-side">
-          <h4>360 User View</h4>
-          <p class="muted">Drag directly on preview to rotate and inspect interaction angles.</p>
-
-          <div
-            class="viewer-stage"
-            @pointerdown="startViewerDrag"
-            @pointermove="moveViewerDrag"
-            @pointerup="endViewerDrag"
-            @pointerleave="endViewerDrag"
-          >
-            <div class="viewer-card" :style="viewerCardStyle">
-              <img v-if="viewerImageUrl" :src="viewerImageUrl" alt="Mockup 360 preview" />
-              <p v-else class="viewer-empty">Select or upload a mockup to begin.</p>
-            </div>
-          </div>
-
-          <div class="viewer-controls">
-            <label>
-              Rotation (0-360)
-              <input v-model.number="viewer.rotationY" type="range" min="0" max="360" />
-            </label>
-            <label>
-              Tilt
-              <input v-model.number="viewer.tiltX" type="range" min="-35" max="35" />
-            </label>
-            <label>
-              Zoom
-              <input v-model.number="viewer.zoom" type="range" min="0.6" max="1.8" step="0.01" />
-            </label>
-            <div class="inline-row">
-              <button class="secondary" @click="viewer.autoSpin = !viewer.autoSpin">
-                {{ viewer.autoSpin ? 'Stop Spin' : 'Auto Spin' }}
-              </button>
-              <button class="secondary" @click="resetViewer">Reset View</button>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div class="header-row gallery-head">
-        <h3>My Mockups</h3>
-      </div>
-
-      <div class="mockups-grid">
-        <article
-          v-for="mockup in mockups"
-          :key="mockup.id"
-          class="mockup-card"
-          :class="{ selected: selectedMockupId === mockup.id }"
-        >
-          <img :src="mockup.url" :alt="mockup.name" @click="loadMockupIntoStudio(mockup.url, mockup.id)" />
-          <div class="mockup-content">
-            <h4>{{ mockup.name }}</h4>
-            <p class="meta">{{ mockup.category || 'general' }} - {{ mockup.status }}</p>
-            <p class="prompt" v-if="mockup.prompt_used">{{ mockup.prompt_used }}</p>
-            <div class="tags" v-if="mockup.tags?.length">
-              <span v-for="tag in mockup.tags" :key="tag">{{ tag }}</span>
-            </div>
-            <div class="actions">
-              <button class="secondary" @click="loadMockupIntoStudio(mockup.url, mockup.id)">Edit</button>
-              <button class="secondary" @click="changeStatus(mockup, 'approved')">Approve</button>
-              <button class="secondary" @click="changeStatus(mockup, 'draft')">Draft</button>
-            </div>
-          </div>
-        </article>
-        <p v-if="mockups.length === 0" class="muted">No mockups uploaded yet.</p>
-      </div>
     </div>
-  </section>
+
+  </div>
+
+</section>
 </template>
 
+
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { Canvas as FabricCanvas, Circle, FabricImage, PencilBrush, Rect, Textbox } from 'fabric';
-import { getLocalUserId } from '@/lib/localStore';
+
+import { ref, reactive, watch, onMounted, onBeforeUnmount } from "vue"
+
 import {
-  createCyberMockup,
-  listCyberMockups,
-  updateCyberMockupStatus,
-} from '@/services/cyber.service';
+Canvas as FabricCanvas,
+Textbox,
+Rect,
+Circle,
+FabricImage,
+PencilBrush
+} from "fabric"
 
-const userId = ref(null);
-const file = ref(null);
-const uploading = ref(false);
-const errorMessage = ref('');
-const mockups = ref([]);
-const selectedMockupId = ref(null);
-const viewerImageUrl = ref('');
-const localPreviewUrl = ref('');
+const canvasElement = ref(null)
+const studioCanvas = ref(null)
 
-const canvasElement = ref(null);
-const studioCanvas = ref(null);
+const drawingMode = ref(false)
+const brushSize = ref(8)
+const brushColor = ref("#ff6600")
 
-const drawingMode = ref(false);
-const brushSize = ref(8);
-const brushColor = ref('#ff6600');
+const elementColor = ref("#ff6600")
 
 const layerControls = reactive({
-  opacity: 100,
-  scale: 100,
-  angle: 0,
-});
+opacity:100,
+scale:100,
+angle:0
+})
 
-const viewer = reactive({
-  rotationY: 0,
-  tiltX: 0,
-  zoom: 1,
-  autoSpin: false,
-});
+const textFormat = reactive({
+bold:false,
+italic:false,
+underline:false,
+color:"#ffffff",
+fontSize:36
+})
 
-const viewerDrag = reactive({
-  active: false,
-  lastX: 0,
-  lastY: 0,
-});
+const shapeColors = reactive({
+  rect: "rgba(255,102,0,0.5)",
+  circle: "rgba(255,214,0,0.7)"
+})
 
 const form = reactive({
-  name: '',
-  category: '',
-  tags: '',
-  promptUsed: '',
-});
+name:""
+})
 
-const templates = [
-  { id: 'tshirt', name: 'T-Shirt', url: '/mockups/tshirt.png' },
-  { id: 'mug', name: 'Mug', url: '/images/SMARTcoffee.jpg' },
-  { id: 'book', name: 'Book', url: '/images/CMSBOOKlet.jpg' },
-  { id: 'billboard', name: 'Billboard', url: '/images/BiGmage.jpg' },
-  { id: 'umbrella', name: 'Umbrella', url: '/images/SMARTgarden.png' },
-];
+const file = ref(null)
 
-const selectedTemplateId = ref(templates[0]?.id || null);
 
-let spinTimer = null;
 
-const viewerCardStyle = computed(() => ({
-  transform: `rotateX(${viewer.tiltX}deg) rotateY(${viewer.rotationY}deg) scale(${viewer.zoom})`,
-}));
+function initCanvas(){
 
-const parseTags = (value) =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
+studioCanvas.value = new FabricCanvas(canvasElement.value,{
+backgroundColor:"#0d0d0d",
+preserveObjectStacking:true
+})
 
-const resolveGuestUserId = () => getLocalUserId("cyber_guest_user_id");
+updateBrushSettings()
 
-const readFileAsDataUrl = (fileInput) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Unable to read selected image file.'));
-    reader.readAsDataURL(fileInput);
-  });
+}
 
-const handleHeaderExport = () => {
-  downloadCanvas();
-};
 
-const handleHeaderRefresh = () => {
-  loadMockups();
-};
 
-const registerHeaderActions = () => {
-  if (typeof window === "undefined") return;
-  window.addEventListener("cyber:mockups-export", handleHeaderExport);
-  window.addEventListener("cyber:mockups-refresh", handleHeaderRefresh);
-};
+function addTextLayer(){
 
-const unregisterHeaderActions = () => {
-  if (typeof window === "undefined") return;
-  window.removeEventListener("cyber:mockups-export", handleHeaderExport);
-  window.removeEventListener("cyber:mockups-refresh", handleHeaderRefresh);
-};
+const text = new Textbox("Edit text",{
 
-const resetViewer = () => {
-  viewer.rotationY = 0;
-  viewer.tiltX = 0;
-  viewer.zoom = 1;
-};
+left:120,
+top:120,
+width:260,
+fontSize:36,
+fill:"#ffffff"
 
-const updateBrushSettings = () => {
-  if (!studioCanvas.value) return;
-  studioCanvas.value.isDrawingMode = drawingMode.value;
+})
 
-  if (drawingMode.value) {
-    if (!studioCanvas.value.freeDrawingBrush) {
-      studioCanvas.value.freeDrawingBrush = new PencilBrush(studioCanvas.value);
-    }
-    studioCanvas.value.freeDrawingBrush.width = brushSize.value;
-    studioCanvas.value.freeDrawingBrush.color = brushColor.value;
-  }
-};
+studioCanvas.value.add(text)
+studioCanvas.value.setActiveObject(text)
 
-const syncLayerControls = () => {
-  if (!studioCanvas.value) return;
-  const active = studioCanvas.value.getActiveObject();
-  if (!active) return;
+}
 
-  layerControls.opacity = Math.round((active.opacity ?? 1) * 100);
-  layerControls.scale = Math.round((active.scaleX ?? 1) * 100);
-  layerControls.angle = Math.round(active.angle ?? 0);
-};
 
-const applyLayerControls = () => {
-  if (!studioCanvas.value) return;
-  const active = studioCanvas.value.getActiveObject();
-  if (!active) return;
 
-  active.set({
-    opacity: layerControls.opacity / 100,
-    scaleX: layerControls.scale / 100,
-    scaleY: layerControls.scale / 100,
-    angle: layerControls.angle,
-  });
-  active.setCoords();
-  studioCanvas.value.requestRenderAll();
-};
+function addRectLayer(){
 
-const initCanvas = () => {
-  if (!canvasElement.value) return;
+const rect = new Rect({
 
-  studioCanvas.value = new FabricCanvas(canvasElement.value, {
-    preserveObjectStacking: true,
-    backgroundColor: '#0d0d0d',
-  });
+left:150,
+top:250,
+width:260,
+height:120,
+fill:shapeColors.rect
 
-  studioCanvas.value.on('selection:created', syncLayerControls);
-  studioCanvas.value.on('selection:updated', syncLayerControls);
-  studioCanvas.value.on('selection:cleared', () => {
-    layerControls.opacity = 100;
-    layerControls.scale = 100;
-    layerControls.angle = 0;
-  });
+})
 
-  updateBrushSettings();
-};
+studioCanvas.value.add(rect)
+studioCanvas.value.setActiveObject(rect)
 
-const loadBackgroundIntoCanvas = async (url) => {
-  if (!studioCanvas.value || !url) return;
+}
 
-  const bg = await FabricImage.fromURL(url, { crossOrigin: 'anonymous' });
-  const baseWidth = bg.width || 1;
-  const baseHeight = bg.height || 1;
-  const scale = Math.min(studioCanvas.value.getWidth() / baseWidth, studioCanvas.value.getHeight() / baseHeight);
 
-  bg.set({
-    originX: 'center',
-    originY: 'center',
-    left: studioCanvas.value.getWidth() / 2,
-    top: studioCanvas.value.getHeight() / 2,
-    selectable: false,
-    evented: false,
-    scaleX: scale,
-    scaleY: scale,
-  });
 
-  studioCanvas.value.backgroundImage = bg;
-  studioCanvas.value.requestRenderAll();
-};
+function addCircleLayer(){
 
-const loadMockupIntoStudio = async (url, id = null) => {
-  selectedTemplateId.value = null;
-  selectedMockupId.value = id;
-  viewerImageUrl.value = url;
-  await loadBackgroundIntoCanvas(url);
-};
+const circle = new Circle({
 
-const loadTemplate = async (template) => {
-  if (!template) return;
-  selectedTemplateId.value = template.id;
-  selectedMockupId.value = null;
-  viewerImageUrl.value = template.url;
-  await loadBackgroundIntoCanvas(template.url);
-};
+left:450,
+top:150,
+radius:70,
+fill:shapeColors.circle
 
-const addTextLayer = () => {
-  if (!studioCanvas.value) return;
-  const text = new Textbox('Brand headline', {
-    left: 140,
-    top: 120,
-    width: 260,
-    fontSize: 36,
-    fill: '#ffffff',
-    fontWeight: 700,
-    stroke: '#000000',
-    strokeWidth: 0.5,
-  });
-  studioCanvas.value.add(text);
-  studioCanvas.value.setActiveObject(text);
-  studioCanvas.value.requestRenderAll();
-};
+})
 
-const addRectLayer = () => {
-  if (!studioCanvas.value) return;
-  const shape = new Rect({
-    left: 120,
-    top: 260,
-    width: 320,
-    height: 110,
-    fill: 'rgba(255, 102, 0, 0.45)',
-    rx: 12,
-    ry: 12,
-  });
-  studioCanvas.value.add(shape);
-  studioCanvas.value.setActiveObject(shape);
-  studioCanvas.value.requestRenderAll();
-};
+studioCanvas.value.add(circle)
+studioCanvas.value.setActiveObject(circle)
 
-const addCircleLayer = () => {
-  if (!studioCanvas.value) return;
-  const badge = new Circle({
-    left: 500,
-    top: 80,
-    radius: 62,
-    fill: 'rgba(255, 214, 0, 0.72)',
-  });
-  studioCanvas.value.add(badge);
-  studioCanvas.value.setActiveObject(badge);
-  studioCanvas.value.requestRenderAll();
-};
+}
 
-const removeSelectedLayer = () => {
-  if (!studioCanvas.value) return;
-  const selected = studioCanvas.value.getActiveObjects();
-  if (!selected.length) return;
-  selected.forEach((item) => studioCanvas.value.remove(item));
-  studioCanvas.value.discardActiveObject();
-  studioCanvas.value.requestRenderAll();
-};
 
-const clearCanvasObjects = () => {
-  if (!studioCanvas.value) return;
-  studioCanvas.value.getObjects().forEach((item) => studioCanvas.value.remove(item));
-  studioCanvas.value.discardActiveObject();
-  studioCanvas.value.requestRenderAll();
-};
 
-const toggleDrawingMode = () => {
-  drawingMode.value = !drawingMode.value;
-};
+function removeSelectedLayer(){
 
-const downloadCanvas = () => {
-  if (!studioCanvas.value) return;
-  const dataUrl = studioCanvas.value.toDataURL({ format: 'png', multiplier: 2 });
-  const link = document.createElement('a');
-  link.href = dataUrl;
-  link.download = `${form.name || 'mockup-canvas'}.png`;
-  link.click();
-};
+const selected = studioCanvas.value.getActiveObjects()
 
-const onFileChange = async (event) => {
-  file.value = event.target.files?.[0] || null;
-  if (!file.value) return;
+selected.forEach(obj=>{
+studioCanvas.value.remove(obj)
+})
 
-  if (localPreviewUrl.value) URL.revokeObjectURL(localPreviewUrl.value);
-  localPreviewUrl.value = URL.createObjectURL(file.value);
+studioCanvas.value.discardActiveObject()
+studioCanvas.value.requestRenderAll()
 
-  if (!form.name) {
-    form.name = file.value.name.replace(/\.[^/.]+$/, '');
-  }
+}
 
-  await loadMockupIntoStudio(localPreviewUrl.value);
-};
 
-const loadMockups = async () => {
-  try {
-    const ownerId = userId.value || resolveGuestUserId();
-    mockups.value = await listCyberMockups({ userId: ownerId });
-  } catch (error) {
-    errorMessage.value = error.message || 'Unable to fetch mockups';
-  }
-};
 
-const onUpload = async () => {
-  if (!file.value) return;
+function toggleDrawingMode(){
 
-  uploading.value = true;
-  errorMessage.value = '';
+drawingMode.value=!drawingMode.value
+updateBrushSettings()
 
-  try {
-    const owner = userId.value || resolveGuestUserId();
-    const mockupUrl = await readFileAsDataUrl(file.value);
+}
 
-    const created = await createCyberMockup({
-      userId: owner,
-      name: form.name,
-      url: mockupUrl,
-      category: form.category,
-      tags: parseTags(form.tags),
-      promptUsed: form.promptUsed,
-      status: 'draft',
-    });
 
-    mockups.value = [created, ...mockups.value];
-    await loadMockupIntoStudio(created.url, created.id);
-    form.name = '';
-    form.category = '';
-    form.tags = '';
-    form.promptUsed = '';
-    file.value = null;
-  } catch (error) {
-    errorMessage.value = error.message || 'Upload failed';
-  } finally {
-    uploading.value = false;
-  }
-};
 
-const changeStatus = async (mockup, status) => {
-  try {
-    const updated = await updateCyberMockupStatus(mockup.id, status);
-    mockups.value = mockups.value.map((item) => (item.id === updated.id ? updated : item));
-  } catch (error) {
-    errorMessage.value = error.message || 'Unable to update status';
-  }
-};
+function updateBrushSettings(){
 
-const startViewerDrag = (event) => {
-  viewerDrag.active = true;
-  viewerDrag.lastX = event.clientX;
-  viewerDrag.lastY = event.clientY;
-};
+if(!studioCanvas.value) return
 
-const moveViewerDrag = (event) => {
-  if (!viewerDrag.active) return;
-  const deltaX = event.clientX - viewerDrag.lastX;
-  const deltaY = event.clientY - viewerDrag.lastY;
+studioCanvas.value.isDrawingMode=drawingMode.value
 
-  viewer.rotationY = (viewer.rotationY + deltaX * 0.7 + 360) % 360;
-  viewer.tiltX = Math.max(-35, Math.min(35, viewer.tiltX - deltaY * 0.35));
+if(drawingMode.value){
 
-  viewerDrag.lastX = event.clientX;
-  viewerDrag.lastY = event.clientY;
-};
+studioCanvas.value.freeDrawingBrush=new PencilBrush(studioCanvas.value)
 
-const endViewerDrag = () => {
-  viewerDrag.active = false;
-};
+studioCanvas.value.freeDrawingBrush.width=brushSize.value
 
-watch([drawingMode, brushSize, brushColor], updateBrushSettings);
+studioCanvas.value.freeDrawingBrush.color=brushColor.value
 
-watch(
-  () => viewer.autoSpin,
-  (enabled) => {
-    if (spinTimer) {
-      clearInterval(spinTimer);
-      spinTimer = null;
-    }
+}
 
-    if (enabled) {
-      spinTimer = setInterval(() => {
-        viewer.rotationY = (viewer.rotationY + 1.4) % 360;
-      }, 30);
-    }
-  },
-);
+}
 
-onMounted(async () => {
-  initCanvas();
-  userId.value = resolveGuestUserId();
-  await loadMockups();
-  if (!viewerImageUrl.value && templates.length) {
-    await loadTemplate(templates[0]);
-  }
-  registerHeaderActions();
-});
+
+
+watch([brushSize,brushColor,drawingMode],updateBrushSettings)
+
+
+
+function applyLayerControls(){
+
+const active=studioCanvas.value.getActiveObject()
+
+if(!active) return
+
+active.set({
+
+opacity:layerControls.opacity/100,
+
+scaleX:layerControls.scale/100,
+scaleY:layerControls.scale/100,
+
+angle:layerControls.angle
+
+})
+
+studioCanvas.value.requestRenderAll()
+
+}
+
+
+
+function applyTextFormat(format){
+
+const active=studioCanvas.value.getActiveObject()
+
+if(!active) return
+
+if(format==="bold"){
+
+textFormat.bold=!textFormat.bold
+
+active.set({
+fontWeight:textFormat.bold?"bold":"normal"
+})
+
+}
+
+if(format==="italic"){
+
+textFormat.italic=!textFormat.italic
+
+active.set({
+fontStyle:textFormat.italic?"italic":"normal"
+})
+
+}
+
+if(format==="underline"){
+
+textFormat.underline=!textFormat.underline
+
+active.set({
+underline:textFormat.underline
+})
+
+}
+
+studioCanvas.value.requestRenderAll()
+
+}
+
+
+
+function applySelectedTextFormat(){
+
+const active=studioCanvas.value.getActiveObject()
+
+if(!active) return
+
+active.set({
+
+fill:textFormat.color,
+
+fontSize:textFormat.fontSize,
+
+fontWeight:textFormat.bold?"bold":"normal",
+
+fontStyle:textFormat.italic?"italic":"normal",
+
+underline:textFormat.underline
+
+})
+
+studioCanvas.value.requestRenderAll()
+
+}
+
+
+
+function clearCanvasObjects(){
+
+studioCanvas.value.getObjects().forEach(o=>{
+studioCanvas.value.remove(o)
+})
+
+}
+
+
+
+function downloadCanvas(){
+
+const url=studioCanvas.value.toDataURL({
+format:"png",
+multiplier:2
+})
+
+const link=document.createElement("a")
+
+link.href=url
+link.download="mockup.png"
+
+link.click()
+
+}
+
+
+
+function onFileChange(e){
+
+file.value=e.target.files[0]
+
+const reader=new FileReader()
+
+reader.onload=async ()=>{
+const img=await FabricImage.fromURL(reader.result)
+
+img.scaleToWidth(400)
+
+studioCanvas.value.add(img)
+
+}
+
+reader.readAsDataURL(file.value)
+
+}
+
+
+
+function onUpload(){
+alert("Upload logic can stay from your service API")
+}
+
+function loadDefaultMockup(){
+  // Load default t-shirt mockup asset
+  FabricImage.fromURL('/mockups/tshirt.png').then((img)=>{
+    img.scaleToWidth(400)
+    img.set({
+      left:300,
+      top:100
+    })
+    studioCanvas.value.add(img)
+    studioCanvas.value.renderAll()
+  }).catch((err)=>{
+    console.error('Error loading default mockup:', err)
+  })
+}
+
+function handleZoomChange(v){
+console.log("Zoom",v)
+}
+
+onMounted(()=>{
+initCanvas()
+loadDefaultMockup()
+
+// Listen for delete element event from toolbar
+window.addEventListener('cyber:delete-element', removeSelectedLayer)
+})
 
 onBeforeUnmount(() => {
-  unregisterHeaderActions();
-  if (spinTimer) clearInterval(spinTimer);
-  if (studioCanvas.value) {
-    studioCanvas.value.dispose();
-    studioCanvas.value = null;
-  }
-  if (localPreviewUrl.value) URL.revokeObjectURL(localPreviewUrl.value);
-});
+  window.removeEventListener('cyber:delete-element', removeSelectedLayer)
+})
+
 </script>
 
+
 <style scoped>
-.mockups-page {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 1rem;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+
+.mockups-page{
+display:grid;
+grid-template-columns:280px 1fr;
+gap:1rem;
+height:100%;
 }
 
-.panel {
-  background: #151515;
-  border: 1px solid #2e2e2e;
-  border-radius: 12px;
-  padding: 0.85rem;
+.canvas-stage{
+border:1px solid #333;
+background:#000;
+padding:8px;
 }
 
-.muted {
-  color: #9ca3af;
+canvas{
+width:100%;
+height:100%;
 }
 
-.tools-panel {
-  position: relative;
-  top: 0;
-  height: 100%;
-  max-height: none;
-  overflow: auto;
+.panel{
+background:#151515;
+padding:1rem;
+border-radius:10px;
 }
 
-.upload-form {
-  display: grid;
-  gap: 0.6rem;
-  margin-top: 0.85rem;
+.tool-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px;
 }
 
-.tool-section {
-  border-top: 1px solid #2b2b2b;
-  margin-top: 0.95rem;
-  padding-top: 0.95rem;
+button{
+background:#ffd600;
+border:none;
+padding:8px;
+border-radius:6px;
+cursor:pointer;
 }
 
-.tool-section h3 {
-  margin: 0 0 0.65rem;
-  font-size: 0.95rem;
+.muted{
+color:#aaa;
 }
 
-.tool-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.45rem;
-}
-
-.icon-tool-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.inline-row {
-  display: flex;
-  gap: 0.45rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.compact-tools {
-  align-items: center;
-}
-
-label {
-  display: grid;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  color: #d1d5db;
-  margin-top: 0.55rem;
-}
-
-input,
-textarea {
-  border-radius: 8px;
-  border: 1px solid #393939;
-  background: #0f0f0f;
-  color: #f7f7f7;
-  padding: 0.65rem;
-  width: 100%;
-}
-
-.color-input {
-  padding: 0.1rem;
-  height: 38px;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 0.62rem 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: #ffd600;
-  color: #121212;
-}
-
-button.secondary {
-  background: transparent;
-  color: #ffd600;
-  border: 1px solid #ffd600;
-}
-
-.icon-tool {
-  width: 40px;
-  min-width: 40px;
-  height: 40px;
-  padding: 0 !important;
-  display: grid;
-  place-items: center;
-}
-
-.tool-hint {
-  margin-top: 0.45rem;
-  margin-bottom: 0;
-  color: #9ca3af;
-  font-size: 0.78rem;
-}
-
-.workspace-panel {
-  display: grid;
-  gap: 0.95rem;
-  min-height: 0;
-  overflow: auto;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.header-actions {
-  display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-
-.workspace-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.85rem;
-  min-height: 0;
-}
-
-.canvas-stage {
-  border: 1px solid #2f2f2f;
-  border-radius: 10px;
-  background: #090909;
-  overflow: hidden;
-  padding: 0.4rem;
-  width: 100%;
-  min-height: clamp(420px, 62vh, 760px);
-  aspect-ratio: auto;
-}
-
-.canvas-stage canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-.viewer-side {
-  border: 1px solid #2f2f2f;
-  border-radius: 10px;
-  padding: 0.7rem;
-  background: #101010;
-}
-
-.viewer-side h4 {
-  margin: 0;
-}
-
-.viewer-stage {
-  margin-top: 0.55rem;
-  perspective: 1100px;
-  min-height: 220px;
-  border: 1px dashed #3a3a3a;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at center, rgba(255, 102, 0, 0.12), transparent 62%);
-  touch-action: none;
-}
-
-.viewer-card {
-  width: 220px;
-  height: 220px;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-  transform-style: preserve-3d;
-  transition: transform 0.06s linear;
-  overflow: hidden;
-}
-
-.viewer-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 16px;
-  border: 1px solid #404040;
-}
-
-.viewer-empty {
-  font-size: 0.85rem;
-  color: #9ca3af;
-  text-align: center;
-  padding: 0.8rem;
-}
-
-.viewer-controls {
-  margin-top: 0.7rem;
-  display: grid;
-  gap: 0.45rem;
-}
-
-.gallery-head {
-  margin-top: 0.5rem;
-}
-
-.mockups-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.8rem;
-}
-
-.mockup-card {
-  border: 1px solid #2f2f2f;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #101010;
-}
-
-.mockup-card.selected {
-  border-color: #ff6600;
-  box-shadow: 0 0 0 1px rgba(255, 102, 0, 0.6);
-}
-
-.mockup-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.mockup-content {
-  padding: 0.7rem;
-}
-
-.meta {
-  font-size: 0.82rem;
-  color: #9ca3af;
-}
-
-.prompt {
-  font-size: 0.85rem;
-  margin: 0.45rem 0;
-}
-
-.tags {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-
-.tags span {
-  font-size: 0.74rem;
-  border: 1px solid #363636;
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-}
-
-.actions {
-  display: flex;
-  gap: 0.45rem;
-  margin-top: 0.65rem;
-  flex-wrap: wrap;
-}
-
-.template-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.template-card {
-  background: #0f0f0f;
-  border: 1px solid #2f2f2f;
-  color: #f7f7f7;
-  border-radius: 10px;
-  padding: 0.4rem;
-  text-align: left;
-}
-
-.template-card img {
-  width: 100%;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #2a2a2a;
-}
-
-.template-card span {
-  display: block;
-  margin-top: 0.35rem;
-  font-size: 0.82rem;
-}
-
-.template-card.active {
-  border-color: #ff6600;
-  box-shadow: 0 0 0 1px rgba(255, 102, 0, 0.6);
-}
-
-.error {
-  color: #fca5a5;
-  margin-top: 0.7rem;
-}
-
-@media (max-width: 980px) {
-  .mockups-page {
-    grid-template-columns: 1fr;
-    height: auto;
-    overflow: visible;
-  }
-
-  .tools-panel {
-    position: static;
-    height: auto;
-    max-height: none;
-  }
-
-  .workspace-panel {
-    overflow: visible;
-  }
-}
 </style>
