@@ -622,7 +622,6 @@ Target Audience: [Define who you're selling to]`
     padding: 16px 10px 10px 10px;
   }
 }
-}
 
 .hero {
   text-align: center;
