@@ -1,5 +1,26 @@
 <template>
   <section class="prompt-training-page">
+    <!-- Practice & Tracking Columns -->
+    <div class="practice-tracking-row">
+      <!-- Practice Area -->
+      <div class="practice-col">
+        <h2>Practice Your Prompt</h2>
+        <textarea v-model="practicePrompt" class="practice-textarea" placeholder="Write your prompt here..." />
+      </div>
+      <!-- Tracking Area -->
+      <div class="tracking-col">
+        <h2>Prompt Key Areas</h2>
+        <ul class="tracking-list">
+          <li><strong>ROLE:</strong> [Your role if needed]</li>
+          <li><strong>WHAT:</strong> [Specific task]</li>
+          <li><strong>HOW:</strong> [Tone, style, format, length]</li>
+          <li><strong>WHY:</strong> [Purpose, audience, goal]</li>
+          <li><strong>WHERE:</strong> [Platform, brand rules, constraints]</li>
+          <li><strong>OUTPUT:</strong> [Format, quantity, sections]</li>
+          <li><strong>CONTEXT:</strong> [Background, references]</li>
+        </ul>
+      </div>
+    </div>
     <!-- Hero Section -->
     <div class="hero">
       <h1>AI Prompt Mastery</h1>
@@ -171,6 +192,8 @@
 
 <script setup>
 import { ref } from 'vue';
+
+const practicePrompt = ref("");
 
 const activeStep = ref('what');
 
@@ -522,6 +545,83 @@ Target Audience: [Define who you're selling to]`
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: #f1f5f9;
   font-family: 'Poppins', sans-serif;
+}
+
+/* Practice & Tracking Columns */
+.practice-tracking-row {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+  min-height: 260px;
+}
+.practice-col, .tracking-col {
+  flex: 1 1 0;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 14px;
+  padding: 24px 18px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  min-width: 0;
+  overflow: hidden;
+}
+.practice-col {
+  margin-right: 0;
+}
+.tracking-col {
+  margin-left: 0;
+}
+.practice-col h2, .tracking-col h2 {
+  font-size: 1.1rem;
+  color: #ffd600;
+  margin-bottom: 12px;
+}
+.practice-textarea {
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 120px;
+  max-height: 200px;
+  resize: vertical;
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #7c3aed;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+.tracking-list {
+  flex: 1 1 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+.tracking-list li {
+  margin-bottom: 10px;
+  font-size: 0.98rem;
+  color: #e0e0e0;
+  background: rgba(124, 58, 237, 0.08);
+  border-left: 3px solid #ffd600;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.tracking-list strong {
+  color: #ffd600;
+}
+
+@media (max-width: 900px) {
+  .practice-tracking-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .practice-col, .tracking-col {
+    max-height: 220px;
+    padding: 16px 10px 10px 10px;
+  }
+}
 }
 
 .hero {

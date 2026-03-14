@@ -147,6 +147,9 @@
       </div>
 
       <!-- Layer Controls -->
+      <div class="tool-section">
+
+        <h3>Layer Controls</h3>
 
         <label>
           Opacity
