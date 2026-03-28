@@ -1,8 +1,17 @@
 <template>
   <aside class="cyber-sidebar">
-    <h2 class="sidebar-title" aria-label="O!clok Cyber" title="O!clok Cyber">O!</h2>
-
     <nav class="sidebar-nav">
+      <router-link
+        to="/cyber"
+        class="nav-link"
+        active-class="active-link"
+        aria-label="Cyber Home"
+        title="Cyber Home"
+      >
+        <i class="fas fa-home"></i>
+        <span class="nav-label">Home</span>
+      </router-link>
+
       <!-- CREATE Section -->
       <span class="nav-section">CREATE</span>
       <router-link
@@ -68,15 +77,8 @@
   align-items: center;
 }
 
-.sidebar-title {
-  font-size: 1.1rem;
-  color: #ffd600;
-  text-align: center;
-  margin-bottom: 1.2rem;
-}
-
-.sidebar-nav {
-  display: flex;
+  .sidebar-nav {
+    display: flex;
   flex-direction: column;
   gap: 0.55rem;
   width: 100%;

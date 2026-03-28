@@ -1,126 +1,100 @@
 <template>
   <div class="writer-container">
-    <!-- Shared Toolbar with Zoom -->
-    <CreatorToolbar
-      :initial-zoom="zoom"
-      :editor-content="getEditorText()"
-      current-page="writer"
-      @zoom-change="handleZoomChange"
-      @tool-selected="handleToolSelected"
-      @draft-saved="handleDraftSaved"
-    />
+    <RteLayout :zoom="zoom" columns="minmax(0, 2.2fr) minmax(260px, 0.6fr)">
+      <template #toolbar>
+        <!-- Shared Toolbar with Zoom -->
+        <CreatorToolbar
+          :initial-zoom="zoom"
+          :editor-content="getEditorText()"
+          current-page="writer"
+          @zoom-change="handleZoomChange"
+          @tool-selected="handleToolSelected"
+          @draft-saved="handleDraftSaved"
+        />
+      </template>
 
-    <section class="writer-page" :style="{ transform: `scale(${zoom / 100})`, transformOrigin: '0 0' }">
-      <CreatorEditor
-        ref="editorRef"
-        class="panel editor-panel"
-        title="Writing Canvas with RTE"
-        subtitle="Rich Text Editor for AI scripts, campaign drafts, and professional content generation."
-        placeholder="Start writing your AI script or campaign content here..."
-        use-draft-label="Save Draft"
-        @use-draft="applyDraftToTraining"
-      />
+      <template #main>
+        <CreatorEditor
+          ref="editorRef"
+          class="panel editor-panel"
+          title="Writing Canvas with Rich Text Edotor"
+          subtitle="For AI scripts, campaign drafts, and professional content generation."
+          placeholder="Start writing your AI script or campaign content here..."
+          :show-actions="false"
+        />
+      </template>
 
-      <!-- File Upload & Shapes Panel for RTE -->
-      <aside class="panel tools-panel">
-        <div class="panel-header">
-          <h2>RTE Tools & Imports</h2>
-          <router-link to="/cyber/prompts" class="learn-prompts-btn" title="Learn AI prompting">
-            <i class="fas fa-sparkles"></i>
-          </router-link>
-        </div>
-
-        <!-- File Upload Section -->
-        <div class="section-container">
-          <h3>📁 File Upload</h3>
-          <p class="muted">Import text files to your editor</p>
-          <form class="upload-form" @submit.prevent="handleFileUpload">
-            <input 
-              ref="fileInput"
-              type="file" 
-              accept=".txt,.md,.doc,.docx" 
-              @change="onFileSelected"
-              class="file-input"
-            />
-            <button type="submit" :disabled="!selectedFile || uploading" class="upload-btn">
-              {{ uploading ? 'Uploading...' : 'Import File' }}
-            </button>
-          </form>
-        </div>
-
-        <!-- Shapes & Elements Section -->
-        <div class="section-container">
-          <h3>🔷 Shapes & Elements</h3>
-          <p class="muted">Insert formatting shapes</p>
-          
-          <div class="color-control">
-            <label>Color:</label>
-            <input type="color" v-model="shapeColor" class="color-picker">
+      <template #aside>
+        <div class="panel tools-panel">
+          <div class="panel-header">
+            <h2>Imports & Templates</h2>
+            <p class="muted">Bring in files and quick-start copy</p>
           </div>
-          
-          <div class="shapes-grid">
-            <button 
-              class="shape-btn" 
-              @click="insertShape('quote')" 
-              title="Insert quote shape"
-            >
-              <i class="fas fa-quote-left"></i> Quote
-            </button>
-            <button 
-              class="shape-btn" 
-              @click="insertShape('box')" 
-              title="Insert text box"
-            >
-              <i class="fas fa-square"></i> Box
-            </button>
-            <button 
-              class="shape-btn" 
-              @click="insertShape('highlight')" 
-              title="Insert highlight"
-            >
-              <i class="fas fa-highlighter"></i> Highlight
-            </button>
-            <button 
-              class="shape-btn" 
-              @click="insertShape('divider')" 
-              title="Insert divider"
-            >
-              <i class="fas fa-minus"></i> Divider
-            </button>
+
+          <div class="section-container">
+            <h3>Draft Actions</h3>
+            <div class="draft-actions">
+              <button class="draft-btn primary" @click="handleSaveDraft">
+                <i class="fas fa-save"></i> Save Draft
+              </button>
+              <button class="draft-btn" @click="handleCopyDraft">
+                <i class="fas fa-copy"></i> Copy Draft
+              </button>
+              <button class="draft-btn ghost" @click="handleClearDraft">
+                <i class="fas fa-eraser"></i> Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="section-container">
+            <h3>File Upload</h3>
+            <p class="muted">Import text files into your editor</p>
+            <form class="upload-form" @submit.prevent="handleFileUpload">
+              <input
+                ref="fileInput"
+                type="file"
+                accept=".txt,.md,.doc,.docx"
+                @change="onFileSelected"
+                class="file-input"
+              />
+              <button type="submit" :disabled="!selectedFile || uploading" class="upload-btn">
+                {{ uploading ? 'Uploading...' : 'Import File' }}
+              </button>
+            </form>
+          </div>
+
+          <div class="section-container">
+            <h3>Quick Templates</h3>
+            <div class="template-buttons">
+              <button class="template-btn" @click="insertTemplate('email')">
+                <i class="fas fa-envelope"></i> Email
+              </button>
+              <button class="template-btn" @click="insertTemplate('social')">
+                <i class="fas fa-share-alt"></i> Social
+              </button>
+              <button class="template-btn" @click="insertTemplate('script')">
+                <i class="fas fa-microphone"></i> Script
+              </button>
+            </div>
           </div>
         </div>
-
-        <!-- Templates Section -->
-        <div class="section-container">
-          <h3>📋 Quick Templates</h3>
-          <div class="template-buttons">
-            <button class="template-btn" @click="insertTemplate('email')">
-              <i class="fas fa-envelope"></i> Email
-            </button>
-            <button class="template-btn" @click="insertTemplate('social')">
-              <i class="fas fa-share-alt"></i> Social
-            </button>
-            <button class="template-btn" @click="insertTemplate('script')">
-              <i class="fas fa-microphone"></i> Script
-            </button>
-          </div>
-        </div>
-      </aside>
-    </section>
+      </template>
+    </RteLayout>
   </div>
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import CreatorEditor from '@/components/CreatorEditor.vue';
+import CreatorToolbar from '@/components/TopToolbar.vue';
+import RteLayout from '@/layouts/RteLayout.vue';
 import { getLocalUserId } from '@/lib/localStore';
 
 const editorRef = ref(null);
-const fileInput = ref(null);
 const zoom = ref(100);
+const fileInput = ref(null);
 const selectedFile = ref(null);
 const uploading = ref(false);
-const shapeColor = ref('#ff6600');
 
 const templates = {
   email: `Subject: [Your Subject Here]
@@ -131,15 +105,13 @@ Hi [Name],
 
 Best regards,
 [Your Name]`,
-  
-  social: `📱 [Hook or attention-grabber]
+  social: `[Hook or attention-grabber]
 
 [Main message - 2-3 lines]
 
 [Call-to-action]
 
 #oclok #[relevant hashtags]`,
-  
   script: `[SCENE DESCRIPTION]
 
 CHARACTER: [Dialogue here]
@@ -149,38 +121,18 @@ CHARACTER: [Dialogue here]
 CHARACTER: [Response]`,
 };
 
-const shapeTemplates = {
-  quote: `"[Your quote here]"
-— [Attribution]`,
-  
-  box: `┌────────────────────┐
-│ [Important Info]   │
-└────────────────────┘`,
-  
-  highlight: `⭐ [HIGHLIGHTED TEXT]`,
-  
-  divider: `════════════════════════════════════`,
-};
-
-// Add color wrapper for shapes with memo of color applied
-const wrapShapeWithColor = (content) => {
-  return `\n[COLOR: ${shapeColor.value}]\n${content}\n[/COLOR]\n`;
-};
-
-// File Upload Handler
 const onFileSelected = (event) => {
   selectedFile.value = event.target.files?.[0] || null;
 };
 
 const handleFileUpload = async () => {
   if (!selectedFile.value) return;
-  
+
   uploading.value = true;
   try {
     const text = await selectedFile.value.text();
     editorRef.value?.insertContent?.(text);
-    
-    // Reset file input
+
     selectedFile.value = null;
     if (fileInput.value) fileInput.value.value = '';
   } catch (error) {
@@ -191,27 +143,33 @@ const handleFileUpload = async () => {
   }
 };
 
-// Shape Insertion
-const insertShape = (shapeType) => {
-  const shapeContent = shapeTemplates[shapeType] || '';
-  if (editorRef.value) {
-    const current = editorRef.value?.getText?.() || '';
-    const coloredContent = wrapShapeWithColor(shapeContent);
-    editorRef.value?.setText?.(current + coloredContent);
-  }
-};
-
 const getEditorText = () => editorRef.value?.getText() || "";
 
-const applyDraftToTraining = (text) => {
-  console.log('Draft applied to training:', text);
-  // Here you could send the draft to your AI training service
+const handleSaveDraft = () => {
+  const content = getEditorText();
+  const draftData = {
+    content,
+    page: "writer",
+    timestamp: new Date().toISOString(),
+    zoom: zoom.value
+  };
+  localStorage.setItem("creator_draft_writer", JSON.stringify(draftData));
+  handleDraftSaved(draftData);
+};
+
+const handleCopyDraft = () => {
+  editorRef.value?.copyDraft?.();
+};
+
+const handleClearDraft = () => {
+  editorRef.value?.clearDraft?.();
 };
 
 const insertTemplate = (templateType) => {
   const templateContent = templates[templateType] || '';
   editorRef.value?.setText?.(templateContent);
 };
+
 
 const handleZoomChange = (newZoom) => {
   zoom.value = newZoom;
@@ -243,16 +201,6 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 
-.writer-page {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.5fr);
-  gap: 0.9rem;
-  overflow: auto;
-  height: 100%;
-}
-
 .panel {
   background: #161616;
   border: 1px solid #2a2a2a;
@@ -263,6 +211,8 @@ onBeforeUnmount(() => {
 
 .editor-panel {
   overflow: auto;
+  width: 100%;
+  max-width: 980px;
 }
 
 .tools-panel {
@@ -276,9 +226,9 @@ onBeforeUnmount(() => {
 
 .panel-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.8rem;
   border-bottom: 1px solid #2a2a2a;
 }
@@ -288,32 +238,11 @@ onBeforeUnmount(() => {
   font-weight: 600;
   color: #e0e0e0;
   margin: 0;
-  flex: 1;
-}
-
-.learn-prompts-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  color: #ff6600;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-}
-
-.learn-prompts-btn:hover {
-  background: rgba(255, 102, 0, 0.1);
-  color: #ff8533;
 }
 
 .muted {
   color: #9ca3af;
-  margin: 0.2rem 0 0.8rem;
+  margin: 0;
   font-size: 0.85rem;
 }
 
@@ -325,6 +254,8 @@ onBeforeUnmount(() => {
 
 .section-container:last-child {
   border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .section-container h3 {
@@ -334,7 +265,57 @@ onBeforeUnmount(() => {
   margin: 0 0 0.6rem 0;
 }
 
-/* File Upload Styles */
+.draft-actions {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.draft-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #2a2a2a;
+  background: #1a2942;
+  color: #e0e0e0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draft-btn:hover {
+  background: #253a52;
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
+}
+
+.draft-btn.primary {
+  background: var(--primary-orange);
+  border-color: var(--primary-orange-border);
+  color: var(--text-white);
+}
+
+.draft-btn.primary:hover {
+  background: var(--primary-orange-hover);
+  color: var(--text-white);
+}
+
+.draft-btn.ghost {
+  background: transparent;
+  border-color: var(--secondary-teal-border);
+  color: var(--secondary-teal);
+}
+
+.draft-btn.ghost:hover {
+  background: rgba(15, 157, 138, 0.15);
+  border-color: var(--secondary-teal);
+  color: var(--text-white);
+}
+
 .upload-form {
   display: flex;
   flex-direction: column;
@@ -379,143 +360,6 @@ onBeforeUnmount(() => {
   cursor: not-allowed;
 }
 
-/* Shapes Grid */
-.shapes-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.6rem;
-}
-
-.shape-btn {
-  background: #253a52;
-  border: 1px solid #2a2a2a;
-  color: #b0b0b0;
-  padding: 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.shape-btn:hover {
-  border-color: #ff6600;
-  background: #1a2942;
-  color: #ff6600;
-}
-
-.shape-btn i {
-  font-size: 1rem;
-}
-
-/* Color Control */
-.color-control {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-  padding: 0.7rem;
-  background: rgba(255, 214, 0, 0.08);
-  border: 1px solid rgba(255, 214, 0, 0.2);
-  border-radius: 6px;
-}
-
-.color-control label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #ffd600;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.color-picker {
-  width: 50px;
-  height: 40px;
-  border: 1px solid #2a2a2a;
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 2px;
-}
-
-.color-picker:hover {
-  border-color: #ffd600;
-}
-
-/* AI Section Styles */
-.ai-section {
-  background: rgba(255, 102, 0, 0.05);
-  border: 1px solid rgba(255, 102, 0, 0.2);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.4rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 0.8rem;
-}
-
-.form-group label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #b0b0b0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #2a2a2a;
-  border-radius: 6px;
-  background: #0f0f0f;
-  color: #f8f8f8;
-  font-size: 0.85rem;
-  transition: border-color 0.2s ease;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #ff6600;
-  box-shadow: 0 0 8px rgba(255, 102, 0, 0.2);
-}
-
-textarea.form-input {
-  resize: vertical;
-  font-family: 'Monaco', 'Courier New', monospace;
-}
-
-.generate-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
-  color: #fff;
-  border: none;
-  padding: 0.8rem;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 0.4rem;
-}
-
-.generate-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
-}
-
-.generate-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Template Buttons */
 .template-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -541,177 +385,11 @@ textarea.form-input {
   color: #ff6600;
 }
 
-/* Info Box */
-.info-box {
-  background: rgba(255, 102, 0, 0.08);
-  border: 1px solid rgba(255, 102, 0, 0.2);
-  border-radius: 6px;
-  padding: 0.8rem;
-  font-size: 0.85rem;
-  color: #b0b0b0;
-  line-height: 1.5;
-}
-
-.info-box h4 {
-  margin: 0 0 0.4rem 0;
-  color: #e0e0e0;
-  font-size: 0.9rem;
-}
-
-.info-box p {
-  margin: 0;
-}
-
-.info-box a {
-  color: #ff6600;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-
-.info-box a:hover {
-  color: #ff8533;
-}
-
-/* Responsive */
 @media (max-width: 1200px) {
-  .writer-page {
-    grid-template-columns: 1fr;
-  }
-  
   .tools-panel {
     max-height: 50vh;
-  }
-}
-
-.assets-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.8rem;
-}
-
-.asset-item {
-  aspect-ratio: 1;
-  background: #0f172a;
-  border: 1px solid #2a2a2a;
-  border-radius: 6px;
-  overflow: hidden;
-  cursor: grab;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.asset-item:hover {
-  border-color: #ff6600;
-  background: #0f172a;
-  box-shadow: 0 0 12px rgba(255, 102, 0, 0.2);
-  transform: scale(1.05);
-}
-
-.asset-item:active {
-  cursor: grabbing;
-}
-
-.asset-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.template-btn {
-  width: 100%;
-  background: #1a2942;
-  border: 1px solid #2a2a2a;
-  color: #e0e0e0;
-  padding: 0.8rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 0.6rem;
-}
-
-.template-btn:hover {
-  background: #253a52;
-  border-color: #ff6600;
-  color: #ff6600;
-}
-
-.info-box {
-  background: rgba(255, 102, 0, 0.08);
-  border: 1px solid rgba(255, 102, 0, 0.2);
-  border-radius: 6px;
-  padding: 0.8rem;
-  font-size: 0.85rem;
-  color: #b0b0b0;
-  line-height: 1.5;
-}
-
-.prompt-form,
-.training-form {
-  display: grid;
-  gap: 0.55rem;
-  margin-top: 0.65rem;
-}
-
-input,
-textarea {
-  width: 100%;
-  border: 1px solid #3a3a3a;
-  border-radius: 8px;
-  background: #0f0f0f;
-  color: #f8f8f8;
-  padding: 0.62rem;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  background: #ffd600;
-  color: #131313;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0.62rem 0.9rem;
-}
-
-button.secondary {
-  border: 1px solid #ffd600;
-  background: transparent !important;
-  color: #6d28d9 !important;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-@media (max-width: 1100px) {
-  .writer-page {
-    grid-template-columns: 1fr;
-  }
-
-  .assets-panel {
-    max-height: none;
+    border-left: none;
     border-top: 1px solid #2a2a2a;
-  }
-}
-
-@media (max-width: 768px) {
-  .assets-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .template-btn {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .assets-panel {
-    padding: 0.8rem;
   }
 }
 </style>

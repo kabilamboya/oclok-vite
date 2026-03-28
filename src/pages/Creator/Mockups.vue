@@ -1,223 +1,179 @@
 <template>
-<section class="mockups-wrapper">
+  <section class="mockups-wrapper">
+    <RteLayout :zoom="zoom" columns="280px 1fr" aside-position="left">
+      <template #toolbar>
+        <CreatorToolbar
+          :initial-zoom="zoom"
+          current-page="mockups"
+          @zoom-change="handleZoomChange"
+          @tool-selected="selectedTool = $event"
+          @delete-element="removeSelectedLayer"
+        />
+      </template>
 
-  <CreatorToolbar
-    @zoom-change="handleZoomChange"
-    @tool-selected="selectedTool = $event"
-  />
+      <template #aside>
+        <!-- LEFT SIDEBAR -->
+        <div class="panel tools-panel">
+          <div class="tools-header">
+            <h3>Mockup Studio</h3>
+          </div>
 
-  <div class="mockups-page">
+          <p class="muted">Create and edit mockups.</p>
 
-    <!-- LEFT SIDEBAR -->
-    <aside class="panel tools-panel">
+          <!-- Upload -->
+          <div class="tool-section">
+            <h3>Upload</h3>
 
-      <div class="tools-header">
-        <h2>Mockup Studio</h2>
-      </div>
+            <form class="upload-form" @submit.prevent="onUpload">
+              <input v-model="form.name" placeholder="Name" required>
 
-      <p class="muted">Create and edit mockups.</p>
+              <input type="file" accept="image/*" @change="onFileChange">
 
-      <!-- Upload -->
-      <div class="tool-section">
-        <h3>Upload</h3>
+              <button type="submit">
+                Upload
+              </button>
+            </form>
+          </div>
 
-        <form class="upload-form" @submit.prevent="onUpload">
+          <!-- Tools -->
+          <div class="tool-section">
+            <h3>Tools</h3>
 
-          <input v-model="form.name" placeholder="Name" required>
+            <div class="tool-grid">
+              <button @click="addTextLayer">
+                Text
+              </button>
 
-          <input type="file" accept="image/*" @change="onFileChange">
+              <button @click="addRectLayer">
+                Rectangle
+              </button>
 
-          <button type="submit">
-            Upload
-          </button>
+              <button @click="addCircleLayer">
+                Circle
+              </button>
 
-        </form>
-      </div>
+              <button @click="removeSelectedLayer">
+                Delete
+              </button>
+            </div>
+          </div>
 
-      <!-- Tools -->
-      <div class="tool-section">
-        <h3>Tools</h3>
+          <!-- Shape Color Customization -->
+          <div class="tool-section">
+            <h3>Shape Colors</h3>
 
-        <div class="tool-grid">
+            <label>
+              Rectangle Color
+              <input type="color" v-model="shapeColors.rect" title="Choose rectangle color">
+            </label>
 
-          <button @click="addTextLayer">
-            Text
-          </button>
+            <label>
+              Circle Color
+              <input type="color" v-model="shapeColors.circle" title="Choose circle color">
+            </label>
 
-          <button @click="addRectLayer">
-            Rectangle
-          </button>
+            <p class="muted" style="font-size: 0.85rem; margin-top: 8px;">Apply before adding shapes</p>
+          </div>
 
-          <button @click="addCircleLayer">
-            Circle
-          </button>
+          <!-- Drawing -->
+          <div class="tool-section">
+            <h3>Brush</h3>
 
-          <button @click="removeSelectedLayer">
-            Delete
-          </button>
+            <button @click="toggleDrawingMode">
+              Draw
+            </button>
 
+            <button @click="clearCanvasObjects">
+              Clear
+            </button>
+
+            <label>
+              Size
+              <input type="range" min="1" max="48"
+              v-model.number="brushSize">
+            </label>
+
+            <label>
+              Color
+              <input type="color" v-model="brushColor">
+            </label>
+          </div>
+
+          <!-- Layer -->
+          <div class="tool-section">
+            <h3>Element Color</h3>
+
+            <label>
+              Fill Color
+              <input type="color" v-model="elementColor" @input="applyElementColor" title="Change selected element color">
+            </label>
+          </div>
+
+          <!-- Layer Controls -->
+          <div class="tool-section">
+            <h3>Layer Controls</h3>
+
+            <label>
+              Opacity
+              <input type="range"
+              min="10"
+              max="100"
+              v-model.number="layerControls.opacity"
+              @input="applyLayerControls">
+            </label>
+
+            <label>
+              Scale
+              <input type="range"
+              min="20"
+              max="220"
+              v-model.number="layerControls.scale"
+              @input="applyLayerControls">
+            </label>
+
+            <label>
+              Rotate
+              <input type="range"
+              min="-180"
+              max="180"
+              v-model.number="layerControls.angle"
+              @input="applyLayerControls">
+            </label>
+          </div>
         </div>
+      </template>
 
-      </div>
+      <template #main>
+        <!-- WORKSPACE -->
+        <div class="panel workspace-panel">
+          <div class="header-row">
+            <h2>Create and share mockups</h2>
 
-      <!-- Shape Color Customization -->
-      <div class="tool-section">
-        <h3>🎨 Shape Colors</h3>
+            <div class="header-actions">
+              <button @click="downloadCanvas">
+                Export
+              </button>
+            </div>
+          </div>
 
-        <label>
-          Rectangle Color
-          <input type="color" v-model="shapeColors.rect" title="Choose rectangle color">
-        </label>
-
-        <label>
-          Circle Color
-          <input type="color" v-model="shapeColors.circle" title="Choose circle color">
-        </label>
-
-        <p class="muted" style="font-size: 0.85rem; margin-top: 8px;">Apply before adding shapes</p>
-      </div>
-
-      <!-- Text formatting -->
-      <div class="tool-section">
-        <h3>Text</h3>
-
-        <div class="rte-controls">
-
-          <button @click="applyTextFormat('bold')">B</button>
-
-          <button @click="applyTextFormat('italic')">I</button>
-
-          <button @click="applyTextFormat('underline')">U</button>
-
+          <div class="workspace-grid">
+            <div class="canvas-stage">
+              <canvas ref="canvasElement" width="1280" height="1440"></canvas>
+            </div>
+          </div>
         </div>
-
-        <label>
-          Color
-          <input type="color" v-model="textFormat.color">
-        </label>
-
-        <label>
-          Size
-          <input type="range" min="12" max="100"
-          v-model.number="textFormat.fontSize">
-        </label>
-
-        <button @click="applySelectedTextFormat">
-          Apply
-        </button>
-
-      </div>
-
-      <!-- Drawing -->
-      <div class="tool-section">
-
-        <h3>Brush</h3>
-
-        <button @click="toggleDrawingMode">
-          Draw
-        </button>
-
-        <button @click="clearCanvasObjects">
-          Clear
-        </button>
-
-        <label>
-          Size
-          <input type="range" min="1" max="48"
-          v-model.number="brushSize">
-        </label>
-
-        <label>
-          Color
-          <input type="color" v-model="brushColor">
-        </label>
-
-      </div>
-
-      <!-- Layer -->
-      <div class="tool-section">
-
-        <h3>🎨 Element Color</h3>
-
-        <label>
-          Fill Color
-          <input type="color" v-model="elementColor" @input="applyElementColor" title="Change selected element color">
-        </label>
-
-      </div>
-
-      <!-- Layer Controls -->
-      <div class="tool-section">
-
-        <h3>Layer Controls</h3>
-
-        <label>
-          Opacity
-          <input type="range"
-          min="10"
-          max="100"
-          v-model.number="layerControls.opacity"
-          @input="applyLayerControls">
-        </label>
-
-        <label>
-          Scale
-          <input type="range"
-          min="20"
-          max="220"
-          v-model.number="layerControls.scale"
-          @input="applyLayerControls">
-        </label>
-
-        <label>
-          Rotate
-          <input type="range"
-          min="-180"
-          max="180"
-          v-model.number="layerControls.angle"
-          @input="applyLayerControls">
-        </label>
-
-      </div>
-
-    </aside>
-
-    <!-- WORKSPACE -->
-    <div class="panel workspace-panel">
-
-      <div class="header-row">
-
-        <h3>Canvas Workspace</h3>
-
-        <div class="header-actions">
-
-          <button @click="downloadCanvas">
-            Export
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="workspace-grid">
-
-        <div class="canvas-stage">
-          <canvas ref="canvasElement" width="1280" height="720"></canvas>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
+      </template>
+    </RteLayout>
+  </section>
 </template>
 
 
 <script setup>
 
-import { ref, reactive, watch, onMounted, onBeforeUnmount } from "vue"
+import { ref, reactive, watch, onMounted } from "vue"
+
+import CreatorToolbar from "@/components/TopToolbar.vue"
+import RteLayout from "@/layouts/RteLayout.vue"
 
 import {
 Canvas as FabricCanvas,
@@ -230,6 +186,8 @@ PencilBrush
 
 const canvasElement = ref(null)
 const studioCanvas = ref(null)
+const zoom = ref(100)
+const selectedTool = ref("select")
 
 const drawingMode = ref(false)
 const brushSize = ref(8)
@@ -241,14 +199,6 @@ const layerControls = reactive({
 opacity:100,
 scale:100,
 angle:0
-})
-
-const textFormat = reactive({
-bold:false,
-italic:false,
-underline:false,
-color:"#ffffff",
-fontSize:36
 })
 
 const shapeColors = reactive({
@@ -403,75 +353,6 @@ studioCanvas.value.requestRenderAll()
 }
 
 
-
-function applyTextFormat(format){
-
-const active=studioCanvas.value.getActiveObject()
-
-if(!active) return
-
-if(format==="bold"){
-
-textFormat.bold=!textFormat.bold
-
-active.set({
-fontWeight:textFormat.bold?"bold":"normal"
-})
-
-}
-
-if(format==="italic"){
-
-textFormat.italic=!textFormat.italic
-
-active.set({
-fontStyle:textFormat.italic?"italic":"normal"
-})
-
-}
-
-if(format==="underline"){
-
-textFormat.underline=!textFormat.underline
-
-active.set({
-underline:textFormat.underline
-})
-
-}
-
-studioCanvas.value.requestRenderAll()
-
-}
-
-
-
-function applySelectedTextFormat(){
-
-const active=studioCanvas.value.getActiveObject()
-
-if(!active) return
-
-active.set({
-
-fill:textFormat.color,
-
-fontSize:textFormat.fontSize,
-
-fontWeight:textFormat.bold?"bold":"normal",
-
-fontStyle:textFormat.italic?"italic":"normal",
-
-underline:textFormat.underline
-
-})
-
-studioCanvas.value.requestRenderAll()
-
-}
-
-
-
 function clearCanvasObjects(){
 
 studioCanvas.value.getObjects().forEach(o=>{
@@ -541,32 +422,26 @@ function loadDefaultMockup(){
 }
 
 function handleZoomChange(v){
-console.log("Zoom",v)
+  zoom.value = v
 }
 
 onMounted(()=>{
-initCanvas()
-loadDefaultMockup()
-
-// Listen for delete element event from toolbar
-window.addEventListener('cyber:delete-element', removeSelectedLayer)
+ initCanvas()
+ loadDefaultMockup()
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('cyber:delete-element', removeSelectedLayer)
-})
 
 </script>
 
 
 <style scoped>
 
-.mockups-page{
-display:grid;
-grid-template-columns:280px 1fr;
-gap:1rem;
-height:100%;
+.mockups-wrapper{
+  height:100%;
+  display:flex;
+  flex-direction:column;
 }
+
 
 .canvas-stage{
 border:1px solid #333;

@@ -5,41 +5,19 @@
 
     <!-- Main Area -->
     <div class="cyber-main">
-      <!-- Top Toolbar -->
-      <TopToolbar @delete-element="dispatchDeleteEvent" />
-      
       <!-- Dynamic Workspace Content -->
       <main class="cyber-content">
         <div class="workspace-root">
           <router-view />
         </div>
       </main>
-
-      <!-- Footer -->
-      <footer class="cyber-footer">
-        <slot name="header" />
-        <div v-if="headerActions.length" class="header-actions">
-          <button
-            v-for="action in headerActions"
-            :key="action.label"
-            :class="['btn', action.type || 'primary']"
-            @click="action.handler"
-          >
-            {{ action.label }}
-          </button>
-        </div>
-      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { onBeforeUnmount, onMounted } from "vue";
 import CyberSidebar from "../components/cyberSidebar.vue";
-import TopToolbar from "../components/TopToolbar.vue";
-
-const route = useRoute();
 
 onMounted(() => {
   if (typeof document === "undefined") return;
@@ -51,49 +29,6 @@ onBeforeUnmount(() => {
   document.body.classList.remove("cyber-mode");
 });
 
-const dispatchHeaderEvent = (name) => () => {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent(name));
-};
-
-const dispatchDeleteEvent = () => {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent("cyber:delete-element"));
-};
-
-// Header actions driven by the current cyber route
-const headerActions = computed(() => {
-  switch (route.name) {
-    case "Mockups":
-      return [
-        {
-          label: "Export PNG",
-          type: "secondary",
-          handler: dispatchHeaderEvent("cyber:mockups-export"),
-        },
-        {
-          label: "Refresh Mockups",
-          type: "primary",
-          handler: dispatchHeaderEvent("cyber:mockups-refresh"),
-        },
-      ];
-    case "Writer":
-      return [
-        {
-          label: "Copy Draft",
-          type: "secondary",
-          handler: dispatchHeaderEvent("cyber:writer-copy"),
-        },
-        {
-          label: "Clear Draft",
-          type: "secondary",
-          handler: dispatchHeaderEvent("cyber:writer-clear"),
-        },
-      ];
-    default:
-      return [];
-  }
-});
 </script>
 
 <style scoped>
@@ -115,35 +50,6 @@ const headerActions = computed(() => {
   min-height: 100vh;
   min-width: 0;
   padding: 0.4rem;
-}
-
-/* HEADER */
-.cyber-footer {
-  flex-shrink: 0;
-  text-align: left;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.3rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.cyber-footer h1 {
-  font-size: 1.25rem;
-  color: #ffd600;
-  margin: 0;
-}
-
-.cyber-footer p {
-  display: none;
-}
-
-/* Header actions buttons */
-.header-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
 }
 
 .btn {
@@ -192,16 +98,13 @@ const headerActions = computed(() => {
   flex: 1;
   min-height: 0;
   display: flex;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.9rem;
 }
 
 .workspace-root > * {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  padding: 0.65rem;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.03);
 }
 
 /* RESPONSIVE */

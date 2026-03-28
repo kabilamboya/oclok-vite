@@ -10,6 +10,7 @@ const Products = () => import('../pages/Store.vue');
 const ProductDetail = () => import('../pages/ProductDetail.vue');
 const AccountPage = () => import('../pages/AccountPage.vue');
 const Cyber = () => import('../pages/Cyber.vue');
+const CyberHome = () => import('../pages/Creator/CyberHome.vue');
 const Writer = () => import('../pages/Creator/Writer.vue');
 const Mockups = () => import('../pages/Creator/Mockups.vue');
 const Gallery = () => import('../pages/Creator/Gallery.vue');
@@ -38,7 +39,7 @@ const routes = [
     name: 'Cyber',
     component: Cyber,
     children: [
-      { path: '', redirect: 'prompts' }, // default to prompts
+      { path: '', name: 'CyberHome', component: CyberHome },
       // { path: 'creator', name: 'Creator', component: Mockups },  Consolidated 2D design studio
       { path: 'writer', name: 'Writer', component: Writer },
       { path: 'mockups', name: 'Mockups', component: Mockups },

@@ -5,47 +5,64 @@
         <h2>{{ title }}</h2>
         <p v-if="subtitle" class="muted">{{ subtitle }}</p>
       </div>
-
-      <div class="rte-toolbar">
-        <button class="tool-btn" @click="runEditorCommand('bold')"><i class="fas fa-bold"></i></button>
-        <button class="tool-btn" @click="runEditorCommand('italic')"><i class="fas fa-italic"></i></button>
-        <button class="tool-btn" @click="runEditorCommand('underline')"><i class="fas fa-underline"></i></button>
-
-        <button class="tool-btn" @click="runEditorCommand('insertUnorderedList')">
-          <i class="fas fa-list-ul"></i>
-        </button>
-
-        <button class="tool-btn" @click="runEditorCommand('insertOrderedList')">
-          <i class="fas fa-list-ol"></i>
-        </button>
-
-        <button class="tool-btn" @click="insertLink">
-          <i class="fas fa-link"></i>
-        </button>
-
-        <button class="tool-btn" @click="runEditorCommand('undo')">
-          <i class="fas fa-rotate-left"></i>
-        </button>
-
-        <button class="tool-btn" @click="runEditorCommand('redo')">
-          <i class="fas fa-rotate-right"></i>
-        </button>
-
-        <div class="font-size-control">
-          <label>Size: <span class="size-value">{{ fontSize }}px</span></label>
-          <input
-            v-model.number="fontSize"
-            type="range"
-            min="12"
-            max="72"
-            @input="applyFontSize"
-          />
-        </div>
-      </div>
     </div>
 
-    <div class="editor-body">
-      <div class="editor-panel">
+    <div class="editor-body" :class="{ 'with-assets': hasAssets }">
+      <div class="editor-surface">
+        <div class="rte-toolbar">
+          <div class="toolbar-group">
+            <div class="style-select">
+              <select v-model="blockStyle" @change="applyBlockStyle" aria-label="Style">
+                <option value="paragraph">Style</option>
+                <option value="h1">Heading 1</option>
+                <option value="h2">Heading 2</option>
+                <option value="quote">Quote</option>
+                <option value="code">Code Block</option>
+              </select>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="toolbar-group">
+            <button class="tool-btn text-btn" @click="runEditorCommand('bold')" title="Bold">B</button>
+            <button class="tool-btn text-btn italic" @click="runEditorCommand('italic')" title="Italic">I</button>
+          </div>
+
+          <div class="toolbar-group">
+            <button class="tool-btn" @click="runEditorCommand('insertUnorderedList')" title="Bullet list">
+              <i class="fas fa-list-ul"></i>
+            </button>
+            <button class="tool-btn" @click="runEditorCommand('insertOrderedList')" title="Numbered list">
+              <i class="fas fa-list-ol"></i>
+            </button>
+          </div>
+
+          <div class="toolbar-group">
+            <button class="tool-btn" @click="runEditorCommand('formatBlock', 'blockquote')" title="Quote">
+              <i class="fas fa-quote-right"></i>
+            </button>
+            <button class="tool-btn" @click="runEditorCommand('formatBlock', 'pre')" title="Code block">
+              <i class="fas fa-code"></i>
+            </button>
+            <button class="tool-btn" @click="runEditorCommand('insertHorizontalRule')" title="Divider">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="toolbar-group">
+            <button class="tool-btn" @click="insertLink" title="Link">
+              <i class="fas fa-link"></i>
+            </button>
+            <button class="tool-btn" @click="insertImage" title="Image">
+              <i class="fas fa-image"></i>
+            </button>
+          </div>
+        </div>
+
         <div
           ref="editorElement"
           class="rte-canvas"
@@ -106,7 +123,7 @@ const props = defineProps({
 const emit = defineEmits(["input", "copy", "clear", "use-draft"])
 
 const editorElement = ref(null)
-const fontSize = ref(16)
+const blockStyle = ref("paragraph")
 
 const hasAssets = computed(
   () => Array.isArray(props.assets) && props.assets.length > 0
@@ -142,19 +159,21 @@ const insertLink = () => {
   runEditorCommand("createLink", url)
 }
 
-const applyFontSize = () => {
-  focusEditor()
+const insertImage = () => {
+  const url = window.prompt("Paste image URL")
+  if (!url) return
+  insertAsset(url)
+}
 
-  document.execCommand("fontSize", false, "7")
-
-  const fonts = editorElement.value.getElementsByTagName("font")
-
-  for (let font of fonts) {
-    if (font.size === "7") {
-      font.removeAttribute("size")
-      font.style.fontSize = fontSize.value + "px"
-    }
+const applyBlockStyle = () => {
+  const map = {
+    paragraph: "p",
+    h1: "h1",
+    h2: "h2",
+    quote: "blockquote",
+    code: "pre"
   }
+  runEditorCommand("formatBlock", map[blockStyle.value] || "p")
 }
 
 const insertAsset = (url) => {
@@ -214,10 +233,11 @@ const loadDraft = () => {
 }
 
 const commands = {
-  "/h1": () => document.execCommand("formatBlock", false, "h1"),
-  "/h2": () => document.execCommand("formatBlock", false, "h2"),
-  "/quote": () => document.execCommand("formatBlock", false, "blockquote"),
-  "/list": () => document.execCommand("insertUnorderedList")
+  "/h1": () => runEditorCommand("formatBlock", "h1"),
+  "/h2": () => runEditorCommand("formatBlock", "h2"),
+  "/quote": () => runEditorCommand("formatBlock", "blockquote"),
+  "/code": () => runEditorCommand("formatBlock", "pre"),
+  "/list": () => runEditorCommand("insertUnorderedList")
 }
 
 const handleSlashCommands = () => {
@@ -296,39 +316,92 @@ defineExpose({
 .rte-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: .4rem;
+  align-items: center;
+  gap: .55rem;
+  padding: .4rem .6rem;
+  background: #1f242c;
+  border: 1px solid #2f3641;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,0.12);
+}
+
+.style-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.style-select select {
+  appearance: none;
+  border: 1px solid #38404d;
+  background: #242a33;
+  color: #e5e7eb;
+  border-radius: 999px;
+  padding: .35rem 1.6rem .35rem .7rem;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.style-select i {
+  position: absolute;
+  right: .55rem;
+  font-size: .6rem;
+  color: #9aa3b2;
+  pointer-events: none;
 }
 
 .tool-btn {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
-  border: 1px solid #ffd600;
+  border: 1px solid transparent;
   background: transparent;
-  color: white;
+  color: #cbd5e1;
   cursor: pointer;
 }
 
 .tool-btn:hover {
-  background: rgba(255,214,0,.15);
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
 }
 
-.font-size-control {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  margin-left: .5rem;
+.tool-btn.text-btn {
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 
-.size-value {
-  color: #ffd600;
-  font-weight: bold;
+.tool-btn.text-btn.italic {
+  font-style: italic;
 }
 
 .editor-body {
   display: grid;
-  grid-template-columns: 1fr 220px;
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+.editor-body.with-assets {
+  grid-template-columns: 1fr 220px;
+}
+
+.editor-surface {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .rte-canvas {
@@ -336,8 +409,9 @@ defineExpose({
   border: 1px solid #303030;
   border-radius: 10px;
   padding: 1rem;
-  min-height: 300px;
+  min-height: 420px;
   overflow: auto;
+  width: 100%;
 }
 
 .rte-canvas:empty::before {
