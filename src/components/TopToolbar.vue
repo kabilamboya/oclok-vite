@@ -159,6 +159,7 @@ onUnmounted(() => clearInterval(autoSaveInterval));
   padding: 8px 16px;
   background: #161616;
   border-bottom: 1px solid #2a2a2a;
+  flex-wrap: wrap;
 }
 
 .toolbar-left, .toolbar-right {
@@ -250,5 +251,17 @@ onUnmounted(() => clearInterval(autoSaveInterval));
   .toolbar-btn span { display: none; }
   .toolbar-center { display: none; }
   .zoom-slider { width: 80px; }
+}
+
+@media (max-width: 600px) {
+  .merged-toolbar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    flex-wrap: wrap;
+  }
 }
 </style>

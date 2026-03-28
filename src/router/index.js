@@ -38,6 +38,7 @@ const routes = [
     path: '/cyber',
     name: 'Cyber',
     component: Cyber,
+    redirect: { name: 'CyberHome' },
     children: [
       { path: '', name: 'CyberHome', component: CyberHome },
       // { path: 'creator', name: 'Creator', component: Mockups },  Consolidated 2D design studio
@@ -59,6 +60,32 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+});
+
+const CYBER_HOME_NAME = 'CyberHome';
+const CYBER_PATH_PREFIX = '/cyber';
+let pendingCyberTarget = null;
+
+const isCyberPath = (path) => typeof path === 'string' && path.startsWith(CYBER_PATH_PREFIX);
+
+router.beforeEach((to, from) => {
+  const isCyberChild = isCyberPath(to.path) && to.name !== CYBER_HOME_NAME;
+  const fromIsCyber = isCyberPath(from.path);
+
+  if (isCyberChild && !fromIsCyber) {
+    pendingCyberTarget = to.fullPath;
+    return { name: CYBER_HOME_NAME, replace: true };
+  }
+
+  return true;
+});
+
+router.afterEach((to) => {
+  if (to.name === CYBER_HOME_NAME && pendingCyberTarget) {
+    const target = pendingCyberTarget;
+    pendingCyberTarget = null;
+    router.push(target);
+  }
 });
 
 // Export router at the end

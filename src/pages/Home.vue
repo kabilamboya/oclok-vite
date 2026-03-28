@@ -527,4 +527,49 @@ onBeforeUnmount(() => {
 
 /* --- Responsive --- */
 @media(max-width:768px){.about-container{flex-direction:column;text-align:center;}.about-text{text-align:center;}.social-icons{justify-content:center;}}
+
+@media (max-width: 900px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .header-container h1 {
+    white-space: normal;
+    font-size: 1.7rem;
+  }
+
+  .background-notanimated {
+    width: 100%;
+    height: 40px;
+  }
+
+  .animated-text {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .tabs {
+    justify-content: center;
+    margin-right: 0;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .tabs {
+    gap: 6px;
+  }
+
+  .tabs button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .about-container {
+    padding: 12px;
+  }
+}
 </style>

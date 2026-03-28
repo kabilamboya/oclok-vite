@@ -73,4 +73,11 @@ const bodyStyle = computed(() => ({
     grid-template-columns: 1fr !important;
   }
 }
+
+@media (max-width: 900px) {
+  .rte-body {
+    transform: none !important;
+    width: 100%;
+  }
+}
 </style>

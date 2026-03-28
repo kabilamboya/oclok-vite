@@ -52,6 +52,16 @@ body {
   min-height: 100vh;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
 .hero {
   padding: 48px 20px;
   text-align: center;
@@ -410,6 +420,25 @@ h1 {
   .card { flex: 0 0 100%; }
 }
 
+@media (max-width: 768px) {
+  body:not(.cyber-mode) #app {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  body:not(.cyber-mode) section {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 2.2em;
+  }
+
+  .cards-container {
+    gap: 1rem;
+  }
+}
+
 /* =========================================================
    APP WRAPPER
 ========================================================= */
@@ -426,4 +455,8 @@ body.cyber-mode #app {
   margin: 0;
   padding: 0;
   text-align: left;
+}
+
+body.writer-single-scroll .cyber-content {
+  overflow: hidden;
 }

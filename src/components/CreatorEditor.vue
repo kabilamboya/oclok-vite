@@ -410,7 +410,7 @@ defineExpose({
   border-radius: 10px;
   padding: 1rem;
   min-height: 420px;
-  overflow: auto;
+  overflow: visible;
   width: 100%;
 }
 

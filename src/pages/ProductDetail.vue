@@ -463,10 +463,41 @@ export default {
   }
 }
 
+@media (max-width: 640px) {
+  .product-detail {
+    padding: 14px;
+  }
+
+  .product-card {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .main-image {
+    height: 240px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
   .thumbnail {
     width: 65px;
     height: 65px;
+  }
+
+  .product-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .price {
+    font-size: 1.2rem;
   }
 }
 </style>

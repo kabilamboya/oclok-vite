@@ -161,4 +161,32 @@ form button {
   border-radius: 6px;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .checkout-page {
+    margin: 20px auto;
+    padding: 16px;
+  }
+
+  .checkout-items {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item-preview img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-page {
+    padding: 12px;
+  }
+
+  form button {
+    width: 100%;
+  }
+}
 </style>

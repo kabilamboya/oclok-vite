@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 .cyber-layout {
   display: flex;
   min-height: 100vh;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   background-color: #121212;
   color: #f0f0f0;
@@ -111,10 +111,15 @@ onBeforeUnmount(() => {
 @media (max-width: 768px) {
   .cyber-layout {
     flex-direction: column;
+    min-height: 100dvh;
   }
 
   .cyber-main {
-    padding: 1rem;
+    padding: 0.8rem;
+  }
+
+  .cyber-content {
+    padding: 0.25rem;
   }
 }
 </style>

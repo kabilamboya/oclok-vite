@@ -113,60 +113,93 @@ Tip: {{ tip }}
 <!-- Hero moved to Cyber page -->
 <!-- Framework -->
 
+<div class="framework-header">
+  <div>
+    <h2>Prompt Framework</h2>
+    <p class="framework-subtitle">Tap a step to expand the details.</p>
+  </div>
+  <button
+    v-if="activeStepData"
+    class="secondary-button collapse-button"
+    type="button"
+    @click="activeStep = null"
+  >
+    Collapse Details
+  </button>
+</div>
+
 <div class="framework-container">
+  <button
+    v-for="(step, idx) in steps"
+    :key="step.id"
+    class="step-card"
+    :class="{ active: activeStep === step.id }"
+    type="button"
+    @click="toggleStep(step.id)"
+  >
+    <div class="step-card-top">
+      <span class="step-badge">{{ idx + 1 }}</span>
+      <div class="step-text">
+        <span class="step-label">{{ step.label }}</span>
+        <h3>{{ step.title }}</h3>
+      </div>
+      <span class="step-expand">{{ activeStep === step.id ? "Hide" : "Expand" }}</span>
+    </div>
 
-<article
- v-for="(step, idx) in steps"
- :key="step.id"
- class="step-card"
- :class="{ active: activeStep === step.id }"
- role="button"
- tabindex="0"
- @click="activeStep = step.id"
- @keyup.enter="activeStep = step.id"
- @keyup.space.prevent="activeStep = step.id"
->
+    <p class="step-subtitle">{{ step.description }}</p>
 
-<div class="step-badge">{{ idx + 1 }}</div>
-
-<h2>{{ step.title }}</h2>
-
-<p class="step-subtitle">
-{{ step.description }}
-</p>
-
-<div v-if="activeStep === step.id" class="step-content">
-
-<h3>What to Include:</h3>
-
-<ul>
-<li v-for="item in step.whats" :key="item">
-{{ item }}
-</li>
-</ul>
-
-<h3>Example:</h3>
-
-<pre class="example-code">
-{{ step.example }}
-</pre>
-
-<h3>Common Mistakes:</h3>
-
-<ul class="mistakes">
-<li v-for="mistake in step.mistakes" :key="mistake">
-Avoid: {{ mistake }}
-
-</li>
-</ul>
-
-<div class="best-practice">
-<p>Best: {{ step.bestPractice }}</p>
+    <div class="step-tags">
+      <span v-for="item in step.whats.slice(0, 2)" :key="item" class="tag">
+        {{ item }}
+      </span>
+      <span v-if="step.whats.length > 2" class="tag more">
+        +{{ step.whats.length - 2 }} more
+      </span>
+    </div>
+  </button>
 </div>
 
-</div>
+<div v-if="activeStepData" class="step-detail">
+  <div class="detail-header">
+    <div class="detail-heading">
+      <span class="step-badge detail-badge">{{ activeStepIndex + 1 }}</span>
+      <div>
+        <span class="detail-label">{{ activeStepData.label }}</span>
+        <h3>{{ activeStepData.title }}</h3>
+        <p class="detail-subtitle">{{ activeStepData.description }}</p>
+      </div>
+    </div>
+    <button class="secondary-button collapse-button" type="button" @click="activeStep = null">
+      Close
+    </button>
+  </div>
 
-</article>
+  <div class="detail-grid">
+    <div class="detail-card">
+      <h4>What to Include</h4>
+      <ul>
+        <li v-for="item in activeStepData.whats" :key="item">{{ item }}</li>
+      </ul>
+    </div>
+
+    <div class="detail-card">
+      <h4>Example</h4>
+      <pre class="example-code">{{ activeStepData.example }}</pre>
+    </div>
+
+    <div class="detail-card">
+      <h4>Common Mistakes</h4>
+      <ul class="mistakes">
+        <li v-for="mistake in activeStepData.mistakes" :key="mistake">
+          Avoid: {{ mistake }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="best-practice">
+    <p>Best: {{ activeStepData.bestPractice }}</p>
+  </div>
 </div>
 
 <!-- Template -->
@@ -275,7 +308,7 @@ const zoom = ref(100)
 const savedNotice = ref("")
 const lastAnalyzedAt = ref("")
 
-const activeStep = ref("what")
+const activeStep = ref(null)
 
 const promptScore = ref(null)
 const promptFeedback = ref([])
@@ -317,6 +350,7 @@ const inlineHints = computed(() => [
 const liveCheckCount = computed(() => {
   return Object.values(liveChecks.value).filter(Boolean).length
 })
+
 
 /* Autosave Prompt */
 
@@ -440,7 +474,8 @@ const steps = [
 
 {
 id:"what",
-title:"WHAT - Define the Task",
+label:"WHAT",
+title:"Define the Task",
 description:"Clearly state what you want the AI to do",
 whats:[
 "Specific action (write, create, analyze)",
@@ -458,7 +493,8 @@ bestPractice:"Start prompts with a clear action verb."
 
 {
 id:"how",
-title:"HOW - Specify Style",
+label:"HOW",
+title:"Specify Style",
 description:"Define tone and structure",
 whats:[
 "Tone (professional, playful)",
@@ -475,7 +511,8 @@ bestPractice:"Be explicit about style and format."
 
 {
 id:"why",
-title:"WHY - Give Context",
+label:"WHY",
+title:"Give Context",
 description:"Explain purpose and audience",
 whats:[
 "Goal",
@@ -492,7 +529,8 @@ bestPractice:"Explain why the prompt matters."
 
 {
 id:"where",
-title:"WHERE - Platform",
+label:"WHERE",
+title:"Platform",
 description:"Specify the environment",
 whats:[
 "Platform (Instagram, blog, email)",
@@ -508,7 +546,8 @@ bestPractice:"Mention the publishing environment."
 
 {
 id:"output",
-title:"OUTPUT - Deliverables",
+label:"OUTPUT",
+title:"Deliverables",
 description:"Define what you want returned",
 whats:[
 "Format",
@@ -523,6 +562,18 @@ bestPractice:"Specify format and quantity."
 }
 
 ]
+
+const activeStepData = computed(() =>
+  steps.find((step) => step.id === activeStep.value) || null
+)
+
+const activeStepIndex = computed(() =>
+  steps.findIndex((step) => step.id === activeStep.value)
+)
+
+const toggleStep = (stepId) => {
+  activeStep.value = activeStep.value === stepId ? null : stepId
+}
 
 /* Prompt Template */
 
@@ -720,29 +771,39 @@ gap:8px;
 }
 
 .tracking-list li{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:12px;
-background:rgba(15,23,42,0.6);
-padding:8px 10px;
-border-radius:8px;
-border:1px solid rgba(124,58,237,0.3);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  background:rgba(15,23,42,0.6);
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid rgba(124,58,237,0.3);
+  flex-wrap:wrap;
 }
 
 .tracking-list li.done{
-border-color:#22c55e;
+  border-color:#22c55e;
+}
+
+.tracking-list strong{
+  flex:1;
+  min-width:160px;
+}
+
+.tracking-list .status{
+  margin-left:auto;
 }
 
 .status{
-font-size:0.75rem;
-padding:2px 8px;
-border-radius:999px;
-background:#111827;
+  font-size:0.75rem;
+  padding:2px 8px;
+  border-radius:999px;
+  background:#111827;
 border:1px solid rgba(148,163,184,0.4);
 color:#cbd5f5;
 text-transform:uppercase;
-letter-spacing:0.05em;
+  letter-spacing:0.05em;
 }
 
 .status.ok{
@@ -764,35 +825,220 @@ background:linear-gradient(90deg,#ff6b00,#39ff14);
 -webkit-text-fill-color:transparent;
 }
 
+.framework-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:16px;
+}
+
+.framework-subtitle{
+  margin:6px 0 0;
+  color:#cbd5f5;
+  font-size:0.95rem;
+}
+
 .framework-container{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:16px;
-margin-bottom:50px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.step-badge{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  font-size:0.8rem;
+  font-weight:700;
+  color:#ffd699;
+  background:rgba(255,107,0,0.15);
+  border:1px solid rgba(255,107,0,0.4);
+  flex-shrink:0;
 }
 
 .step-card{
-background:rgba(30,41,59,0.8);
-border:2px solid #7c3aed;
-border-radius:12px;
-padding:20px;
-cursor:pointer;
+  background:rgba(30,41,59,0.8);
+  border:1px solid rgba(124,58,237,0.5);
+  border-radius:12px;
+  padding:14px;
+  cursor:pointer;
+  text-align:left;
+  width:100%;
+  color:inherit;
+  font-family:inherit;
+  appearance:none;
+  transition:transform 0.2s ease,border-color 0.2s ease,box-shadow 0.2s ease;
+}
+
+.step-card:hover{
+  transform:translateY(-2px);
+  border-color:#ff6b00;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
 .step-card.active{
-border-color:#ff6b00;
+  border-color:#ff6b00;
+  box-shadow:0 0 0 1px rgba(255,107,0,0.6);
 }
 
 .step-card:focus-visible{
-outline:none;
-box-shadow:0 0 0 3px rgba(255,107,0,0.35);
+  outline:none;
+  box-shadow:0 0 0 3px rgba(255,107,0,0.35);
+}
+
+.step-card-top{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.step-text{
+  flex:1;
+  min-width:0;
+}
+
+.step-label{
+  font-size:0.7rem;
+  letter-spacing:0.28em;
+  color:#cbd5f5;
+  font-weight:700;
+}
+
+.step-card h3{
+  margin:4px 0 0;
+  font-size:1rem;
+  color:#f8fafc;
+}
+
+.step-expand{
+  font-size:0.75rem;
+  color:#a78bfa;
+  font-weight:600;
+  margin-left:auto;
+}
+
+.step-subtitle{
+  margin:8px 0 10px;
+  color:#cbd5f5;
+  font-size:0.9rem;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.step-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.tag{
+  font-size:0.72rem;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.6);
+  border:1px solid rgba(148,163,184,0.35);
+  color:#cbd5f5;
+}
+
+.tag.more{
+  border-style:dashed;
+  color:#fbbf24;
+}
+
+.step-detail{
+  background:rgba(15,23,42,0.7);
+  border:1px solid rgba(124,58,237,0.4);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:40px;
+}
+
+.detail-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+}
+
+.detail-heading{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.detail-label{
+  font-size:0.72rem;
+  letter-spacing:0.28em;
+  color:#cbd5f5;
+  font-weight:700;
+  display:block;
+}
+
+.detail-subtitle{
+  margin:6px 0 0;
+  color:#cbd5f5;
+  font-size:0.95rem;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-top:10px;
+}
+
+.detail-card{
+  background:rgba(30,41,59,0.85);
+  border-radius:12px;
+  padding:14px;
+  border:1px solid rgba(148,163,184,0.2);
+}
+
+.detail-card h4{
+  margin:0 0 10px;
+  font-size:0.95rem;
+  color:#f8fafc;
+}
+
+.detail-badge{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  font-size:0.85rem;
+}
+
+.collapse-button{
+  white-space:nowrap;
 }
 
 .example-code{
-background:#0f172a;
-padding:10px;
-border-radius:6px;
-color:#a78bfa;
+  background:#0f172a;
+  padding:10px;
+  border-radius:6px;
+  color:#a78bfa;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.best-practice{
+  margin-top:14px;
+  padding:10px 12px;
+  border-left:3px solid #ff6b00;
+  border-radius:8px;
+  background:rgba(255,107,0,0.08);
+}
+
+.best-practice p{
+  margin:0;
+  color:#fde68a;
 }
 
 .examples-grid{
@@ -802,9 +1048,10 @@ gap:20px;
 }
 
 .example-card{
-background:rgba(30,41,59,0.8);
-padding:20px;
-border-radius:12px;
+  background:rgba(30,41,59,0.8);
+  padding:20px;
+  border-radius:12px;
+  word-break:break-word;
 }
 
 .example-actions{
@@ -833,8 +1080,24 @@ cursor:pointer;
 }
 
 .secondary-button:disabled{
-opacity:0.5;
-cursor:not-allowed;
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.template-box{
+  background:rgba(15,23,42,0.7);
+  border:1px solid rgba(124,58,237,0.35);
+  border-radius:12px;
+  padding:14px;
+  overflow:auto;
+}
+
+.template-box pre,
+.example-prompt pre{
+  margin:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  color:#cbd5f5;
 }
 
 .checklist{
@@ -850,6 +1113,32 @@ gap:10px;
 
   .tracking-col{
     position:static;
+  }
+
+  .framework-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .detail-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+
+@media (max-width: 600px){
+  .prompt-training-page{
+    padding:24px 14px;
+  }
+
+  .practice-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .secondary-button,
+  .cta-button{
+    width:100%;
   }
 }
 

@@ -323,4 +323,30 @@
   margin-top: 1rem;
 }
 
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input,
+  .specialty-select {
+    width: 100%;
+  }
+
+  .cards .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .cards .cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>

@@ -186,10 +186,15 @@ const handleDraftSaved = (draftData) => {
 onMounted(() => {
   const userId = getLocalUserId("cyber_guest_user_id");
   console.log('Writer page loaded for user:', userId);
+  if (typeof document !== "undefined") {
+    document.body.classList.add("writer-single-scroll");
+  }
 });
 
 onBeforeUnmount(() => {
-  // Clean up
+  if (typeof document !== "undefined") {
+    document.body.classList.remove("writer-single-scroll");
+  }
 });
 </script>
 
@@ -210,7 +215,6 @@ onBeforeUnmount(() => {
 }
 
 .editor-panel {
-  overflow: auto;
   width: 100%;
   max-width: 980px;
 }
@@ -220,8 +224,6 @@ onBeforeUnmount(() => {
   padding: 1.2rem;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border-radius: 8px;
-  overflow-y: auto;
-  max-height: calc(100vh - 120px);
 }
 
 .panel-header {

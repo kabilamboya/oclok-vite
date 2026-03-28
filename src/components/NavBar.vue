@@ -316,6 +316,14 @@ export default {
     width: 100%;
     order: 2;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .nav-search {
+    flex: 1 1 100%;
+  }
+  .nav-search input {
+    width: 100%;
   }
   .logo img {
     height: 36px; /* slightly smaller on mobile */

@@ -1174,7 +1174,24 @@ async function submitMembershipWhatsApp() {
   }
 
   .places-scroll {
-    max-height: 320px;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .form-btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

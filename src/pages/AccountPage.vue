@@ -94,4 +94,26 @@ input {
 .submit-btn:hover {
   background: #e65c00;
 }
+
+@media (max-width: 768px) {
+  .form-page {
+    margin: 24px auto;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-page {
+    margin: 16px auto;
+    padding: 16px;
+  }
+
+  input {
+    padding: 9px;
+  }
+}
 </style>

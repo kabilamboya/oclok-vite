@@ -400,5 +400,62 @@ function downloadPDF() {
     grid-template-columns:1fr;
   }
 }
+
+@media (max-width: 900px) {
+  .dashboard-wrapper{
+    padding:24px;
+  }
+
+  .dashboard-header h1{
+    font-size:22px;
+  }
+}
+
+@media (max-width: 700px) {
+  .chart-row{
+    flex-direction:column;
+  }
+
+  .chart-box{
+    min-width:0;
+  }
+
+  .action-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .btn{
+    width:100%;
+  }
+
+  .chatbot-container{
+    right:12px;
+    bottom:12px;
+  }
+
+  .chat-window{
+    width:min(92vw, 320px);
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-wrapper{
+    padding:16px;
+  }
+
+  .summary-grid{
+    grid-template-columns:1fr;
+  }
+
+  .blog-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .blog-actions button{
+    width:100%;
+  }
+}
 </style>
 ```

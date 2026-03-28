@@ -797,5 +797,51 @@ export default {
   .top-row { flex-direction:column; align-items:stretch; gap:10px; position: static; }
   .top-ctas { justify-content: center; }
 }
+
+@media (max-width: 640px) {
+  .top-ctas {
+    flex-wrap: wrap;
+  }
+
+  .top-ctas button {
+    width: 100%;
+  }
+
+  .quick-stats {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .rating-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rating-meta {
+    width: 100%;
+  }
+
+  .rating-number {
+    width: auto;
+  }
+
+  .ratings-footer {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .partner-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 </style>
 

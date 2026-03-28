@@ -236,4 +236,42 @@ function callToBook() {
 .buttons button:hover {
   transform: scale(1.05);
 }
+
+@media (max-width: 768px) {
+  .details {
+    padding: 1.25rem;
+  }
+
+  .meta {
+    flex-wrap: wrap;
+  }
+
+  .booking-contact {
+    padding: 0.85rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .details {
+    padding: 1rem;
+  }
+
+  .nav {
+    font-size: 1.5rem;
+    padding: 0 0.45rem;
+  }
+
+  .carousel img {
+    height: clamp(200px, 55vw, 320px);
+  }
+}
 </style>

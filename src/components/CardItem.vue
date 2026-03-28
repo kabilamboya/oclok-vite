@@ -379,4 +379,25 @@ export default {
 .secondary-btn:hover {
   background: #1e7e34;
 }
+
+@media (max-width: 600px) {
+  .card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+    margin: 0;
+  }
+
+  .star {
+    font-size: 2.4rem;
+  }
+
+  .card-technician .star {
+    font-size: 1.8rem;
+  }
+}
 </style>

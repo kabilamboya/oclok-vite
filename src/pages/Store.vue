@@ -376,5 +376,32 @@
   .products-grid {
     gap: 14px;
   }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar,
+  .filter-dropdown {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .products-grid .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    gap: 8px;
+  }
+
+  .page-btn {
+    min-width: 34px;
+    padding: 0.4rem 0.6rem;
+  }
 }
 </style>

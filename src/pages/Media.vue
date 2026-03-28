@@ -642,4 +642,31 @@ onMounted(() => {
   }
 }
 
+@media (max-width: 600px) {
+  .video-content {
+    padding: 1.1rem;
+  }
+
+  .video-meta {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .blog-author-info {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .video-tags {
+    gap: 0.4rem;
+  }
+}
+
 </style>
