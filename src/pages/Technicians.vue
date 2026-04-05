@@ -41,18 +41,12 @@
       />
     </div>
 
-    <div class="pagination" v-if="totalPages > 1" aria-label="Pagination">
-      <button :disabled="currentPage === 1" @click="currentPage--">Prev</button>
-      <button
-        v-for="page in visiblePages"
-        :key="page"
-        :class="['page-btn', { active: page === currentPage }]"
-        @click="goToPage(page)"
-      >
-        {{ page }}
-      </button>
-      <button :disabled="currentPage === totalPages" @click="currentPage++">Next</button>
-    </div>
+    <PaginationControls
+      v-if="totalPages > 1"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @update:current-page="currentPage = $event"
+    />
 
     <div v-if="bookings.length" class="booking-summary">
       <h2>Bookings ({{ bookings.length }})</h2>
@@ -70,139 +64,130 @@
 
   <script>
   import CardList from "../components/CardList.vue";
+  import PaginationControls from "../components/PaginationControls.vue";
   import techniciansData from "../data/technicians.json";
+  import { computed, ref, watch, onMounted } from "vue";
 
   export default {
-  name: "Technicians",
-  components: { CardList },
+    name: "Technicians",
+    components: { CardList, PaginationControls },
 
-  data() {
-    return {
-      technicians: [],
-      searchQuery: "",
-      selectedSpecialty: "",
-      bookings: [],
-      currentPage: 1,
-      itemsPerPage: 8,
-    };
-  },
+    setup() {
+      const technicians = ref([]);
+      const searchQuery = ref("");
+      const selectedSpecialty = ref("");
+      const bookings = ref([]);
+      const currentPage = ref(1);
+      const itemsPerPage = 8;
 
-  computed: {
-    specialties() {
-      return [...new Set(this.technicians.map((t) => t.specialty).filter(Boolean))];
-    },
-
-    filteredTechnicians() {
-      const query = this.searchQuery.trim().toLowerCase();
-      return this.technicians.filter((t) => {
-        const name = (t.name || "").toLowerCase();
-        const specialtyText = (t.specialty || "").toLowerCase();
-        const searchMatches = !query || name.includes(query) || specialtyText.includes(query);
-        const specialtyMatches = this.selectedSpecialty
-          ? specialtyText === this.selectedSpecialty.toLowerCase()
-          : true;
-        return searchMatches && specialtyMatches;
+      const specialties = computed(() => {
+        return [...new Set(technicians.value.map((t) => t.specialty).filter(Boolean))];
       });
+
+      const filteredTechnicians = computed(() => {
+        const query = searchQuery.value.trim().toLowerCase();
+        return technicians.value.filter((t) => {
+          const name = (t.name || "").toLowerCase();
+          const specialtyText = (t.specialty || "").toLowerCase();
+          const searchMatches = !query || name.includes(query) || specialtyText.includes(query);
+          const specialtyMatches = selectedSpecialty.value
+            ? specialtyText === selectedSpecialty.value.toLowerCase()
+            : true;
+          return searchMatches && specialtyMatches;
+        });
+      });
+
+      const totalPages = computed(() => {
+        return Math.max(1, Math.ceil(filteredTechnicians.value.length / itemsPerPage));
+      });
+
+      const paginatedTechnicians = computed(() => {
+        const start = (currentPage.value - 1) * itemsPerPage;
+        return filteredTechnicians.value.slice(start, start + itemsPerPage);
+      });
+
+      watch(searchQuery, () => {
+        currentPage.value = 1;
+      });
+
+      watch(selectedSpecialty, () => {
+        currentPage.value = 1;
+      });
+
+      watch(totalPages, (newTotal) => {
+        if (currentPage.value > newTotal) {
+          currentPage.value = newTotal;
+        }
+      });
+
+      const createSlug = (name) => {
+        return (name || "")
+          .toString()
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      };
+
+      const goToTech = (tech) => {
+        const routeKey = tech.slug || createSlug(tech.name) || String(tech.id);
+        window.location.href = `/technicians/${routeKey}`;
+      };
+
+      const bookTechnician = (tech) => {
+        if (!bookings.value.some((b) => b.id === tech.id)) {
+          bookings.value.push(tech);
+        }
+      };
+
+      const clearBookings = () => {
+        bookings.value = [];
+      };
+
+      onMounted(() => {
+        const normalizeRating = (value) => {
+          const numeric = Number(value);
+          if (!Number.isFinite(numeric)) return 0;
+          const rounded = Math.round(numeric);
+          if (rounded <= 0) return 0;
+          return Math.min(5, Math.max(3, rounded));
+        };
+
+        const ratingFromExperience = (experience) => {
+          const years = Number(experience);
+          if (!Number.isFinite(years)) return 3;
+          if (years >= 10) return 5;
+          if (years >= 6) return 4;
+          return 3;
+        };
+
+        technicians.value = (techniciansData || []).map((tech) => ({
+          ...tech,
+          slug: tech.slug || createSlug(tech.name) || String(tech.id),
+          rating: normalizeRating(tech.rating ?? ratingFromExperience(tech.experience)),
+        }));
+      });
+
+      return {
+        technicians,
+        searchQuery,
+        selectedSpecialty,
+        bookings,
+        currentPage,
+        itemsPerPage,
+        specialties,
+        filteredTechnicians,
+        totalPages,
+        paginatedTechnicians,
+        createSlug,
+        goToTech,
+        bookTechnician,
+        clearBookings,
+      };
     },
-
-    totalPages() {
-      return Math.max(1, Math.ceil(this.filteredTechnicians.length / this.itemsPerPage));
-    },
-
-    paginatedTechnicians() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.filteredTechnicians.slice(start, start + this.itemsPerPage);
-    },
-
-    visiblePages() {
-      const total = this.totalPages;
-      const current = this.currentPage;
-      const delta = 2;
-      const start = Math.max(1, current - delta);
-      const end = Math.min(total, current + delta);
-      const pages = [];
-
-      for (let page = start; page <= end; page += 1) {
-        pages.push(page);
-      }
-
-      return pages;
-    },
-  },
-
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-
-    selectedSpecialty() {
-      this.currentPage = 1;
-    },
-
-    totalPages(newTotal) {
-      if (this.currentPage > newTotal) {
-        this.currentPage = newTotal;
-      }
-    },
-  },
-
-  methods: {
-    createSlug(name) {
-      return (name || "")
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-    },
-
-    goToTech(tech) {
-      const routeKey = tech.slug || this.createSlug(tech.name) || String(tech.id);
-      this.$router.push(`/technicians/${routeKey}`);
-    },
-
-    goToPage(page) {
-      this.currentPage = page;
-      console.log("[pagination][technicians] page ->", this.currentPage);
-    },
-
-    bookTechnician(tech) {
-      if (!this.bookings.some((b) => b.id === tech.id)) {
-        this.bookings.push(tech);
-      }
-    },
-
-    clearBookings() {
-      this.bookings = [];
-    },
-  },
-
-  mounted() {
-    const normalizeRating = (value) => {
-      const numeric = Number(value);
-      if (!Number.isFinite(numeric)) return 0;
-      const rounded = Math.round(numeric);
-      if (rounded <= 0) return 0;
-      return Math.min(5, Math.max(3, rounded));
-    };
-
-    const ratingFromExperience = (experience) => {
-      const years = Number(experience);
-      if (!Number.isFinite(years)) return 3;
-      if (years >= 10) return 5;
-      if (years >= 6) return 4;
-      return 3;
-    };
-
-    this.technicians = (techniciansData || []).map((tech) => ({
-      ...tech,
-      slug: tech.slug || this.createSlug(tech.name) || String(tech.id),
-      rating: normalizeRating(tech.rating ?? ratingFromExperience(tech.experience)),
-    }));
-  },
-};
-</script>
+  };
+  </script>
 
 <style scoped>
 .page {
@@ -275,30 +260,7 @@
   background: #ddd;
 }
 
-.page-btn {
-  min-width: 40px;
-  background: #fff !important;
-  color: #111827 !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 0.45rem 0.75rem;
-  border-radius: 0.45rem;
-}
 
-.page-btn.active {
-  background: var(--support-purple, #6d28d9) !important;
-  color: #fff !important;
-  border-color: var(--support-purple, #6d28d9) !important;
-}
-
-.page-btn:hover,
-.page-btn:focus-visible {
-  border-color: var(--support-purple, #6d28d9) !important;
-  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.25);
-}
-
-.page-btn:focus-visible {
-  outline: 2px solid transparent;
-}
 
 .booking-summary {
   margin-top: 2rem;

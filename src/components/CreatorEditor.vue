@@ -61,6 +61,32 @@
               <i class="fas fa-image"></i>
             </button>
           </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="toolbar-group dictation-group">
+            <button
+              class="tool-btn"
+              :class="{ active: isDictating }"
+              type="button"
+              :disabled="!speechSupported"
+              :title="speechSupported ? 'Voice typing' : 'Voice typing not supported in this browser'"
+              aria-label="Voice typing"
+              @click="toggleDictation"
+            >
+              <i :class="isDictating ? 'fas fa-microphone-slash' : 'fas fa-microphone'"></i>
+            </button>
+            <span
+              class="dictation-status"
+              :class="{
+                active: isDictating,
+                error: !!dictationError,
+                unsupported: !speechSupported
+              }"
+            >
+              {{ dictationStatus }}
+            </span>
+          </div>
         </div>
 
         <div
@@ -101,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, onBeforeUnmount } from "vue"
 
 const STORAGE_KEY = "creator-editor-draft"
 
@@ -124,6 +150,22 @@ const emit = defineEmits(["input", "copy", "clear", "use-draft"])
 
 const editorElement = ref(null)
 const blockStyle = ref("paragraph")
+const isDictating = ref(false)
+const dictationError = ref("")
+
+const speechSupported = computed(() => {
+  if (typeof window === "undefined") return false
+  return "SpeechRecognition" in window || "webkitSpeechRecognition" in window
+})
+
+const dictationStatus = computed(() => {
+  if (!speechSupported.value) return "Voice typing unavailable"
+  if (dictationError.value) return dictationError.value
+  return isDictating.value ? "Listening..." : "Voice typing"
+})
+
+let recognition = null
+let shouldKeepListening = false
 
 const hasAssets = computed(
   () => Array.isArray(props.assets) && props.assets.length > 0
@@ -274,6 +316,98 @@ const onEditorInput = () => {
   emit("input", getEditorContent())
 }
 
+const insertTranscript = (text = "") => {
+  if (!editorElement.value || !text) return
+
+  focusEditor()
+
+  try {
+    const success = document.execCommand("insertText", false, text)
+    if (!success) throw new Error("execCommand failed")
+  } catch {
+    editorElement.value.innerHTML += text
+  }
+
+  saveDraft()
+  emit("input", getEditorContent())
+}
+
+const initSpeechRecognition = () => {
+  if (!speechSupported.value || recognition) return recognition
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition
+
+  recognition = new SpeechRecognition()
+  recognition.continuous = true
+  recognition.interimResults = true
+  recognition.lang = navigator.language || "en-US"
+
+  recognition.onstart = () => {
+    dictationError.value = ""
+    isDictating.value = true
+  }
+
+  recognition.onend = () => {
+    if (shouldKeepListening) {
+      setTimeout(() => {
+        try {
+          recognition.start()
+        } catch {
+          // Ignore auto-restart failures
+        }
+      }, 250)
+    } else {
+      isDictating.value = false
+    }
+  }
+
+  recognition.onerror = (event) => {
+    const errorMessage = event?.error || "Microphone error"
+    dictationError.value = errorMessage.replace(/-/g, " ")
+    shouldKeepListening = false
+    isDictating.value = false
+  }
+
+  recognition.onresult = (event) => {
+    let finalText = ""
+
+    for (let i = event.resultIndex; i < event.results.length; i += 1) {
+      const result = event.results[i]
+      if (result.isFinal) {
+        finalText += result[0].transcript
+      }
+    }
+
+    if (finalText) {
+      const cleaned = finalText.replace(/\s+/g, " ").trim()
+      insertTranscript(`${cleaned} `)
+    }
+  }
+
+  return recognition
+}
+
+const toggleDictation = () => {
+  if (!speechSupported.value) return
+
+  const instance = initSpeechRecognition()
+  if (!instance) return
+
+  if (isDictating.value) {
+    shouldKeepListening = false
+    instance.stop()
+    return
+  }
+
+  shouldKeepListening = true
+  try {
+    instance.start()
+  } catch {
+    // Ignore "already started" errors
+  }
+}
+
 onMounted(() => {
   loadDraft()
   focusEditor()
@@ -282,6 +416,17 @@ onMounted(() => {
 
   el.addEventListener("dragover", (e) => e.preventDefault())
   el.addEventListener("drop", handleDrop)
+})
+
+onBeforeUnmount(() => {
+  if (recognition) {
+    shouldKeepListening = false
+    try {
+      recognition.stop()
+    } catch {
+      // Ignore shutdown errors
+    }
+  }
 })
 
 defineExpose({
@@ -373,9 +518,53 @@ defineExpose({
   cursor: pointer;
 }
 
+.tool-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .tool-btn:hover {
   background: rgba(255,255,255,0.08);
   color: #ffffff;
+}
+
+.tool-btn.active {
+  background: rgba(255, 214, 0, 0.15);
+  border-color: rgba(255, 214, 0, 0.55);
+  color: #ffd600;
+}
+
+.dictation-group {
+  gap: .5rem;
+}
+
+.dictation-status {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .2rem .5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: #9aa3b2;
+  text-transform: none;
+  letter-spacing: .01em;
+}
+
+.dictation-status.active {
+  color: #ffd600;
+  border-color: rgba(255, 214, 0, 0.45);
+  background: rgba(255, 214, 0, 0.08);
+}
+
+.dictation-status.error {
+  color: #ff8a8a;
+  border-color: rgba(255, 138, 138, 0.5);
+  background: rgba(255, 138, 138, 0.1);
+}
+
+.dictation-status.unsupported {
+  color: #8b93a1;
+  border-color: rgba(139, 147, 161, 0.4);
+  background: rgba(139, 147, 161, 0.08);
 }
 
 .tool-btn.text-btn {

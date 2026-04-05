@@ -20,7 +20,7 @@
             <li>Generate structured prompts fast</li>
             <li>Draft scripts and campaigns</li>
             <li>Design mockups and brand assets</li>
-            <li>Publish and review your gallery</li>
+            <li>Review published gallery</li>
           </ul>
         </div>
       </div>

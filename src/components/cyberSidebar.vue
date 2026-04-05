@@ -2,7 +2,7 @@
   <aside class="cyber-sidebar" :class="{ 'is-collapsed': isCollapsed }">
     <div class="sidebar-top">
       <div class="sidebar-brand">
-        <span class="brand-mark">OC</span>
+        <img class="brand-mark" src="@/assets/images/ocLoGo.png" alt="Oclok Logo" />
         <span class="brand-text">Cyber Studio</span>
       </div>
       <button
@@ -110,7 +110,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const STORAGE_KEY = "oclok_cyber_sidebar_collapsed";
 
-const isCollapsed = ref(true);
+const isCollapsed = ref(false);
 const isCreateOpen = ref(true);
 const isDesignOpen = ref(true);
 
@@ -187,13 +187,8 @@ watch(isCollapsed, (value) => {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(255, 214, 0, 0.18);
-  color: #ffd600;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-text {
@@ -300,12 +295,24 @@ watch(isCollapsed, (value) => {
   align-items: center;
 }
 
+.cyber-sidebar.is-collapsed .nav-group {
+  align-items: center;
+  width: 100%;
+}
+
+.cyber-sidebar.is-collapsed .nav-group-links {
+  align-items: center;
+  width: 100%;
+  gap: 0.55rem;
+}
+
 .cyber-sidebar.is-collapsed .nav-section {
   display: none;
 }
 
 .cyber-sidebar.is-collapsed .nav-link {
   width: 44px;
+  height: 44px;
   padding: 0.4rem;
   justify-content: center;
 }

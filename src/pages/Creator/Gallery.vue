@@ -19,7 +19,7 @@
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 
         <div class="gallery-grid">
-          <article v-for="item in gallery" :key="item.id" class="gallery-item">
+          <article v-for="item in paginatedGallery" :key="item.id" class="gallery-item">
             <img :src="item.url" :alt="item.name" />
             <div class="caption">
               <h4>{{ item.name }}</h4>
@@ -29,21 +29,31 @@
           </article>
           <p v-if="!loading && gallery.length === 0" class="empty">No approved mockups yet.</p>
         </div>
+
+        <PaginationControls
+          v-if="!loading && totalPages > 1"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          @update:current-page="currentPage = $event"
+        />
       </section>
     </template>
   </RteLayout>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import CreatorToolbar from '@/components/TopToolbar.vue';
 import RteLayout from '@/layouts/RteLayout.vue';
+import PaginationControls from '@/components/PaginationControls.vue';
 import { listCyberMockups } from '@/services/cyber.service';
 
 const loading = ref(false);
 const errorMessage = ref('');
 const gallery = ref([]);
 const zoom = ref(100);
+const currentPage = ref(1);
+const pageSize = 10; // 2 rows x 5 columns
 
 const baseUrl = import.meta.env.BASE_URL || '/';
 const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
@@ -89,6 +99,7 @@ const loadGallery = async () => {
   try {
     const data = await listCyberMockups({ status: 'approved' });
     gallery.value = mergeGallery([...localItems, ...data]);
+    currentPage.value = 1;
   } catch (error) {
     errorMessage.value = error.message || 'Unable to load gallery';
     gallery.value = mergeGallery(localItems);
@@ -96,6 +107,15 @@ const loadGallery = async () => {
     loading.value = false;
   }
 };
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(gallery.value.length / pageSize));
+});
+
+const paginatedGallery = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return gallery.value.slice(start, start + pageSize);
+});
 
 const handleZoomChange = (newZoom) => {
   zoom.value = newZoom;
@@ -134,7 +154,7 @@ button {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.8rem;
 }
 

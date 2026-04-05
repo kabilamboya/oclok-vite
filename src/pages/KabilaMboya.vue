@@ -1,27 +1,31 @@
 <template>
   <main class="kabila-page">
+    <!-- Top Bar -->
     <div class="top-bar">
-      <RouterLink to="/technicians" class="back-link">Back to Doctors</RouterLink>
+      <RouterLink to="/technicians" class="back-link">Back to Technicians</RouterLink>
     </div>
 
+    <!-- Hero Section -->
     <section id="about" class="hero-card">
       <img :src="profileImage" alt="Kabila Mboya" class="profile-image" />
       <div>
         <h1>Kabila Mboya</h1>
-        <p class="role">Creative Frontend Developer and Electrical Systems Technician</p>
+        <p class="role">QA Lead | Automation Engineer | Building Reliable Software Systems</p>
         <p>
-          Practical builder focused on modern web experiences, technician tooling, and reliable service workflows
-          for O!clok operations.
+          Leading testing initiatives, building automation frameworks, and ensuring reliable, scalable
+          software delivery across frontend and backend systems for O!clok operations.
         </p>
       </div>
     </section>
 
+    <!-- Quick Nav -->
     <nav class="quick-nav">
       <a v-for="item in navItems" :key="item.id" :href="`#${item.id}`">{{ item.label }}</a>
     </nav>
 
+    <!-- Skills Section -->
     <section id="skills" class="card">
-      <h2>Skills</h2>
+      <h2>Core Competencies & QA Focus</h2>
       <div class="skill-list">
         <div v-for="skill in skills" :key="skill.name" class="skill-item">
           <div class="skill-head">
@@ -31,33 +35,41 @@
           <div class="meter">
             <div class="meter-fill" :style="{ width: `${skill.level}%` }"></div>
           </div>
+          <p v-if="skill.qaNotes" class="skill-note">{{ skill.qaNotes }}</p>
         </div>
       </div>
     </section>
 
+    <!-- Projects Section -->
     <section id="projects" class="card">
-      <h2>Projects</h2>
+      <h2>Key Projects & Automation Impact</h2>
       <div class="project-columns">
         <div>
           <h3>Completed</h3>
           <article v-for="project in completedProjects" :key="project.title" class="project-card">
             <h4>{{ project.title }}</h4>
             <p>{{ project.description }}</p>
+            <ul>
+              <li v-for="item in project.qaHighlights" :key="item">{{ item }}</li>
+            </ul>
             <small>{{ project.time }}</small>
           </article>
         </div>
-
         <div>
           <h3>Ongoing</h3>
           <article v-for="project in ongoingProjects" :key="project.title" class="project-card">
             <h4>{{ project.title }}</h4>
             <p>{{ project.description }}</p>
+            <ul>
+              <li v-for="item in project.qaHighlights" :key="item">{{ item }}</li>
+            </ul>
             <small>{{ project.time }}</small>
           </article>
         </div>
       </div>
     </section>
 
+    <!-- Certifications -->
     <section id="certifications" class="card">
       <h2>Certifications</h2>
       <ul class="cert-list">
@@ -68,13 +80,17 @@
       </ul>
     </section>
 
+    <!-- Blogs Section -->
     <section id="blogs" class="card">
-      <h2>Blogs and Insights</h2>
+      <h2>Insights & Technical Writing</h2>
       <div class="blog-carousel">
         <img :src="currentBlog.image" :alt="currentBlog.title" class="blog-image" />
         <div class="blog-content">
           <h3>{{ currentBlog.title }}</h3>
           <p>{{ currentBlog.description }}</p>
+          <ul>
+            <li v-for="point in currentBlog.qaTakeaways" :key="point">{{ point }}</li>
+          </ul>
           <div class="blog-actions">
             <button @click="prevBlog">Prev</button>
             <button @click="nextBlog">Next</button>
@@ -83,16 +99,18 @@
       </div>
     </section>
 
+    <!-- Chatbot -->
     <section id="chat" class="chat-anchor"></section>
     <div class="chatbot-container">
       <div v-if="isChatOpen" class="chat-window">
         <h4>Chat with Kabila</h4>
-        <p>Welcome. Ask about web projects, technician services, or O!clok collaborations.</p>
+        <p>Ask about testing, automation, or O!clok project workflows.</p>
         <button class="chat-close" @click="isChatOpen = false">Close</button>
       </div>
       <button class="chat-toggle" @click="isChatOpen = !isChatOpen">Chat</button>
     </div>
 
+    <!-- Footer -->
     <footer class="page-footer">
       <p>Kisumu, Kenya | kabilamboya@gmail.com</p>
     </footer>
@@ -100,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref, computed } from 'vue';
 import profileImage from '../assets/images/Mboya.JPG';
 import blogImage1 from '../assets/images/BANNER001.jpg';
 import blogImage2 from '../assets/images/DRONE.jpg';
@@ -116,25 +134,35 @@ const navItems = [
 ];
 
 const skills = [
-  { name: 'Typing', level: 90 },
-  { name: 'CSS', level: 85 },
-  { name: 'React', level: 75 },
-  { name: 'JavaScript', level: 80 },
-  { name: 'Playwright', level: 90 },
-  { name: 'Packet Tracer', level: 85 },
-  { name: 'Illustrator', level: 75 },
-  { name: 'Photoshop', level: 80 },
+  { name: 'Typing', level: 90, qaNotes: 'Fast and accurate test documentation' },
+  { name: 'CSS', level: 85, qaNotes: 'Pixel-perfect layouts & responsive verification' },
+  { name: 'React', level: 75, qaNotes: 'Component testing & state validation' },
+  { name: 'JavaScript', level: 80, qaNotes: 'Unit tests, data validation & automation scripts' },
+  { name: 'Playwright', level: 90, qaNotes: 'End-to-end browser testing automation' },
+  { name: 'Packet Tracer', level: 85, qaNotes: 'Network simulation & troubleshooting validation' },
+  { name: 'Illustrator', level: 75, qaNotes: 'Design QA for assets & branding accuracy' },
+  { name: 'Photoshop', level: 80, qaNotes: 'Visual validation for marketing & UI content' },
 ];
 
 const completedProjects = [
   {
     title: 'Cyber Branding Frontend',
     description: 'Built campaign-ready UI flows for O!clok cyber services with responsive page architecture.',
+    qaHighlights: [
+      'End-to-end automated UI tests with Playwright',
+      'Validation logic for forms & APIs',
+      'Regression checks for responsive layouts',
+    ],
     time: '3 weeks',
   },
   {
     title: 'Doctor Profile Dashboard',
     description: 'Implemented profile metrics, projects chart, and communication actions for technician pages.',
+    qaHighlights: [
+      'Test cases for metric calculations',
+      'Cross-browser functional checks',
+      'CI/CD integration for automated deployment and testing',
+    ],
     time: '2 weeks',
   },
 ];
@@ -143,11 +171,19 @@ const ongoingProjects = [
   {
     title: 'Store Conversion Upgrade',
     description: 'Improving product listing relevance, cart behavior, and fulfillment handoff visibility.',
+    qaHighlights: [
+      'Automated validation of cart & checkout workflows',
+      'Real-time metrics for product accuracy',
+    ],
     time: 'In progress',
   },
   {
     title: 'Automation Assistant Integrations',
     description: 'Extending chatbot and WhatsApp-based service workflows for customer operations.',
+    qaHighlights: [
+      'End-to-end workflow automation tests',
+      'API validation & error handling strategies',
+    ],
     time: 'Ongoing',
   },
 ];
@@ -170,24 +206,38 @@ const certifications = [
 const blogs = [
   {
     title: 'Building Practical Service Dashboards',
-    description: 'How to structure technician-facing interfaces for speed, trust, and accountability.',
+    description: 'Structuring technician-facing interfaces for speed, trust, and accountability.',
+    qaTakeaways: [
+      'UI/UX validation scenarios',
+      'Test coverage for workflow accuracy',
+      'Automation strategy for real-time metrics',
+    ],
     image: blogImage1,
   },
   {
     title: 'Automation for Local Service Businesses',
-    description: 'Using bots and lightweight integrations to reduce response time and increase conversions.',
+    description: 'Using bots and integrations to reduce response time and increase reliability.',
+    qaTakeaways: [
+      'End-to-end workflow testing',
+      'Validation of API & bot responses',
+      'Error handling & failover strategies',
+    ],
     image: blogImage2,
   },
   {
     title: 'Human-Centered Technical Design',
     description: 'Balancing technical depth with usability in customer-facing products.',
+    qaTakeaways: [
+      'Usability testing insights',
+      'Accessibility compliance checks',
+      'Reliable interaction patterns',
+    ],
     image: blogImage3,
   },
 ];
 
 const activeBlog = ref(0);
 const isChatOpen = ref(false);
-
 const currentBlog = computed(() => blogs[activeBlog.value]);
 
 const nextBlog = () => {

@@ -1,6 +1,6 @@
 <template>
   <section class="mockups-wrapper">
-    <RteLayout :zoom="zoom" columns="280px 1fr" aside-position="left">
+    <RteLayout :zoom="zoom" columns="1fr" aside-position="left">
       <template #toolbar>
         <CreatorToolbar
           :initial-zoom="zoom"
@@ -9,179 +9,6 @@
           @tool-selected="selectedTool = $event"
           @delete-element="removeSelectedLayer"
         />
-      </template>
-
-      <template #aside>
-        <!-- LEFT SIDEBAR -->
-        <div class="panel tools-panel">
-          <div class="tools-header">
-            <h3>Mockup Studio</h3>
-          </div>
-
-          <p class="muted">Create and edit mockups.</p>
-
-          <!-- Upload -->
-          <div class="tool-section">
-            <h3>Upload Design</h3>
-
-            <form class="upload-form" @submit.prevent="onUpload">
-              <input v-model="form.name" placeholder="Name" required>
-
-              <input type="file" accept="image/*" @change="onFileChange">
-
-              <button type="submit">
-                Upload
-              </button>
-            </form>
-            <p class="muted">Designs snap into the print area automatically.</p>
-          </div>
-
-          <div class="tool-section">
-            <h3>Mockup</h3>
-
-            <label>
-              Mockup Color
-              <input type="color" v-model="mockupColor" @input="applyMockupColor" title="Tint mockup color">
-            </label>
-
-            <label>
-              Tint Strength
-              <input type="range" min="0" max="100" v-model.number="mockupTintStrength" @input="applyMockupColor">
-            </label>
-
-            <div class="tool-grid">
-              <button :class="{ active: mockupOrientation === 'portrait' }" @click="setMockupOrientation('portrait')">
-                Portrait
-              </button>
-              <button :class="{ active: mockupOrientation === 'landscape' }" @click="setMockupOrientation('landscape')">
-                Landscape
-              </button>
-            </div>
-            <p class="muted">Orientation adjusts the print area fit.</p>
-          </div>
-
-          <div class="tool-section">
-            <h3>Design</h3>
-            <div class="tool-grid">
-              <button @click="fitDesignToPrintArea">
-                Fit to Area
-              </button>
-              <button @click="centerDesignInPrintArea">
-                Center
-              </button>
-              <button @click="removeDesignImage">
-                Remove
-              </button>
-            </div>
-            <p class="muted">Select the design on canvas to rotate or scale.</p>
-          </div>
-
-          <!-- Tools -->
-          <div class="tool-section">
-            <h3>Tools</h3>
-
-            <div class="tool-grid">
-              <button @click="addTextLayer">
-                Text
-              </button>
-
-              <button @click="addRectLayer">
-                Rectangle
-              </button>
-
-              <button @click="addCircleLayer">
-                Circle
-              </button>
-
-              <button @click="removeSelectedLayer">
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <!-- Shape Color Customization -->
-          <div class="tool-section">
-            <h3>Shape Colors</h3>
-
-            <label>
-              Rectangle Color
-              <input type="color" v-model="shapeColors.rect" title="Choose rectangle color">
-            </label>
-
-            <label>
-              Circle Color
-              <input type="color" v-model="shapeColors.circle" title="Choose circle color">
-            </label>
-
-            <p class="muted" style="font-size: 0.85rem; margin-top: 8px;">Apply before adding shapes</p>
-          </div>
-
-          <!-- Drawing -->
-          <div class="tool-section">
-            <h3>Brush</h3>
-
-            <button @click="toggleDrawingMode">
-              Draw
-            </button>
-
-            <button @click="clearCanvasObjects">
-              Clear
-            </button>
-
-            <label>
-              Size
-              <input type="range" min="1" max="48"
-              v-model.number="brushSize">
-            </label>
-
-            <label>
-              Color
-              <input type="color" v-model="brushColor">
-            </label>
-          </div>
-
-          <!-- Layer -->
-          <div class="tool-section">
-            <h3>Element Color</h3>
-
-            <label>
-              Fill Color
-              <input type="color" v-model="elementColor" @input="applyElementColor" title="Change selected element color">
-            </label>
-          </div>
-
-          <!-- Layer Controls -->
-          <div class="tool-section">
-            <h3>Layer Controls</h3>
-
-            <label>
-              Opacity
-              <input type="range"
-              min="10"
-              max="100"
-              v-model.number="layerControls.opacity"
-              @input="applyLayerControls">
-            </label>
-
-            <label>
-              Scale
-              <input type="range"
-              min="20"
-              max="220"
-              v-model.number="layerControls.scale"
-              @input="applyLayerControls">
-            </label>
-
-            <label>
-              Rotate
-              <input type="range"
-              min="-180"
-              max="180"
-              v-model.number="layerControls.angle"
-              @input="applyLayerControls">
-            </label>
-          </div>
-        </div>
       </template>
 
       <template #main>
@@ -197,9 +24,153 @@
             </div>
           </div>
 
+          <!-- Canvas & Controls -->
           <div class="workspace-grid">
             <div class="canvas-stage">
-              <canvas ref="canvasElement" width="1280" height="1440"></canvas>
+              <canvas ref="canvasElement" width="900" height="800"></canvas>
+            </div>
+
+            <!-- Controls Grid -->
+            <div class="controls-container">
+              <!-- Mockup Templates -->
+              <ToolSection title="Mockup Templates">
+                <div class="mockup-gallery">
+                  <button 
+                    v-for="mockup in availableMockups" 
+                    :key="mockup.name"
+                    :class="['mockup-button', { active: selectedMockup === mockup.name }]"
+                    @click="loadMockup(mockup.name)"
+                    :title="`Load ${mockup.name}`"
+                  >
+                    <img :src="mockup.path" :alt="mockup.name" class="mockup-thumbnail" />
+                    <span class="mockup-label">{{ mockup.label }}</span>
+                  </button>
+                </div>
+              </ToolSection>
+
+              <!-- Upload -->
+              <ToolSection title="Upload Design">
+                <form class="upload-form" @submit.prevent="onUpload">
+                  <input v-model="form.name" placeholder="Name" required>
+                  <input type="file" accept="image/*" @change="onFileChange">
+                  <button type="submit">Upload</button>
+                </form>
+              </ToolSection>
+
+              <!-- Mockup Settings -->
+              <ToolSection title="Mockup Settings">
+                <ColorPicker 
+                  v-model="mockupColor"
+                  label="Mockup Color"
+                  :presets="COLOR_PRESETS"
+                  @update:modelValue="applyMockupColor"
+                />
+                <ControlSlider 
+                  v-model="mockupTintStrength"
+                  label="Tint Strength"
+                  min="0"
+                  max="100"
+                  @update:modelValue="applyMockupColor"
+                />
+                <div class="tool-grid">
+                  <button :class="{ active: mockupOrientation === 'portrait' }" @click="setMockupOrientation('portrait')">
+                    Portrait
+                  </button>
+                  <button :class="{ active: mockupOrientation === 'landscape' }" @click="setMockupOrientation('landscape')">
+                    Landscape
+                  </button>
+                </div>
+              </ToolSection>
+
+              <!-- Design Controls -->
+              <ToolSection title="Design">
+                <div class="tool-grid">
+                  <button @click="fitDesignToPrintArea">Fit to Area</button>
+                  <button @click="centerDesignInPrintArea">Center</button>
+                  <button @click="removeDesignImage">Remove</button>
+                </div>
+              </ToolSection>
+
+              <!-- Shape Tools -->
+              <ToolSection title="Add Shapes">
+                <ShapesLibrary 
+                  :shapes="SHAPES_LIBRARY"
+                  @shape-selected="handleShapeSelected"
+                />
+              </ToolSection>
+
+              <!-- Shape Colors -->
+              <ToolSection title="Shape Colors">
+                <ColorPicker 
+                  v-model="shapeColors.rect"
+                  label="Rectangle Color"
+                  :presets="COLOR_PRESETS"
+                />
+                <ColorPicker 
+                  v-model="shapeColors.circle"
+                  label="Circle Color"
+                  :presets="COLOR_PRESETS"
+                />
+              </ToolSection>
+
+              <!-- Brush Tools -->
+              <ToolSection title="Brush">
+                <div class="tool-grid">
+                  <button @click="toggleDrawingMode" :class="{ active: drawingMode }">Draw</button>
+                  <button @click="clearCanvasObjects">Clear</button>
+                </div>
+                <ControlSlider 
+                  v-model="brushSize"
+                  label="Size"
+                  min="1"
+                  max="48"
+                />
+                <ColorPicker 
+                  v-model="brushColor"
+                  label="Brush Color"
+                  :presets="COLOR_PRESETS"
+                />
+              </ToolSection>
+
+              <!-- Element Color -->
+              <ToolSection title="Element Color">
+                <ColorPicker 
+                  v-model="elementColor"
+                  label="Fill Color"
+                  :presets="COLOR_PRESETS"
+                  @update:modelValue="applyElementColor"
+                />
+              </ToolSection>
+
+              <!-- Layer Controls -->
+              <ToolSection title="Layer Controls">
+                <ControlSlider 
+                  v-model="layerControls.opacity"
+                  label="Opacity"
+                  min="10"
+                  max="100"
+                  @update:modelValue="applyLayerControls"
+                />
+                <ControlSlider 
+                  v-model="layerControls.scale"
+                  label="Scale"
+                  min="20"
+                  max="220"
+                  @update:modelValue="applyLayerControls"
+                />
+                <ControlSlider 
+                  v-model="layerControls.angle"
+                  label="Rotate"
+                  min="-180"
+                  max="180"
+                  @update:modelValue="applyLayerControls"
+                />
+              </ToolSection>
+
+              <!-- Delete -->
+              <ToolSection title="Actions">
+                <button class="delete-btn" @click="removeSelectedLayer">Delete Selected</button>
+              </ToolSection>
             </div>
           </div>
         </div>
@@ -215,6 +186,12 @@ import { ref, reactive, watch, onMounted } from "vue"
 
 import CreatorToolbar from "@/components/TopToolbar.vue"
 import RteLayout from "@/layouts/RteLayout.vue"
+import ToolSection from "@/components/ToolSection.vue"
+import ColorPicker from "@/components/ColorPicker.vue"
+import ControlSlider from "@/components/ControlSlider.vue"
+import ShapesLibrary from "@/components/ShapesLibrary.vue"
+
+import { SHAPES_LIBRARY, COLOR_PRESETS, DEFAULT_SHAPE_COLORS, MOCKUP_TEMPLATES } from "@/lib/shapes-library.js"
 
 import {
 Canvas as FabricCanvas,
@@ -229,6 +206,9 @@ const canvasElement = ref(null)
 const studioCanvas = ref(null)
 const zoom = ref(100)
 const selectedTool = ref("select")
+
+const availableMockups = MOCKUP_TEMPLATES
+const selectedMockup = ref('tshirt')
 
 const mockupImage = ref(null)
 const mockupTintLayer = ref(null)
@@ -260,8 +240,8 @@ angle:0
 })
 
 const shapeColors = reactive({
-  rect: "rgba(255,102,0,0.5)",
-  circle: "rgba(255,214,0,0.7)"
+  rect: DEFAULT_SHAPE_COLORS.rect,
+  circle: DEFAULT_SHAPE_COLORS.circle
 })
 
 const form = reactive({
@@ -339,6 +319,14 @@ fill:shapeColors.circle
 studioCanvas.value.add(circle)
 studioCanvas.value.setActiveObject(circle)
 
+}
+
+function handleShapeSelected(shape) {
+  // Call the appropriate handler based on the shape
+  const handler = this[shape.handler]
+  if (handler && typeof handler === 'function') {
+    handler.call(this)
+  }
 }
 
 
@@ -515,7 +503,28 @@ function onUpload(){
 
 function loadDefaultMockup(){
   // Load default t-shirt mockup asset
-  FabricImage.fromURL('/mockups/tshirt.png').then((img)=>{
+  loadMockup('tshirt')
+}
+
+function loadMockup(mockupName){
+  // Find the mockup
+  const mockup = availableMockups.find(m => m.name === mockupName)
+  if(!mockup) return
+  
+  selectedMockup.value = mockupName
+  
+  // Remove old mockup and tint layers
+  if(mockupImage.value){
+    studioCanvas.value.remove(mockupImage.value)
+    mockupImage.value = null
+  }
+  if(mockupTintLayer.value){
+    studioCanvas.value.remove(mockupTintLayer.value)
+    mockupTintLayer.value = null
+  }
+  
+  // Load new mockup
+  FabricImage.fromURL(mockup.path).then((img)=>{
     img.scaleToWidth(520)
     const canvasWidth = canvasElement.value?.width || 1280
     const canvasHeight = canvasElement.value?.height || 1440
@@ -524,9 +533,9 @@ function loadDefaultMockup(){
       originY: "center",
       left: canvasWidth / 2,
       top: canvasHeight / 2,
-      selectable:false,
-      evented:false,
-      data:{ role:"mockup" }
+      selectable: false,
+      evented: false,
+      data: { role: "mockup" }
     })
     mockupImage.value = img
     studioCanvas.value.add(img)
@@ -534,7 +543,7 @@ function loadDefaultMockup(){
     applyMockupColor()
     studioCanvas.value.renderAll()
   }).catch((err)=>{
-    console.error('Error loading default mockup:', err)
+    console.error(`Error loading mockup ${mockupName}:`, err)
   })
 }
 
@@ -651,21 +660,24 @@ function bindDesignConstraints(){
 function enforceDesignBounds(){
   if(isConstraining) return
   if(!designImage.value) return
-  if(!printArea.width || !printArea.height) return
-
+  
   isConstraining = true
 
   const obj = designImage.value
-  const areaLeft = printArea.left
-  const areaTop = printArea.top
-  const areaRight = printArea.left + printArea.width
-  const areaBottom = printArea.top + printArea.height
+  // Allow placement anywhere on canvas
+  const canvasWidth = studioCanvas.value?.width || 1280
+  const canvasHeight = studioCanvas.value?.height || 1440
+  const canvasLeft = 0
+  const canvasTop = 0
+  const canvasRight = canvasWidth
+  const canvasBottom = canvasHeight
 
   obj.setCoords()
   let bounds = obj.getBoundingRect(true, true)
 
-  if(bounds.width > printArea.width || bounds.height > printArea.height){
-    const scaleFactor = Math.min(printArea.width / bounds.width, printArea.height / bounds.height, 1)
+  // Keep object within canvas bounds
+  if(bounds.width > canvasWidth || bounds.height > canvasHeight){
+    const scaleFactor = Math.min(canvasWidth / bounds.width, canvasHeight / bounds.height, 1)
     obj.scale(obj.scaleX * scaleFactor)
     obj.setCoords()
     bounds = obj.getBoundingRect(true, true)
@@ -674,17 +686,17 @@ function enforceDesignBounds(){
   let deltaX = 0
   let deltaY = 0
 
-  if(bounds.left < areaLeft){
-    deltaX = areaLeft - bounds.left
+  if(bounds.left < canvasLeft){
+    deltaX = canvasLeft - bounds.left
   }
-  if(bounds.left + bounds.width > areaRight){
-    deltaX = areaRight - (bounds.left + bounds.width)
+  if(bounds.left + bounds.width > canvasRight){
+    deltaX = canvasRight - (bounds.left + bounds.width)
   }
-  if(bounds.top < areaTop){
-    deltaY = areaTop - bounds.top
+  if(bounds.top < canvasTop){
+    deltaY = canvasTop - bounds.top
   }
-  if(bounds.top + bounds.height > areaBottom){
-    deltaY = areaBottom - (bounds.top + bounds.height)
+  if(bounds.top + bounds.height > canvasBottom){
+    deltaY = canvasBottom - (bounds.top + bounds.height)
   }
 
   if(deltaX || deltaY){
@@ -768,30 +780,181 @@ onMounted(()=>{
   height:100%;
   display:flex;
   flex-direction:column;
+  overflow:hidden;
 }
 
-
-.canvas-stage{
-border:1px solid #333;
-background:#000;
-padding:8px;
-}
-
-canvas{
-width:100%;
-height:100%;
-}
-
-.panel{
+.workspace-panel{
   background:#151515;
   padding:1rem;
   border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.header-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1rem;
+}
+
+.header-actions{
+  display:flex;
+  gap:8px;
+}
+
+.workspace-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:2rem;
+  align-items:flex-start;
+  margin-bottom:1rem;
+}
+
+.canvas-stage{
+  border:1px solid #333;
+  background:#000;
+  padding:8px;
+  border-radius:6px;
+  flex-shrink:0;
+}
+
+canvas{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+.controls-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+  gap:1.5rem;
+  flex:1;
+  min-width:250px;
+}
+
+.tool-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:0.75rem;
+}
+
+.tool-grid button{
+  padding:0.75rem;
+  background:#0d0d0d;
+  border:1px solid #333;
+  border-radius:6px;
+  color:#d0d0d0;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.tool-grid button:hover{
+  background:#1a1a1a;
+  border-color:#ffd600;
+  color:#ffd600;
+}
+
+.tool-grid button.active{
+  background:#ffd600;
+  border-color:#ffd600;
+  color:#000;
+}
+
+.mockup-gallery{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:0.75rem;
+}
+
+.mockup-button{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  padding:0.75rem;
+  background:#0d0d0d;
+  border:2px solid #333;
+  border-radius:6px;
+  color:#d0d0d0;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.mockup-button:hover{
+  background:#1a1a1a;
+  border-color:#ffd600;
+}
+
+.mockup-button.active{
+  background:#ffd600;
+  border-color:#ffd600;
+  color:#000;
+}
+
+.mockup-thumbnail{
+  width:100%;
+  height:auto;
+  max-width:80px;
+  object-fit:contain;
+}
+
+.mockup-label{
+  font-size:0.8rem;
+  font-weight:600;
+  text-transform:uppercase;
 }
 
 .upload-form{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:0.75rem;
+}
+
+.upload-form input[type="text"],
+.upload-form input[type="file"]{
+  padding:0.6rem;
+  background:#0d0d0d;
+  border:1px solid #333;
+  border-radius:4px;
+  color:#d0d0d0;
+  font-size:0.9rem;
+}
+
+.upload-form button{
+  padding:0.6rem;
+  background:#ffd600;
+  border:none;
+  border-radius:4px;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.upload-form button:hover{
+  background:#ffed4e;
+}
+
+.delete-btn{
+  width:100%;
+  padding:0.75rem;
+  background:#dc3545;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.delete-btn:hover{
+  background:#ef5350;
 }
 
 .tool-section label{
@@ -809,10 +972,65 @@ height:100%;
   width:100%;
 }
 
+.upload-form{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
 .tool-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
+}
+
+.mockup-gallery{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.mockup-button{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  background:#222;
+  border:2px solid #444;
+  padding:8px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.mockup-button:hover{
+  border-color:#666;
+}
+
+.mockup-button.active{
+  background:#ffd600;
+  border-color:#ffd600;
+  color:#111;
+}
+
+.mockup-thumbnail{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  background:#111;
+  padding:4px;
+  border-radius:4px;
+}
+
+.mockup-button.active .mockup-thumbnail{
+  background:#ddd;
+}
+
+.mockup-label{
+  font-size:0.8rem;
+  font-weight:500;
+  text-align:center;
 }
 
 button{
@@ -829,19 +1047,23 @@ button{
 }
 
 .muted{
-color:#aaa;
+  color:#aaa;
+  font-size:0.85rem;
 }
 
-@media (max-width: 900px){
-  .canvas-stage{
-    max-height:65vh;
+@media (max-width: 768px){
+  .workspace-panel{
+    padding:0.75rem;
+  }
+  
+  .controls-container{
+    grid-template-columns:1fr;
   }
 }
 
 @media (max-width: 600px){
-  .canvas-stage{
-    padding:6px;
-    aspect-ratio:4 / 5;
+  canvas{
+    max-width:100%;
   }
 }
 

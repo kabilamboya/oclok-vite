@@ -27,20 +27,8 @@
         </nav>
       </div>
 
-      <!-- Search & Cart -->
+      <!-- Cart -->
       <div class="nav-actions">
-        <!-- Search -->
-        <div class="nav-search">
-          <input
-            type="text"
-            placeholder="Search..."
-            v-model="searchQuery"
-            @keyup.enter="handleSearch"
-          />
-          <button @click="handleSearch">🔍</button>
-        </div>
-
-        <!-- Cart Icon -->
         <div class="cart-wrap">
           <div class="cart-icon" :class="{ pulse: cartPulse }" @click="openCart">
             🛒
@@ -72,7 +60,6 @@ export default {
   },
   data() {
     return {
-      searchQuery: "",
       isMenuOpen: false,
       showCartToast: false,
       cartToastMessage: "",
@@ -107,15 +94,6 @@ export default {
         this.showCartToast = false;
         this.cartPulse = false;
       }, 2200);
-    },
-    handleSearch() {
-      if (this.searchQuery.trim()) {
-        this.$router.push({
-          name: "Search",
-          query: { q: this.searchQuery }
-        });
-        this.searchQuery = "";
-      }
     },
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
@@ -208,28 +186,11 @@ export default {
   color: #6d28d9 !important;
 }
 
-/* Search & Cart */
+/* Cart */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 15px;
-}
-.nav-search {
-  display: flex;
-  gap: 5px;
-}
-.nav-search input {
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: none;
-}
-.nav-search button {
-  padding: 6px 10px;
-  background: #ff6600;
-  border: none;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
 }
 .cart-wrap {
   position: relative;
@@ -318,12 +279,6 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .nav-search {
-    flex: 1 1 100%;
-  }
-  .nav-search input {
-    width: 100%;
   }
   .logo img {
     height: 36px; /* slightly smaller on mobile */

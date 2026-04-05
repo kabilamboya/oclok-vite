@@ -2,14 +2,18 @@
   <div class="products-page">
 
     <div class="filters" role="search" aria-label="Product filters">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search products..."
-        class="search-bar"
-        @input="onFilterChange"
-        aria-label="Search products"
-      />
+      <div class="search-wrapper">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search products..."
+          class="search-bar"
+          @input="onFilterChange"
+          @keyup.enter="onFilterChange"
+          aria-label="Search products"
+        />
+        <button class="search-btn" @click="onFilterChange">🔍</button>
+      </div>
 
       <select v-model="selectedCategory" class="filter-dropdown" @change="onFilterChange" aria-label="Filter by category">
         <option value="">All Categories</option>
@@ -41,139 +45,96 @@
       />
     </div>
 
-    <div v-if="!loading && totalPages > 1" class="pagination" aria-label="Pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
-      <button
-        v-for="page in visiblePages"
-        :key="page"
-        :class="['page-btn', { active: page === currentPage }]"
-        @click="goToPage(page)"
-      >
-        {{ page }}
-      </button>
-      <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-    </div>
+    <PaginationControls
+      v-if="!loading && totalPages > 1"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @update:current-page="currentPage = $event"
+    />
 
   </div>
 </template>
 
-  <script>
-  import CardList from "../components/CardList.vue";
-  import productsData from "../data/products.json";
+<script>
+import CardList from "../components/CardList.vue";
+import PaginationControls from "../components/PaginationControls.vue";
+import productsData from "../data/products.json";
+import { computed, ref, watch } from "vue";
 
-  export default {
+export default {
   name: "ProductsPage",
-  components: { CardList },
+  components: { CardList, PaginationControls },
 
-  data() {
-    return {
-      products: [],
-      loading: true,
-      searchQuery: "",
-      selectedCategory: "",
-      currentPage: 1,
-      pageSize: 12,
-      cart: JSON.parse(localStorage.getItem("cart")) || [],
-    };
-  },
+  setup() {
+    const products = ref([]);
+    const loading = ref(true);
+    const searchQuery = ref("");
+    const selectedCategory = ref("");
+    const currentPage = ref(1);
+    const cart = ref(JSON.parse(localStorage.getItem("cart")) || []);
+    const pageSize = 12;
 
-  computed: {
-    categories() {
-      return [...new Set(this.products.map((p) => p.category))].filter(Boolean);
-    },
+    const categories = computed(() => {
+      return [...new Set(products.value.map((p) => p.category))].filter(Boolean);
+    });
 
-    filteredProducts() {
-      const q = this.searchQuery.trim().toLowerCase();
-      return this.products.filter((p) => {
+    const filteredProducts = computed(() => {
+      const q = searchQuery.value.trim().toLowerCase();
+      return products.value.filter((p) => {
         const productName = (p.name || "").toLowerCase();
         const productCategory = (p.category || "").toLowerCase();
         const matchesSearch = q === "" || productName.includes(q) || productCategory.includes(q);
-        const matchesCategory = this.selectedCategory ? p.category === this.selectedCategory : true;
+        const matchesCategory = selectedCategory.value ? p.category === selectedCategory.value : true;
         return matchesSearch && matchesCategory;
       });
-    },
+    });
 
-    totalPages() {
-      return Math.max(1, Math.ceil(this.filteredProducts.length / this.pageSize));
-    },
+    const totalPages = computed(() => {
+      return Math.max(1, Math.ceil(filteredProducts.value.length / pageSize));
+    });
 
-    paginatedProducts() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      return this.filteredProducts.slice(start, start + this.pageSize);
-    },
+    const paginatedProducts = computed(() => {
+      const start = (currentPage.value - 1) * pageSize;
+      return filteredProducts.value.slice(start, start + pageSize);
+    });
 
-    visiblePages() {
-      const total = this.totalPages;
-      const current = this.currentPage;
-      const delta = 2;
-      const start = Math.max(1, current - delta);
-      const end = Math.min(total, current + delta);
-      const pages = [];
+    watch(searchQuery, () => {
+      currentPage.value = 1;
+    });
 
-      for (let page = start; page <= end; page += 1) {
-        pages.push(page);
+    watch(selectedCategory, () => {
+      currentPage.value = 1;
+    });
+
+    watch(totalPages, (newTotal) => {
+      if (currentPage.value > newTotal) {
+        currentPage.value = newTotal;
       }
+    });
 
-      return pages;
-    },
-
-  },
-
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-    selectedCategory() {
-      this.currentPage = 1;
-    },
-  },
-
-  methods: {
-    normalizeProduct(product) {
+    const normalizeProduct = (product) => {
       const numericPrice = Number(product?.price);
       return {
         ...product,
         price: Number.isFinite(numericPrice) ? numericPrice : 0,
       };
-    },
+    };
 
-    goToProduct(product) {
+    const goToProduct = (product) => {
       if (!product?.id) return;
-      this.$router.push(`/products/${product.id}`);
-    },
+      window.location.href = `/products/${product.id}`;
+    };
 
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        console.log("[pagination][store] next ->", this.currentPage);
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
+    const onFilterChange = () => {
+      currentPage.value = 1;
+    };
 
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        console.log("[pagination][store] prev ->", this.currentPage);
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-
-    onFilterChange() {
-      this.currentPage = 1;
-    },
-
-    goToPage(page) {
-      this.currentPage = page;
-      console.log("[pagination][store] page ->", this.currentPage);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-
-    addToCart(product) {
-      const itemIndex = this.cart.findIndex((i) => i.id === product.id);
+    const addToCart = (product) => {
+      const itemIndex = cart.value.findIndex((i) => i.id === product.id);
       if (itemIndex !== -1) {
-        this.cart[itemIndex].quantity += 1;
+        cart.value[itemIndex].quantity += 1;
       } else {
-        this.cart.push({
+        cart.value.push({
           id: product.id,
           name: product.name,
           title: product.name,
@@ -186,70 +147,82 @@
         });
       }
 
-      this.saveCart(`${product?.name || "Item"} added to cart`);
+      saveCart(`${product?.name || "Item"} added to cart`);
       try {
         window.navigator.vibrate?.(10);
       } catch (_error) {
         // Ignore unsupported vibration API.
       }
-    },
+    };
 
-    saveCart(message) {
-      localStorage.setItem("cart", JSON.stringify(this.cart));
+    const saveCart = (message) => {
+      localStorage.setItem("cart", JSON.stringify(cart.value));
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("cart:updated"));
         if (message) {
           window.dispatchEvent(new CustomEvent("cart:notify", { detail: { message } }));
         }
       }
-    },
+    };
 
-    openCart() {
-      this.isCartOpen = true;
-    },
-
-    closeCart() {
-      this.isCartOpen = false;
-    },
-
-    increaseQty(id) {
-      const item = this.cart.find((i) => i.id === id);
+    const increaseQty = (id) => {
+      const item = cart.value.find((i) => i.id === id);
       if (item) item.quantity++;
-      this.saveCart();
-    },
+      saveCart();
+    };
 
-    decreaseQty(id) {
-      const item = this.cart.find((i) => i.id === id);
+    const decreaseQty = (id) => {
+      const item = cart.value.find((i) => i.id === id);
       if (!item) return;
 
       if (item.quantity > 1) {
         item.quantity--;
       } else {
-        this.removeItem(id);
+        removeItem(id);
       }
 
-      this.saveCart();
-    },
+      saveCart();
+    };
 
-    removeItem(id) {
-      this.cart = this.cart.filter((i) => i.id !== id);
-      this.saveCart();
-    },
+    const removeItem = (id) => {
+      cart.value = cart.value.filter((i) => i.id !== id);
+      saveCart();
+    };
 
-    goToCheckout() {
-      this.closeCart();
-      this.$router.push({ path: "/checkout", query: { from: "cart" } });
-    },
-  },
+    const goToCheckout = () => {
+      window.location.href = "/checkout?from=cart";
+    };
 
-  mounted() {
     setTimeout(() => {
-      this.products = (productsData || []).map((item) => this.normalizeProduct(item));
-      this.loading = false;
+      products.value = (productsData || []).map((item) => normalizeProduct(item));
+      loading.value = false;
     }, 500);
+
+    return {
+      products,
+      loading,
+      searchQuery,
+      selectedCategory,
+      currentPage,
+      cart,
+      pageSize,
+      categories,
+      filteredProducts,
+      totalPages,
+      paginatedProducts,
+      normalizeProduct,
+      goToProduct,
+      onFilterChange,
+      addToCart,
+      saveCart,
+      increaseQty,
+      decreaseQty,
+      removeItem,
+      goToCheckout,
+    };
   },
 };
-  </script>
+</script>
 
 <style scoped>
 .hero {
@@ -266,10 +239,15 @@
   gap: 12px;
   margin: 18px 0;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.search-bar,
-.filter-dropdown {
+.search-wrapper {
+  display: flex;
+  gap: 5px;
+}
+
+.search-bar {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
@@ -277,7 +255,33 @@
   transition: box-shadow 0.15s;
 }
 
-.search-bar:focus,
+.search-bar:focus {
+  outline: none;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+}
+
+.search-btn {
+  padding: 10px 12px;
+  background: #ff6600;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: brightness 0.15s ease;
+}
+
+.search-btn:hover {
+  brightness: 1.1;
+}
+
+.filter-dropdown {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.15s;
+}
+
 .filter-dropdown:focus {
   outline: none;
   box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
@@ -316,31 +320,7 @@
   flex-wrap: wrap;
 }
 
-.page-btn {
-  min-width: 40px;
-  background: #fff !important;
-  color: #111827 !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 0.45rem 0.75rem;
-  border-radius: 0.45rem;
-  font-weight: 600;
-}
 
-.page-btn.active {
-  background: var(--support-purple, #6d28d9) !important;
-  color: #fff !important;
-  border-color: var(--support-purple, #6d28d9) !important;
-}
-
-.page-btn:hover,
-.page-btn:focus-visible {
-  border-color: var(--support-purple, #6d28d9) !important;
-  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.25);
-}
-
-.page-btn:focus-visible {
-  outline: 2px solid transparent;
-}
 
 .floating-cart {
   position: fixed;
