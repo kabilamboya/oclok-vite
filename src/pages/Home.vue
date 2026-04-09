@@ -572,4 +572,96 @@ onBeforeUnmount(() => {
     padding: 12px;
   }
 }
+
+@media (max-width: 420px) {
+  .header-container {
+    padding: 12px;
+    gap: 8px;
+    min-height: 16vh;
+  }
+
+  .header-container h1 {
+    font-size: 1.45rem;
+    line-height: 1.15;
+  }
+
+  .background-notanimated {
+    height: auto;
+    padding: 8px 10px;
+  }
+
+  .animated-text {
+    font-size: 0.95rem;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .tabs {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tabs button {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+
+  .about {
+    padding: 16px 6px;
+  }
+
+  .about-container {
+    padding: 10px;
+    gap: 14px;
+  }
+
+  .about-text {
+    padding: 6px 8px;
+  }
+
+  .tab-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .tab-content p {
+    font-size: 0.95rem;
+  }
+
+  .social-icons {
+    gap: 8px;
+  }
+
+  .social-icons a {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .featured-services,
+  .featured-projects {
+    padding: 40px 18px;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    margin-bottom: 28px;
+  }
+
+  .projects-subtitle {
+    margin: -10px auto 24px;
+  }
+
+  .services-grid,
+  .projects-grid {
+    gap: 16px;
+  }
+
+  .service-card img {
+    height: 160px;
+  }
+
+  .project-card img {
+    height: 150px;
+  }
+}
 </style>

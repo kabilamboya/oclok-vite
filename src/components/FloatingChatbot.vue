@@ -163,12 +163,12 @@ export default {
         "How can I contact support?",
       ],
       position: {
-        top: Math.max(20, window.innerHeight - 500),
-        left: Math.max(20, window.innerWidth - 380),
+        top: 20,
+        left: 20,
       },
       bubblePos: {
-        top: Math.max(10, window.innerHeight - 100),
-        left: Math.max(10, window.innerWidth - 90),
+        top: 10,
+        left: 10,
       },
       drag: { active: false, offsetX: 0, offsetY: 0 },
       bubbleDrag: { active: false, offsetX: 0, offsetY: 0 },
@@ -176,6 +176,7 @@ export default {
   },
   mounted() {
     window.addEventListener("resize", this.clampFloatingPositions);
+    this.setInitialPositions();
     this.clampFloatingPositions();
   },
   beforeUnmount() {
@@ -409,13 +410,55 @@ export default {
         if (container) container.scrollTop = container.scrollHeight;
       });
     },
+    getChatBounds() {
+      if (typeof window === "undefined") {
+        return {
+          viewportWidth: 0,
+          viewportHeight: 0,
+          chatWidth: 320,
+          chatHeight: 430,
+          maxLeft: 0,
+          maxTop: 0,
+        };
+      }
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const isMobile = viewportWidth <= 600;
+      const chatWidth = isMobile ? Math.max(280, viewportWidth - 20) : 320;
+      const chatHeight = isMobile
+        ? Math.min(Math.round(viewportHeight * 0.72), 440)
+        : 430;
+      const maxLeft = Math.max(10, viewportWidth - chatWidth - 10);
+      const maxTop = Math.max(10, viewportHeight - chatHeight - 10);
+
+      return {
+        viewportWidth,
+        viewportHeight,
+        chatWidth,
+        chatHeight,
+        maxLeft,
+        maxTop,
+      };
+    },
+    setInitialPositions() {
+      const bounds = this.getChatBounds();
+      if (!bounds.viewportWidth || !bounds.viewportHeight) return;
+
+      this.position.left = bounds.maxLeft;
+      this.position.top = bounds.maxTop;
+      this.bubblePos.left = Math.max(10, bounds.viewportWidth - 70);
+      this.bubblePos.top = Math.max(10, bounds.viewportHeight - 70);
+    },
     clampFloatingPositions() {
-      const maxChatLeft = Math.max(10, window.innerWidth - 330);
-      const maxChatTop = Math.max(10, window.innerHeight - 120);
-      const maxBubbleLeft = Math.max(10, window.innerWidth - 70);
-      const maxBubbleTop = Math.max(10, window.innerHeight - 70);
-      this.position.left = Math.min(maxChatLeft, Math.max(10, this.position.left));
-      this.position.top = Math.min(maxChatTop, Math.max(10, this.position.top));
+      const bounds = this.getChatBounds();
+      if (!bounds.viewportWidth || !bounds.viewportHeight) return;
+
+      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 70);
+      const maxBubbleTop = Math.max(10, bounds.viewportHeight - 70);
+
+      this.position.left = Math.min(bounds.maxLeft, Math.max(10, this.position.left));
+      this.position.top = Math.min(bounds.maxTop, Math.max(10, this.position.top));
       this.bubblePos.left = Math.min(maxBubbleLeft, Math.max(10, this.bubblePos.left));
       this.bubblePos.top = Math.min(maxBubbleTop, Math.max(10, this.bubblePos.top));
     },
@@ -428,14 +471,15 @@ export default {
     },
     onDrag(event) {
       if (!this.drag.active) return;
-      const maxChatLeft = Math.max(10, window.innerWidth - 330);
-      const maxChatTop = Math.max(10, window.innerHeight - 120);
+      const bounds = this.getChatBounds();
+      if (!bounds.viewportWidth || !bounds.viewportHeight) return;
+
       this.position.left = Math.min(
-        maxChatLeft,
+        bounds.maxLeft,
         Math.max(10, event.clientX - this.drag.offsetX)
       );
       this.position.top = Math.min(
-        maxChatTop,
+        bounds.maxTop,
         Math.max(10, event.clientY - this.drag.offsetY)
       );
     },
@@ -453,8 +497,11 @@ export default {
     },
     onBubbleDrag(event) {
       if (!this.bubbleDrag.active) return;
-      const maxBubbleLeft = Math.max(10, window.innerWidth - 70);
-      const maxBubbleTop = Math.max(10, window.innerHeight - 70);
+      const bounds = this.getChatBounds();
+      if (!bounds.viewportWidth || !bounds.viewportHeight) return;
+
+      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 70);
+      const maxBubbleTop = Math.max(10, bounds.viewportHeight - 70);
       this.bubblePos.left = Math.min(
         maxBubbleLeft,
         Math.max(10, event.clientX - this.bubbleDrag.offsetX)

@@ -439,6 +439,24 @@ h1 {
   }
 }
 
+@media (max-width: 420px) {
+  body:not(.cyber-mode) #app {
+    padding: 0.75rem;
+  }
+
+  body:not(.cyber-mode) section {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.9em;
+  }
+
+  .hero {
+    padding: 36px 14px;
+  }
+}
+
 /* =========================================================
    APP WRAPPER
 ========================================================= */
