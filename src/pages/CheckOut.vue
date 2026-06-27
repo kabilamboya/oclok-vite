@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import { readCart, persistCart } from "../services/cart.service";
+
 export default {
   data() {
     return {
@@ -61,12 +63,7 @@ export default {
 
   methods: {
     syncCartFromStorage() {
-      try {
-        const stored = JSON.parse(localStorage.getItem("cart") || "[]");
-        this.cartItems = Array.isArray(stored) ? stored : [];
-      } catch (_error) {
-        this.cartItems = [];
-      }
+      this.cartItems = readCart();
     },
     lineTotal(item) {
       const price = Number(item?.price) || 0;
@@ -79,16 +76,8 @@ export default {
     },
     submitOrder() {
       // Clear cart
-      localStorage.removeItem("cart");
+      persistCart([], `Order confirmed for ${this.customer.name}`);
       this.cartItems = [];
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("cart:updated"));
-        window.dispatchEvent(
-          new CustomEvent("cart:notify", {
-            detail: { message: `Order confirmed for ${this.customer.name}` },
-          })
-        );
-      }
 
       // Redirect user
       this.$router.push("/products");
@@ -115,6 +104,7 @@ export default {
   max-width: 800px;
   margin: 40px auto;
   padding: 20px;
+  color: var(--text);
 }
 
 .checkout-items {
@@ -122,10 +112,10 @@ export default {
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
-  background: #fff;
+  background: var(--surface);
   padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .item-preview img {
@@ -149,16 +139,16 @@ form input {
   width: 100%;
   margin-bottom: 12px;
   padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
 }
 
 form button {
-  background: #ff6600;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--text-dark);
   border: none;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
 }
 

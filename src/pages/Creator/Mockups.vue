@@ -1,39 +1,33 @@
 <template>
-  <section class="mockups-wrapper">
-    <RteLayout :zoom="zoom" columns="1fr" aside-position="left">
-      <template #toolbar>
-        <CreatorToolbar
-          :initial-zoom="zoom"
-          current-page="mockups"
-          @zoom-change="handleZoomChange"
-          @tool-selected="selectedTool = $event"
-          @delete-element="removeSelectedLayer"
-        />
-      </template>
-
+    <RteLayout>
       <template #main>
+      <section class="mockups-wrapper">
         <!-- WORKSPACE -->
         <div class="panel workspace-panel">
           <div class="header-row">
-            <h2>Create and share mockups</h2>
+            <div>
+              <p class="eyebrow">Mockup Studio</p>
+              <h2>Create and share designer-ready mockups</h2>
+              <p class="workspace-copy">Import artwork, apply mockup tints, and export polished campaign visuals from a modern studio experience.</p>
+            </div>
 
             <div class="header-actions">
-              <button @click="downloadCanvas">
-                Export
-              </button>
+              <span class="selected-mockup">Current template: {{ selectedMockup }}</span>
+              <button class="btn-export" @click="downloadCanvas">Export</button>
             </div>
           </div>
 
-          <!-- Canvas & Controls -->
+          <!-- Canvas -->
           <div class="workspace-grid">
             <div class="canvas-stage">
               <canvas ref="canvasElement" width="900" height="800"></canvas>
             </div>
+          </div>
 
-            <!-- Controls Grid -->
-            <div class="controls-container">
+          <!-- Controls Below Canvas -->
+          <div class="controls-container">
               <!-- Mockup Templates -->
-              <ToolSection title="Mockup Templates">
+              <ToolSection title="Mockup Templates" compact>
                 <div class="mockup-gallery">
                   <button 
                     v-for="mockup in availableMockups" 
@@ -49,7 +43,7 @@
               </ToolSection>
 
               <!-- Upload -->
-              <ToolSection title="Upload Design">
+              <ToolSection title="Upload Design" compact>
                 <form class="upload-form" @submit.prevent="onUpload">
                   <input v-model="form.name" placeholder="Name" required>
                   <input type="file" accept="image/*" @change="onFileChange">
@@ -58,7 +52,7 @@
               </ToolSection>
 
               <!-- Mockup Settings -->
-              <ToolSection title="Mockup Settings">
+              <ToolSection title="Mockup Settings" compact>
                 <ColorPicker 
                   v-model="mockupColor"
                   label="Mockup Color"
@@ -83,7 +77,7 @@
               </ToolSection>
 
               <!-- Design Controls -->
-              <ToolSection title="Design">
+              <ToolSection title="Design" compact>
                 <div class="tool-grid">
                   <button @click="fitDesignToPrintArea">Fit to Area</button>
                   <button @click="centerDesignInPrintArea">Center</button>
@@ -92,7 +86,7 @@
               </ToolSection>
 
               <!-- Shape Tools -->
-              <ToolSection title="Add Shapes">
+              <ToolSection title="Add Shapes" compact>
                 <ShapesLibrary 
                   :shapes="SHAPES_LIBRARY"
                   @shape-selected="handleShapeSelected"
@@ -100,7 +94,7 @@
               </ToolSection>
 
               <!-- Shape Colors -->
-              <ToolSection title="Shape Colors">
+              <ToolSection title="Shape Colors" compact>
                 <ColorPicker 
                   v-model="shapeColors.rect"
                   label="Rectangle Color"
@@ -114,7 +108,7 @@
               </ToolSection>
 
               <!-- Brush Tools -->
-              <ToolSection title="Brush">
+              <ToolSection title="Brush" compact>
                 <div class="tool-grid">
                   <button @click="toggleDrawingMode" :class="{ active: drawingMode }">Draw</button>
                   <button @click="clearCanvasObjects">Clear</button>
@@ -133,7 +127,7 @@
               </ToolSection>
 
               <!-- Element Color -->
-              <ToolSection title="Element Color">
+              <ToolSection title="Element Color" compact>
                 <ColorPicker 
                   v-model="elementColor"
                   label="Fill Color"
@@ -143,7 +137,7 @@
               </ToolSection>
 
               <!-- Layer Controls -->
-              <ToolSection title="Layer Controls">
+              <ToolSection title="Layer Controls" compact>
                 <ControlSlider 
                   v-model="layerControls.opacity"
                   label="Opacity"
@@ -168,15 +162,15 @@
               </ToolSection>
 
               <!-- Delete -->
-              <ToolSection title="Actions">
+              <ToolSection title="Actions" compact>
                 <button class="delete-btn" @click="removeSelectedLayer">Delete Selected</button>
               </ToolSection>
-            </div>
+            
           </div>
         </div>
+        </section>
       </template>
     </RteLayout>
-  </section>
 </template>
 
 
@@ -184,7 +178,6 @@
 
 import { ref, reactive, watch, onMounted } from "vue"
 
-import CreatorToolbar from "@/components/TopToolbar.vue"
 import RteLayout from "@/layouts/RteLayout.vue"
 import ToolSection from "@/components/ToolSection.vue"
 import ColorPicker from "@/components/ColorPicker.vue"
@@ -776,294 +769,296 @@ onMounted(()=>{
 
 <style scoped>
 
-.mockups-wrapper{
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+.mockups-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.workspace-panel{
-  background:#151515;
-  padding:1rem;
-  border-radius:10px;
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  overflow-y:auto;
-  overflow-x:hidden;
+.workspace-panel {
+  background: radial-gradient(circle at top left, rgba(13, 13, 13, 0.95), #0b0b0f 35%);
+  padding: 1.25rem;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 30px 80px rgba(0, 0, 0, 0.4);
 }
 
-.header-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:1rem;
+.header-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, auto);
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
 }
 
-.header-actions{
-  display:flex;
-  gap:8px;
+.header-row h2 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  color: #fff;
 }
 
-.workspace-grid{
-  display:flex;
-  flex-wrap:wrap;
-  gap:2rem;
-  align-items:flex-start;
-  margin-bottom:1rem;
+.workspace-copy {
+  margin: 0;
+  color: #b8b8c2;
+  max-width: 680px;
+  line-height: 1.8;
 }
 
-.canvas-stage{
-  border:1px solid #333;
-  background:#000;
-  padding:8px;
-  border-radius:6px;
-  flex-shrink:0;
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(15, 157, 138, 0.12);
+  color: var(--color-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
-canvas{
-  display:block;
-  max-width:100%;
-  height:auto;
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.85rem;
 }
 
-.controls-container{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
-  gap:1.5rem;
-  flex:1;
-  min-width:250px;
+.selected-mockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f3f3;
+  font-size: 0.95rem;
 }
 
-.tool-grid{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:0.75rem;
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.4rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));
+  color: var(--text-dark);
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.tool-grid button{
-  padding:0.75rem;
-  background:#0d0d0d;
-  border:1px solid #333;
-  border-radius:6px;
-  color:#d0d0d0;
-  font-weight:500;
-  cursor:pointer;
-  transition:all 0.2s ease;
+.btn-export:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
 }
 
-.tool-grid button:hover{
-  background:#1a1a1a;
-  border-color:#ffd600;
-  color:#ffd600;
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+  min-height: 0;
 }
 
-.tool-grid button.active{
-  background:#ffd600;
-  border-color:#ffd600;
-  color:#000;
+.canvas-stage {
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06));
+  padding: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.04);
+    min-height: 760px;
+  }
+
+  .canvas-stage::before {
+    content: 'Designer workspace';
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 720px;
+  }
+.tool-section h3 {
+  color: #f8f9fb;
 }
 
-.mockup-gallery{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:0.75rem;
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
 }
 
-.mockup-button{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:0.5rem;
-  padding:0.75rem;
-  background:#0d0d0d;
-  border:2px solid #333;
-  border-radius:6px;
-  color:#d0d0d0;
-  cursor:pointer;
-  transition:all 0.2s ease;
+.tool-grid button,
+.upload-form button,
+.delete-btn {
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
-.mockup-button:hover{
-  background:#1a1a1a;
-  border-color:#ffd600;
-}
-
-.mockup-button.active{
-  background:#ffd600;
-  border-color:#ffd600;
-  color:#000;
-}
-
-.mockup-thumbnail{
-  width:100%;
-  height:auto;
-  max-width:80px;
-  object-fit:contain;
-}
-
-.mockup-label{
-  font-size:0.8rem;
-  font-weight:600;
-  text-transform:uppercase;
-}
-
-.upload-form{
-  display:flex;
-  flex-direction:column;
-  gap:0.75rem;
-}
-
-.upload-form input[type="text"],
-.upload-form input[type="file"]{
-  padding:0.6rem;
-  background:#0d0d0d;
-  border:1px solid #333;
-  border-radius:4px;
-  color:#d0d0d0;
-  font-size:0.9rem;
-}
-
-.upload-form button{
-  padding:0.6rem;
-  background:#ffd600;
-  border:none;
-  border-radius:4px;
-  color:#000;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.2s ease;
-}
-
-.upload-form button:hover{
-  background:#ffed4e;
-}
-
-.delete-btn{
-  width:100%;
-  padding:0.75rem;
-  background:#dc3545;
-  border:none;
-  border-radius:6px;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.2s ease;
-}
-
-.delete-btn:hover{
-  background:#ef5350;
-}
-
-.tool-section label{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  color:#ddd;
-  font-size:0.9rem;
-}
-
+.tool-grid button,
+.upload-form input,
 .tool-section input[type="color"],
 .tool-section input[type="range"],
 .tool-section input[type="file"],
-.tool-section input[type="text"]{
-  width:100%;
+.tool-section input[type="text"] {
+  box-sizing: border-box;
 }
 
-.upload-form{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+.tool-grid button {
+  background: #12131a;
+  color: #e3e7f7;
+  border-color: rgba(255, 255, 255, 0.07);
 }
 
-.tool-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
+.tool-grid button:hover {
+  background: rgba(15, 157, 138, 0.12);
+  border-color: rgba(15, 157, 138, 0.35);
+  color: #fff;
 }
 
-.mockup-gallery{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-bottom:12px;
+.tool-grid button.active {
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));
+  color: var(--text-dark);
 }
 
-.mockup-button{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-  background:#222;
-  border:2px solid #444;
-  padding:8px;
-  border-radius:6px;
-  cursor:pointer;
-  transition:all 0.2s ease;
+.mockup-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
 }
 
-.mockup-button:hover{
-  border-color:#666;
+.mockup-button {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  color: #e7e7ef;
+  gap: 0.85rem;
 }
 
-.mockup-button.active{
-  background:#ffd600;
-  border-color:#ffd600;
-  color:#111;
+.mockup-button:hover {
+  background: rgba(15, 157, 138, 0.08);
+  border-color: rgba(15, 157, 138, 0.35);
 }
 
-.mockup-thumbnail{
-  width:60px;
-  height:60px;
-  object-fit:contain;
-  background:#111;
-  padding:4px;
-  border-radius:4px;
+.mockup-button.active {
+  background: linear-gradient(135deg, rgba(15, 157, 138, 0.18), rgba(109, 40, 217, 0.16));
+  border-color: rgba(15, 157, 138, 0.5);
+  color: #fff;
 }
 
-.mockup-button.active .mockup-thumbnail{
-  background:#ddd;
+.mockup-thumbnail {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  background: #0f1118;
+  padding: 0.75rem;
+  border-radius: 12px;
 }
 
-.mockup-label{
-  font-size:0.8rem;
-  font-weight:500;
-  text-align:center;
+.mockup-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
 }
 
-button{
-  background:#ffd600;
-  border:none;
-  padding:8px;
-  border-radius:6px;
-  cursor:pointer;
+.upload-form {
+  display: grid;
+  gap: 0.9rem;
 }
 
-.tool-grid button.active{
-  background:#ff6b00;
-  color:#111;
+.upload-form input[type="text"],
+.upload-form input[type="file"] {
+  padding: 0.95rem 1rem;
+  background: #0f1117;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  color: #e7e7ef;
 }
 
-.muted{
-  color:#aaa;
-  font-size:0.85rem;
+.upload-form button {
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));
+  color: var(--text-dark);
+  border: none;
 }
 
-@media (max-width: 768px){
-  .workspace-panel{
-    padding:0.75rem;
+.upload-form button:hover {
+  filter: brightness(1.05);
+}
+
+.delete-btn {
+  background: #d63f55;
+  color: #fff;
+  border-radius: 14px;
+}
+
+.delete-btn:hover {
+  background: #e85b73;
+}
+
+.tool-section label,
+.muted {
+  color: #bec4d5;
+}
+
+button {
+  min-height: 44px;
+}
+
+@media (max-width: 1024px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .controls-container{
-    grid-template-columns:1fr;
+}
+
+@media (max-width: 768px) {
+  .workspace-panel {
+    padding: 1rem;
+  }
+
+  .header-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    align-items: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .controls-container {
+    grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 600px){
-  canvas{
-    max-width:100%;
+@media (max-width: 600px) {
+  canvas {
+    width: 100%;
+  }
+
+  .selected-mockup {
+    font-size: 0.9rem;
   }
 }
 

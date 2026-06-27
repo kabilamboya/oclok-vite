@@ -9,7 +9,7 @@
         <slot name="aside" />
       </aside>
 
-      <div class="rte-main">
+      <div class="rte-main rte-main-content">
         <slot name="main" />
       </div>
 

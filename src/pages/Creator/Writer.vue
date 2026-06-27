@@ -1,18 +1,6 @@
 <template>
   <div class="writer-container">
     <RteLayout :zoom="zoom" columns="minmax(0, 2.2fr) minmax(260px, 0.6fr)">
-      <template #toolbar>
-        <!-- Shared Toolbar with Zoom -->
-        <CreatorToolbar
-          :initial-zoom="zoom"
-          :editor-content="getEditorText()"
-          current-page="writer"
-          @zoom-change="handleZoomChange"
-          @tool-selected="handleToolSelected"
-          @draft-saved="handleDraftSaved"
-        />
-      </template>
-
       <template #main>
         <CreatorEditor
           ref="editorRef"
@@ -21,19 +9,21 @@
           subtitle="For AI scripts, campaign drafts, and professional content generation."
           placeholder="Start writing your AI script or campaign content here..."
           :show-actions="false"
+          current-page="writer"
+          :show-zoom-controls="true"
+          :show-draft-controls="true"
+          :initial-zoom="zoom"
+          @zoom-change="handleZoomChange"
+          @draft-saved="handleDraftSaved"
         />
       </template>
 
       <template #aside>
         <div class="panel tools-panel">
-          <div class="panel-header">
-            <h2>Imports & Templates</h2>
-            <p class="muted">Bring in files and quick-start copy</p>
-          </div>
-
-          <div class="section-container">
-            <h3>Draft Actions</h3>
-            <div class="draft-actions">
+          <ToolSection title="Imports & Templates" compact>
+            <div class="section-container">
+              <h3>Draft Actions</h3>
+              <div class="draft-actions">
               <button class="draft-btn primary" @click="handleSaveDraft">
                 <i class="fas fa-save"></i> Save Draft
               </button>
@@ -46,10 +36,10 @@
             </div>
           </div>
 
-          <div class="section-container">
-            <h3>File Upload</h3>
-            <p class="muted">Import text files into your editor</p>
-            <form class="upload-form" @submit.prevent="handleFileUpload">
+            <div class="section-container">
+              <h3>File Upload</h3>
+              <p class="muted">Import text files into your editor</p>
+              <form class="upload-form" @submit.prevent="handleFileUpload">
               <input
                 ref="fileInput"
                 type="file"
@@ -63,9 +53,9 @@
             </form>
           </div>
 
-          <div class="section-container">
-            <h3>Quick Templates</h3>
-            <div class="template-buttons">
+            <div class="section-container">
+              <h3>Quick Templates</h3>
+              <div class="template-buttons">
               <button class="template-btn" @click="insertTemplate('email')">
                 <i class="fas fa-envelope"></i> Email
               </button>
@@ -75,8 +65,9 @@
               <button class="template-btn" @click="insertTemplate('script')">
                 <i class="fas fa-microphone"></i> Script
               </button>
+              </div>
             </div>
-          </div>
+          </ToolSection>
         </div>
       </template>
     </RteLayout>
@@ -86,8 +77,8 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import CreatorEditor from '@/components/CreatorEditor.vue';
-import CreatorToolbar from '@/components/TopToolbar.vue';
 import RteLayout from '@/layouts/RteLayout.vue';
+import ToolSection from '@/components/ToolSection.vue';
 import { getLocalUserId } from '@/lib/localStore';
 
 const editorRef = ref(null);
@@ -173,10 +164,6 @@ const insertTemplate = (templateType) => {
 
 const handleZoomChange = (newZoom) => {
   zoom.value = newZoom;
-};
-
-const handleToolSelected = (toolId) => {
-  console.log('Tool selected:', toolId);
 };
 
 const handleDraftSaved = (draftData) => {

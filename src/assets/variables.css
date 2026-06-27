@@ -1,0 +1,64 @@
+/* colors, spacing, fonts, radius */
+
+:root {
+
+  /* Brand */
+
+  --color-primary: #ff7a00;
+  --color-primary-hover: #e56600;
+
+  --color-secondary: #0f9d8a;
+  --color-secondary-hover: #0b7f6f;
+
+  --color-accent: #6d28d9;
+
+  /* Cyber theme aliases */
+  --primary-orange: #ff7a00;
+  --primary-orange-hover: #e56600;
+  --primary-orange-border: rgba(255, 122, 0, 0.35);
+  --secondary-teal: #0f9d8a;
+  --secondary-teal-border: rgba(15, 157, 138, 0.28);
+  --panel-dark: #181b24;
+  --text-white: #ffffff;
+  --line-dark: rgba(255, 255, 255, 0.08);
+
+  /* Light */
+
+  --bg: #fefdf9;
+  --surface: #ffffff;
+  --surface-alt: #f7f7f7;
+  --border: #e5e5e5;
+
+  --text: #111111;
+  --text-muted: #666666;
+
+  /* Dark */
+
+  --bg-dark: #0f1218;
+  --surface-dark: #171b23;
+  --surface-dark-alt: #1d2330;
+  --border-dark: #2c3442;
+
+  --text-dark: #ffffff;
+  --text-muted-dark: #afbac8;
+
+  /* Radius */
+
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:18px;
+
+  /* Spacing */
+
+  --space-xs:.5rem;
+  --space-sm:1rem;
+  --space-md:1.5rem;
+  --space-lg:2rem;
+  --space-xl:3rem;
+
+  /* Shadows */
+
+  --shadow-sm:0 3px 8px rgba(0,0,0,.08);
+  --shadow-md:0 8px 24px rgba(0,0,0,.12);
+
+}

@@ -99,6 +99,7 @@
 
 <script>
 import productsData from "../data/products.json";
+import { addProductToCart, persistCart, readCart } from "../services/cart.service";
 
 export default {
   props: ["id"],
@@ -176,32 +177,8 @@ export default {
     CartModal() {
       if (!this.product) return;
 
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const itemIndex = cart.findIndex((item) => item.id === this.product.id);
-
-      if (itemIndex >= 0) {
-        cart[itemIndex].quantity = (cart[itemIndex].quantity || 1) + 1;
-      } else {
-        cart.push({
-          id: this.product.id,
-          name: this.product.name,
-          title: this.product.name,
-          price: this.product.price,
-          image: this.product.image,
-          thumbnail: this.product.image,
-          quantity: 1,
-        });
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("cart:updated"));
-        window.dispatchEvent(
-          new CustomEvent("cart:notify", {
-            detail: { message: `${this.product.name} added to cart` },
-          })
-        );
-      }
+      const cart = addProductToCart(readCart(), this.product);
+      persistCart(cart, `${this.product.name} added to cart`);
     },
   },
 };
@@ -212,13 +189,14 @@ export default {
   padding: 20px;
   max-width: 1100px;
   margin: auto;
+  color: var(--text);
 }
 
 /* === BACK BUTTON === */
 .back-btn {
-  background: #fff8b3;
-  border: 1px solid #e6d500;
-  color: #000;
+  background: var(--surface-alt);
+  border: 1px solid var(--color-primary);
+  color: var(--text);
   padding: 10px 16px;
   border-radius: 8px;
   font-weight: 600;
@@ -228,7 +206,8 @@ export default {
 }
 
 .back-btn:hover {
-  background: #ffe600;
+  background: var(--color-primary);
+  color: var(--text-dark);
   transform: translateX(-3px);
 }
 
@@ -238,7 +217,7 @@ export default {
   flex-wrap: wrap;
   gap: 40px;
   margin-top: 10px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   padding: 30px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
@@ -260,7 +239,7 @@ export default {
   height: 350px;
   object-fit: contain;
   border-radius: 14px;
-  background: #f7f7f7;
+  background: var(--surface-alt);
   padding: 12px;
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -284,7 +263,7 @@ export default {
   border-radius: 10px;
   cursor: pointer;
   border: 2px solid transparent;
-  background: #fafafa;
+  background: var(--surface-alt);
   padding: 3px;
   transition: all 0.3s ease;
 }
@@ -294,8 +273,8 @@ export default {
 }
 
 .thumbnail.active {
-  border-color: #ffe600;
-  background: #fffde6;
+  border-color: var(--color-primary);
+  background: var(--surface-alt);
   transform: scale(1.12);
 }
 
@@ -311,7 +290,7 @@ export default {
 }
 
 .price {
-  color: #e63946;
+  color: var(--color-secondary);
   font-size: 1.5rem;
   margin: 12px 0;
   font-weight: 700;
@@ -320,7 +299,7 @@ export default {
 .description {
   line-height: 1.7;
   margin-bottom: 20px;
-  color: #444;
+  color: var(--text-muted);
 }
 
 /* === ACTION BUTTONS === */
@@ -342,24 +321,24 @@ export default {
 
 /* Primary action */
 .buy-btn {
-  background: #ffe600;
-  color: #000;
-  box-shadow: 0 3px 10px rgba(255, 230, 0, 0.3);
+  background: var(--color-primary);
+  color: var(--text-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .buy-btn:hover {
-  background: #ffd000;
+  background: var(--color-primary-hover);
   transform: translateY(-2px);
 }
 
 /* Secondary */
 .account-btn {
-  background: #000;
-  color: #fff;
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
 
 .account-btn:hover {
-  background: #333;
+  background: var(--surface-dark);
   transform: translateY(-2px);
 }
 

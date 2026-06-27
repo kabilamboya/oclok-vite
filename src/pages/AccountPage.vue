@@ -57,15 +57,15 @@ export default {
 .form-page {
   max-width: 500px;
   margin: 50px auto;
-  background: #fff;
+  background: var(--surface);
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #222;
+  color: var(--text);
 }
 .account-form .form-group {
   margin-bottom: 15px;
@@ -73,26 +73,26 @@ h1 {
 label {
   display: block;
   margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: 600;
 }
 input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 .submit-btn {
   width: 100%;
-  background: #ff6600;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--text-dark);
   border: none;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 1rem;
   cursor: pointer;
 }
 .submit-btn:hover {
-  background: #e65c00;
+  background: var(--color-primary-hover);
 }
 
 @media (max-width: 768px) {

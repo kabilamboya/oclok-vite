@@ -27,6 +27,20 @@
         </section>
 
         <section class="footer-col">
+          <h3>Vision & Mission</h3>
+          <div class="footer-links mission-vision">
+            <div class="vision-block">
+              <h4>Mission</h4>
+              <p>To make delivery and digital services easier, faster, and more trusted for individuals and businesses.</p>
+            </div>
+            <div class="vision-block">
+              <h4>Vision</h4>
+              <p>To become a leading smart platform that shapes the future of logistics, commerce, and digital engagement.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="footer-col">
           <h3>Follow Us</h3>
 
           <div class="social-icons">
@@ -57,161 +71,305 @@
 
       <div class="footer-bottom">
         <p>&copy; {{ currentYear }} O!clok Media - All Rights Reserved.</p>
-        <a href="#" class="back-to-top" @click.prevent="scrollToTop">Back to top</a>
+        <a
+          href="#"
+          class="back-to-top"
+          :class="{ show: isVisible }"
+          @click.prevent="scrollToTop"
+        >
+          Back to top
+        </a>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
 const currentYear = new Date().getFullYear();
+const isVisible = ref(false);
+
+const updateBackToTop = () => {
+  if (typeof window === 'undefined') return;
+
+  const hero = document.querySelector('.hero');
+  const heroHeight = hero ? hero.offsetHeight : 700;
+  isVisible.value = window.scrollY > heroHeight;
+};
 
 const scrollToTop = () => {
   if (typeof window === 'undefined') return;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+onMounted(() => {
+  updateBackToTop();
+  window.addEventListener('scroll', updateBackToTop, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateBackToTop);
+});
 </script>
 
 <style scoped>
-.footer {
-  background: #1f1f1f;
-  color: #ddd;
-  padding: 52px 20px 28px;
-  text-align: left;
+/* ===========================
+   FOOTER
+=========================== */
+
+.footer{
+
+background:var(--bg-dark);
+
+color:var(--text-dark);
+
+padding:80px 24px 30px;
+
 }
 
-.footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
+.footer-inner{
+
+max-width:1200px;
+
+margin:auto;
+
 }
 
-.footer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  grid-auto-rows: 1fr;
-  gap: 32px;
-  align-items: start;
+.footer-grid{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(260px,1fr));
+
+gap:50px;
+
+margin-bottom:50px;
+
 }
 
-.footer-col {
-  height: 100%;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  align-content: start;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid #3b3b3b;
-  border-radius: 12px;
-  background: #262626;
+.footer-col h3{
+
+font-size:1.25rem;
+
+margin-bottom:20px;
+
+color:var(--color-secondary);
+
 }
 
-.brand-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.footer-links{
+
+display:flex;
+
+flex-direction:column;
+
+gap:14px;
+
 }
 
-.footer h3 {
-  color: #ff7a00;
+.footer-links a{
+
+text-decoration:none;
+
+color:var(--text-muted-dark);
+
+transition:.3s;
+
+}
+
+.footer-links a:hover{
+
+color:var(--color-primary);
+
+padding-left:6px;
+
+}
+
+.mission-vision{
+  gap: 18px;
+}
+
+.vision-block{
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.vision-block:first-child{
+  border-top: 0;
+  padding-top: 0;
+}
+
+.vision-block h4{
+  margin: 0 0 6px;
+  color: var(--color-secondary);
+}
+
+.vision-block p{
   margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.2;
+  color: var(--text-muted-dark);
+  line-height: 1.7;
 }
 
-.footer-links {
-  display: grid;
-  align-content: start;
-  gap: 8px;
+.social-icons{
+
+display:flex;
+
+gap:14px;
+
+margin:20px 0;
+
 }
 
-.footer-links a {
-  color: #ddd;
-  text-decoration: none;
-  font-size: 0.94rem;
-  line-height: 1.35;
+.social-icons a{
+
+width:48px;
+
+height:48px;
+
+border-radius:50%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:rgba(255,255,255,.08);
+
+color:var(--text-dark);
+
+transition:.3s;
+
+font-size:18px;
+
 }
 
-.footer-links a:hover {
-  color: #ff7a00;
+.social-icons a:hover{
+
+background:var(--color-primary);
+
+transform:translateY(-4px);
+
 }
 
-.social-icons {
-  display: flex;
-  gap: 10px;
+.contact-group{
+
+display:flex;
+
+flex-direction:column;
+
+gap:16px;
+
+margin-top:18px;
+
 }
 
-.social-icons a {
-  color: #fff;
-  background: #ff7a00;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  font-size: 1rem;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+.contact-item{
+
+display:flex;
+
+gap:14px;
+
+align-items:flex-start;
+
+color:#cbd5e1;
+
 }
 
-.social-icons a:hover {
-  transform: translateY(-1px);
-  background: #e56600;
+.contact-item i{
+
+color:var(--color-secondary);
+
+margin-top:3px;
+
 }
 
-.contact-group {
-  display: grid;
-  align-content: start;
-  gap: 10px;
+.footer-bottom{
+
+border-top:1px solid rgba(255,255,255,.08);
+
+padding-top:30px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+gap:15px;
+
 }
 
-.contact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.95rem;
-  line-height: 1.35;
+.footer-bottom p{
+
+color:#94a3b8;
+
 }
 
-.contact-item i {
-  color: #ff7a00;
-  width: 18px;
-  margin-top: 2px;
+.back-to-top{
+  text-decoration:none;
+  background:var(--color-accent);
+  padding:12px 24px;
+  border-radius:50px;
+  color:var(--text-dark);
+  font-weight:700;
+  transition:.25s ease;
+  position: fixed;
+  bottom: 1.25rem;
+  right: 5.25rem;
+  z-index: 2000;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(8px);
+  box-shadow:var(--shadow-md);
 }
 
-.footer-bottom {
-  border-top: 1px solid #444;
-  margin-top: 28px;
-  padding-top: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 0.9rem;
+.back-to-top.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0);
 }
 
-.footer-bottom p {
-  margin: 0;
+.back-to-top:hover{
+  background:var(--color-secondary);
+  transform:translateY(-3px);
 }
 
-.back-to-top {
-  color: #ff7a00;
-  text-decoration: none;
-  font-weight: 600;
+@media(max-width:768px){
+
+.footer{
+
+padding:60px 20px;
+
 }
 
-.back-to-top:hover {
-  color: #ff9a3d;
+.footer-grid{
+
+gap:35px;
+
 }
 
-@media (max-width: 760px) {
-  .footer {
-    padding: 40px 16px 24px;
-  }
+.footer-bottom{
 
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+flex-direction:column;
+
+text-align:center;
+
+}
+
+.social-icons{
+
+justify-content:center;
+
+}
+
 }
 </style>
+

@@ -59,6 +59,7 @@
 import CardList from "../components/CardList.vue";
 import PaginationControls from "../components/PaginationControls.vue";
 import productsData from "../data/products.json";
+import { addProductToCart, persistCart, readCart } from "../services/cart.service";
 import { computed, ref, watch } from "vue";
 
 export default {
@@ -71,7 +72,7 @@ export default {
     const searchQuery = ref("");
     const selectedCategory = ref("");
     const currentPage = ref(1);
-    const cart = ref(JSON.parse(localStorage.getItem("cart")) || []);
+    const cart = ref(readCart());
     const pageSize = 12;
 
     const categories = computed(() => {
@@ -130,24 +131,8 @@ export default {
     };
 
     const addToCart = (product) => {
-      const itemIndex = cart.value.findIndex((i) => i.id === product.id);
-      if (itemIndex !== -1) {
-        cart.value[itemIndex].quantity += 1;
-      } else {
-        cart.value.push({
-          id: product.id,
-          name: product.name,
-          title: product.name,
-          price: product.price,
-          image: product.image,
-          thumbnail: product.image,
-          quantity: 1,
-          file: product.file || false,
-          isMockup: product.isMockup || false,
-        });
-      }
-
-      saveCart(`${product?.name || "Item"} added to cart`);
+      cart.value = addProductToCart(cart.value, product);
+      persistCart(cart.value, `${product?.name || "Item"} added to cart`);
       try {
         window.navigator.vibrate?.(10);
       } catch (_error) {
@@ -156,13 +141,7 @@ export default {
     };
 
     const saveCart = (message) => {
-      localStorage.setItem("cart", JSON.stringify(cart.value));
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("cart:updated"));
-        if (message) {
-          window.dispatchEvent(new CustomEvent("cart:notify", { detail: { message } }));
-        }
-      }
+      persistCart(cart.value, message);
     };
 
     const increaseQty = (id) => {
@@ -228,8 +207,8 @@ export default {
 .hero {
   padding: 48px 20px;
   text-align: center;
-  background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
-  border-radius: 8px;
+  background: linear-gradient(180deg, var(--surface-alt) 0%, var(--surface) 100%);
+  border-radius: var(--radius-lg);
   margin-bottom: 20px;
 }
 
@@ -249,8 +228,8 @@ export default {
 
 .search-bar {
   padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
   min-width: 180px;
   transition: box-shadow 0.15s;
 }

@@ -415,24 +415,24 @@ const prevBlog = () => {
 
 .chatbot-container {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 1200;
+  right: clamp(1rem, 2.5vw, 1.25rem);
+  bottom: clamp(1rem, 2.5vh, 1.25rem);
+  z-index: 1000; /* defer to global footer back-to-top */
 }
 
 .chat-window {
-  width: 290px;
+  width: min(22rem, 92vw);
   border-radius: 12px;
-  border: 1px solid #d1d5db;
-  background: #111827;
-  color: #f9fafb;
+  border: 1px solid color-mix(in srgb, var(--surface) 80%, transparent);
+  background: var(--surface-dark);
+  color: var(--text-dark);
   padding: 0.8rem;
   margin-bottom: 0.55rem;
 }
 
 .chat-window h4 {
   margin: 0 0 0.4rem;
-  color: #fbbf24;
+  color: var(--color-primary);
 }
 
 .chat-close,
@@ -445,13 +445,13 @@ const prevBlog = () => {
 }
 
 .chat-close {
-  background: #374151;
-  color: #ffffff;
+  background: color-mix(in srgb, var(--surface) 70%, black);
+  color: var(--text);
 }
 
 .chat-toggle {
-  background: #f59e0b;
-  color: #111827;
+  background: var(--color-primary);
+  color: var(--text-dark);
 }
 
 .page-footer {

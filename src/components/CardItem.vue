@@ -344,41 +344,46 @@ export default {
 
 .card-footer {
   display: flex;
-  justify-content: space-between;
-  padding: 0.8rem;
-  border-top: 1px solid #eee;
-  background: #fafafa;
-}
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface-alt);
+  }
 
-.primary-btn,
-.secondary-btn {
-  flex: 1;
-  text-align: center;
-  margin: 0 0.25rem;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
+  .primary-btn,
+  .secondary-btn {
+    flex: 1 1 10rem;
+    min-width: 9rem;
+    text-align: center;
+    margin: 0;
+    padding: 0.6rem 0.85rem;
+    border: none;
+    border-radius: 0.85rem;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: none;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: 0.24s ease;
+  }
 .primary-btn {
-  background: #007bff;
-  color: #fff;
-}
-.primary-btn:hover {
-  background: #0056b3;
-}
+    background: var(--color-primary);
+    color: var(--text-dark);
+  }
+  .primary-btn:hover {
+    background: var(--color-primary-hover);
+  }
 
-.secondary-btn {
-  background: #28a745;
-  color: #fff;
-  text-decoration: none;
-}
-.secondary-btn:hover {
-  background: #1e7e34;
-}
+  .secondary-btn {
+    background: var(--color-secondary);
+    color: var(--text-dark);
+    text-decoration: none;
+  }
+  .secondary-btn:hover {
+    background: var(--color-secondary-hover);
+  }
 
 @media (max-width: 600px) {
   .card-footer {

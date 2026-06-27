@@ -9,7 +9,26 @@
 
     <div class="editor-body" :class="{ 'with-assets': hasAssets }">
       <div class="editor-surface">
-        <div class="rte-toolbar">
+        <ToolSection v-if="showToolbarInToolSection" title="Editor Tools" compact>
+          <div class="rte-toolbar">
+          <div v-if="showZoomControls || showDraftControls" class="toolbar-group editor-meta-group">
+            <button v-if="showZoomControls" class="tool-btn" type="button" title="Zoom out" @click="zoomOut">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="zoom-pill">{{ zoom }}%</span>
+            <button v-if="showZoomControls" class="tool-btn" type="button" title="Zoom in" @click="zoomIn">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button v-if="showZoomControls" class="tool-btn" type="button" title="Reset zoom" @click="resetZoom">
+              <i class="fas fa-compress"></i>
+            </button>
+            <button v-if="showDraftControls" class="tool-btn" type="button" title="Save draft" @click="saveDraft">
+              <i class="fas fa-save"></i>
+            </button>
+          </div>
+
+          <div v-if="showZoomControls || showDraftControls" class="toolbar-divider"></div>
+
           <div class="toolbar-group">
             <div class="style-select">
               <select v-model="blockStyle" @change="applyBlockStyle" aria-label="Style">
@@ -87,7 +106,8 @@
               {{ dictationStatus }}
             </span>
           </div>
-        </div>
+          </div>
+        </ToolSection>
 
         <div
           ref="editorElement"
@@ -128,6 +148,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue"
+import ToolSection from "./ToolSection.vue"
 
 const STORAGE_KEY = "creator-editor-draft"
 
@@ -143,15 +164,26 @@ const props = defineProps({
   showActions: { type: Boolean, default: true },
   copyLabel: { type: String, default: "Copy Draft" },
   clearLabel: { type: String, default: "Clear" },
-  useDraftLabel: { type: String, default: "Use Draft For Training" }
+  useDraftLabel: { type: String, default: "Use Draft For Training" },
+  currentPage: { type: String, default: "writer" },
+  showZoomControls: { type: Boolean, default: false },
+  showDraftControls: { type: Boolean, default: false },
+  initialZoom: { type: Number, default: 100 },
+  showToolbarInToolSection: { type: Boolean, default: true }
 })
 
-const emit = defineEmits(["input", "copy", "clear", "use-draft"])
+const emit = defineEmits(["input", "copy", "clear", "use-draft", "draft-saved", "zoom-change"])
 
 const editorElement = ref(null)
 const blockStyle = ref("paragraph")
 const isDictating = ref(false)
 const dictationError = ref("")
+const zoom = ref(props.initialZoom)
+
+const draftStorageKey = computed(() => {
+  const pageKey = props.currentPage?.trim();
+  return pageKey ? `creator_draft_${pageKey}` : STORAGE_KEY
+})
 
 const speechSupported = computed(() => {
   if (typeof window === "undefined") return false
@@ -176,7 +208,8 @@ const focusEditor = () => {
 }
 
 const getEditorContent = () => {
-  return editorElement.value?.innerHTML?.trim() || ""
+  if (!editorElement.value) return ""
+  return editorElement.value.innerText?.trim() || editorElement.value.textContent?.trim() || ""
 }
 
 const setText = (value = "") => {
@@ -186,8 +219,24 @@ const setText = (value = "") => {
 
 const insertContent = (content = "") => {
   if (!editorElement.value) return
-  editorElement.value.innerHTML += `<p>${content}</p>`
+  const value = String(content || "")
+  editorElement.value.innerHTML += value.includes("\n") ? `<p>${value}</p>` : value
   focusEditor()
+}
+
+const zoomIn = () => {
+  zoom.value = Math.min(200, zoom.value + 10)
+  emit("zoom-change", zoom.value)
+}
+
+const zoomOut = () => {
+  zoom.value = Math.max(50, zoom.value - 10)
+  emit("zoom-change", zoom.value)
+}
+
+const resetZoom = () => {
+  zoom.value = props.initialZoom
+  emit("zoom-change", zoom.value)
 }
 
 const runEditorCommand = (command, value = null) => {
@@ -264,10 +313,12 @@ const emitUseDraft = () => {
 const saveDraft = () => {
   const content = getEditorContent()
   localStorage.setItem(STORAGE_KEY, content)
+  localStorage.setItem(draftStorageKey.value, content)
+  emit("draft-saved", { content, page: props.currentPage, zoom: zoom.value })
 }
 
 const loadDraft = () => {
-  const draft = localStorage.getItem(STORAGE_KEY)
+  const draft = localStorage.getItem(draftStorageKey.value) || localStorage.getItem(STORAGE_KEY)
 
   if (draft && editorElement.value) {
     editorElement.value.innerHTML = draft
@@ -437,7 +488,12 @@ defineExpose({
   clearDraft,
   runEditorCommand,
   insertAsset,
-  focusEditor
+  focusEditor,
+  saveDraft,
+  zoomIn,
+  zoomOut,
+  resetZoom,
+  getZoom: () => zoom.value
 })
 </script>
 
@@ -474,6 +530,18 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: .35rem;
+}
+
+.editor-meta-group {
+  gap: .4rem;
+}
+
+.zoom-pill {
+  min-width: 56px;
+  text-align: center;
+  color: #e5e7eb;
+  font-size: .82rem;
+  font-weight: 600;
 }
 
 .toolbar-divider {

@@ -53,7 +53,8 @@ const routes = [
   { path: '/discover/:slug', name: 'DiscoverDetails', component: DiscoverDetails, props: true },
   { path: '/robots', name: 'Robots', component: Robots },
   { path: '/search', name: 'Search', component: SearchResults },
-  { path: '/checkout', name: 'Checkout', component: CheckOut },
+  { path: '/store/user/checkout', name: 'Checkout', component: CheckOut },
+  { path: '/checkout', redirect: { name: 'Checkout' } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ];
 

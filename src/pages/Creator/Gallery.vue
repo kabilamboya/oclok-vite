@@ -1,13 +1,5 @@
 <template>
-  <RteLayout :zoom="zoom">
-    <template #toolbar>
-      <CreatorToolbar
-        :initial-zoom="zoom"
-        current-page="gallery"
-        @zoom-change="handleZoomChange"
-      />
-    </template>
-
+  <RteLayout>
     <template #main>
       <section class="gallery-page">
         <div class="header">
@@ -43,10 +35,10 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import CreatorToolbar from '@/components/TopToolbar.vue';
 import RteLayout from '@/layouts/RteLayout.vue';
 import PaginationControls from '@/components/PaginationControls.vue';
 import { listCyberMockups } from '@/services/cyber.service';
+import galleryService from '@/services/gallery.service';
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -95,10 +87,11 @@ const loadGallery = async () => {
   loading.value = true;
   errorMessage.value = '';
   const localItems = await loadLocalGallery();
+  const fallbackGallery = galleryService.getAll();
 
   try {
     const data = await listCyberMockups({ status: 'approved' });
-    gallery.value = mergeGallery([...localItems, ...data]);
+    gallery.value = mergeGallery([...localItems, ...fallbackGallery, ...data]);
     currentPage.value = 1;
   } catch (error) {
     errorMessage.value = error.message || 'Unable to load gallery';

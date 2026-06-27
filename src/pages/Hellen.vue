@@ -277,7 +277,7 @@ function downloadPDF() {
   max-width:1000px;
   margin:auto;
   padding:32px;
-  background:#f4f6fa;
+  background:var(--surface-alt);
   font-family:Arial, Helvetica, sans-serif;
 }
 
@@ -286,13 +286,13 @@ function downloadPDF() {
 }
 
 .employee-info{
-  color:#6b7280;
+  color:var(--text-muted);
   font-weight:600;
 }
 
 .profile-section{
   margin-top:25px;
-  background:#fff;
+  background:var(--surface);
   padding:20px;
   border-radius:10px;
 }
@@ -305,10 +305,10 @@ function downloadPDF() {
 }
 
 .summary-card{
-  background:#fff;
+  background:var(--surface);
   padding:20px;
   border-radius:12px;
-  border:1px solid #e5e7eb;
+  border:1px solid var(--border);
 }
 
 .value{
@@ -430,12 +430,13 @@ function downloadPDF() {
   }
 
   .chatbot-container{
-    right:12px;
-    bottom:12px;
+    right: clamp(1rem, 2.5vw, 1.25rem);
+    bottom: clamp(1rem, 2.5vh, 1.25rem);
+    z-index: 1000;
   }
 
   .chat-window{
-    width:min(92vw, 320px);
+    width:min(92vw, 22rem);
   }
 }
 

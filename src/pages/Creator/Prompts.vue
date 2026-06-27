@@ -1,13 +1,5 @@
 <template>
 <RteLayout :zoom="zoom">
-<template #toolbar>
-  <CreatorToolbar
-    :initial-zoom="zoom"
-    current-page="prompts"
-    @zoom-change="handleZoomChange"
-  />
-</template>
-
 <template #main>
 <section class="prompt-training-page">
 
@@ -299,7 +291,6 @@ class="checklist-item"
 <script setup>
 
 import { ref, watch, onMounted, computed } from "vue"
-import CreatorToolbar from "@/components/TopToolbar.vue"
 import RteLayout from "@/layouts/RteLayout.vue"
 
 const practicePrompt = ref("")

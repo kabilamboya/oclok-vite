@@ -1,173 +1,190 @@
 <template>
   <div class="page">
-  <section class="hero" aria-hidden="false">
-    <!-- Header -->
+    <section class="hero" aria-hidden="false">
       <div class="header-container">
-        <h1>Welcome to <strong> O!clok services </strong></h1>
+        <h1>
+          Welcome to
+          <span class="hero-brand">
+            <span class="hero-brand-name">O!clok</span>
+            <span class="hero-brand-service">services</span>
+          </span>
+        </h1>
         <div class="background-notanimated">
-        <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
+          <p ref="animatedText" class="animated-text play">{{ currentPhrase }}</p>
         </div>
       </div>
     </section>
 
-      <!-- Tabs -->
-          <div class="tabs">
-            <button :class="{ active: activeTab==='about' }" @click="activeTab='about'">About Us</button>
-            <button :class="{ active: activeTab==='mission' }" @click="activeTab='mission'">Our Mission</button>
-            <button :class="{ active: activeTab==='vision' }" @click="activeTab='vision'">Our Vision</button>
-          </div>
-
-    <!-- Hero / About Tabs Section -->
-    <section class="about">
-      <div class="about-container">
-        <!-- Left Image -->
-        <div class="about-image">
-          <img src="/images/deliDrone.jpeg" alt="O!clok Store Team" />
-        </div>
-
-        <!-- Right Tab Content -->
-        <div class="about-text">
-          <!-- Tab Panels -->
-          <div class="tab-panels">
-            <div
-              v-show="activeTab==='about'"
-              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'about' }]"
-            >
-              <h2>About Us</h2>
-              <p>
-                At <strong>O!clok Services</strong> we provide reliable delivery services using both trained human couriers and emerging autonomous systems, alongside digital marketing,
-                web development, and media services that help businesses grow.
-              </p>
-              <p>
-                Our work is built on <strong>convenience, essence, and value</strong> - bringing practical solutions closer to people,
-                businesses, and communities, right when they are needed.
-              </p>
-            </div>
-
-            <div
-              v-show="activeTab==='mission'"
-              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'mission' }]"
-            >
-              <h2>Our Mission</h2>
-              <p>
-                To provide convenient, efficient, and technology-enabled delivery and digital services that empower individuals
-                and businesses to operate smarter and faster.
-              </p>
-              <p>
-                We are committed to combining innovation with a human-centered approach to ensure trust, accessibility,
-                and long-term value for every customer we serve.
-              </p>
-            </div>
-
-            <div
-              v-show="activeTab==='vision'"
-              :class="['tab-content', 'animate-on-scroll', { show: activeTab === 'vision' }]"
-            >
-              <h2>Our Vision</h2>
-              <p>
-                To become a leading smart logistics and digital services platform, shaping the future of delivery,
-                commerce, and online engagement across Kenya and beyond.
-              </p>
+    <section class="trusted-by">
+      <div class="section-shell">
+        <p class="eyebrow">Trusted By</p>
+        <div class="trusted-top">
+          <div class="trusted-stats">
+            <div v-for="stat in trustedStats" :key="stat.label" class="stat-card">
+              <strong>{{ stat.value }}</strong>
+              <span>{{ stat.label }}</span>
             </div>
           </div>
-
-          <!-- Social Icons -->
-          <div class="social-icons animate-on-scroll">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+          <div class="logo-row">
+            <span v-for="brand in trustedBy" :key="brand">{{ brand }}</span>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- Featured Services from Other Pages -->
-  <section class="featured-projects">
-    <h2 class="section-title">Our Top Services</h2>
-    <p class="projects-subtitle">Highlights pulled from key pages across O!clok.</p>
-
-    <div class="projects-grid">
-      <article
-        v-for="project in featuredProjects"
-        :key="project.id"
-        class="project-card animate-on-scroll"
-      >
-        <img :src="project.image" :alt="project.title" />
-        <div class="project-content">
-          <span class="project-source">{{ project.source }}</span>
-          <h3>{{ project.title }}</h3>
-          <p>{{ project.description }}</p>
-          <RouterLink :to="project.route" class="project-btn">Open Page</RouterLink>
+    <section class="services-section">
+      <div class="section-shell">
+        <div class="section-heading">
+          <p class="eyebrow">Our Services</p>
+          <h2>Smart services for fast-moving teams and growing brands.</h2>
         </div>
-      </article>
-    </div>
-  </section>
-</div>
+
+        <div class="services-grid">
+          <article v-for="service in featuredServices" :key="service.id" class="service-card">
+            <div class="service-icon">
+              <i :class="['fas', service.icon]"></i>
+            </div>
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description[0] }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-word">
+      <div class="section-shell featured-word-card">
+        <p class="eyebrow">Featured Word</p>
+        <h2>“We turn everyday delivery and digital needs into calm, dependable experiences.”</h2>
+        <p>From smart logistics to creative media, O!clok builds practical solutions that feel effortless.</p>
+      </div>
+    </section>
+
+    <section class="why-oclok">
+      <div class="section-shell why-grid">
+        <div class="why-intro">
+          <p class="eyebrow">Why O!clok</p>
+          <h2>Built around convenience, trust, and measurable value.</h2>
+          <img src="/images/deliDrone.jpeg" alt="Drone delivery illustration" class="why-image" />
+        </div>
+        <div class="why-list">
+          <div v-for="point in whyPoints" :key="point.title" class="why-item">
+            <h3>{{ point.title }}</h3>
+            <p>{{ point.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials">
+      <div class="section-shell">
+        <div class="section-heading">
+          <p class="eyebrow">Testimonials</p>
+          <h2>Clients trust us to keep their work moving.</h2>
+        </div>
+        <div class="testimonial-grid">
+          <article v-for="item in testimonials" :key="item.name" class="testimonial-card">
+            <img :src="item.image" :alt="item.name" class="testimonial-image" />
+            <p>“{{ item.quote }}”</p>
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.role }}</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="latest-articles">
+      <div class="section-shell">
+        <div class="section-heading">
+          <p class="eyebrow">Latest Posts</p>
+          <h2>Fresh updates from the O!clok team.</h2>
+        </div>
+        <div v-if="posts.length" class="article-grid">
+          <article v-for="post in posts" :key="post.id" class="article-card">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.excerpt }}</p>
+            <small>{{ formatDate(post.date) }}</small>
+            <a :href="post.url" target="_blank" rel="noopener noreferrer">View on LinkedIn</a>
+          </article>
+        </div>
+        <p v-else class="empty-state">Posts will appear here as soon as they are added.</p>
+      </div>
+    </section>
+
+    <section class="contact-cta">
+      <div class="section-shell contact-card">
+        <h2>Ready to launch something smarter?</h2>
+        <p>Let’s create a delivery, media, or digital experience that fits your goals.</p>
+        <div class="contact-actions">
+          <a href="mailto:cambridgemediam@gmail.com" class="primary-btn">Email Us</a>
+          <a href="tel:+254732379292" class="secondary-btn">Call Now</a>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import services from '../data/services.json'
 
-// Featured services
-const featuredServices = services.filter(s => s.featured)
-
-const featuredProjects = [
+const featuredServices = services.slice(0, 4)
+const trustedBy = ['Kisumu SMEs', 'Campus Networks', 'Creative Brands', 'Local Entrepreneurs']
+const trustedStats = [
+  { value: '50+', label: 'Clients served' },
+  { value: '24/7', label: 'Support coverage' },
+  { value: '98%', label: 'Repeat engagement' }
+]
+const whyPoints = [
   {
-    id: 1,
-    title: 'Media Campaign Studio',
-    source: 'From Media Page',
-    description: 'Podcast, interview, and content production workflows for brand storytelling.',
-    image: '/images/BiGmage.jpg',
-    route: '/media'
+    title: 'Fast delivery',
+    description: 'We move orders and information quickly so your customers stay informed.'
   },
   {
-    id: 2,
-    title: 'Creator Lab',
-    source: 'From Cyber Page',
-    description: 'Writing, mockups, and creative workflows for digital product delivery.',
-    image: '/images/dgtl.jpg',
-    route: '/cyber/creator'
+    title: 'Human-centered support',
+    description: 'Every service is designed to feel clear, personal, and dependable.'
   },
   {
-    id: 3,
-    title: 'City Discovery Routes',
-    source: 'From Discover Page',
-    description: 'Location-based recommendations and curated experiences around Kisumu.',
-    image: '/images/AMAZINGRACE.jpg',
-    route: '/discover'
-  },
-  {
-    id: 4,
-    title: 'Smart Commerce',
-    source: 'From Store Page',
-    description: 'Products and checkout-ready flows designed for fast online purchases.',
-    image: '/images/ROBOto.jpg',
-    route: '/products'
+    title: 'Growth-ready technology',
+    description: 'We combine practical tools, media, and infrastructure for long-term momentum.'
   }
 ]
+const testimonials = [
+  {
+    name: 'Winnie A.',
+    role: 'Small Business Owner',
+    quote: 'Their team made our launch feel effortless and professional.',
+    image: '/images/ROBOto.jpg'
+  },
+  {
+    name: 'Daniel M.',
+    role: 'Creative Director',
+    quote: 'The delivery and digital support helped us respond faster than ever.',
+    image: '/images/dgtl.jpg'
+  }
+]
+const posts = ref([])
 
-// Tabs
-const activeTab = ref('about')
-
-// Search & filters
-const searchQuery = ref('')
-const selectedCategory = ref('')
-const categories = ["Electronics", "Home", "Fashion"]
+const formatDate = (value) => {
+  if (!value) return ''
+  const date = new Date(value)
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
 
 // Animated phrases
 const phrases = [
-  "We serve individuals, families, and businesses",
-  "by providing convenient technical services.",
-  "Saving you time through smart digital solutions"
+  'We serve individuals, families, and businesses',
+  'by providing convenient technical services.',
+  'Saving you time through smart digital solutions'
 ]
 const phraseIndex = ref(0)
-const currentPhrase = ref("Empowering smart living through innovation")
+const currentPhrase = ref('Empowering smart living through innovation')
 const animatedText = ref(null)
 let phraseTimer = null
 
-// Functions
 const _playOnce = () => {
   const el = animatedText.value
   if (!el) return
@@ -183,485 +200,1432 @@ const _nextPhrase = () => {
 }
 
 const handleScroll = () => {
-  const elements = document.querySelectorAll(".animate-on-scroll")
+  const elements = document.querySelectorAll('.animate-on-scroll')
   const triggerBottom = window.innerHeight * 0.85
   elements.forEach(el => {
     const top = el.getBoundingClientRect().top
-    if (top < triggerBottom) el.classList.add("show")
+    if (top < triggerBottom) el.classList.add('show')
   })
 }
 
-// Lifecycle
-onMounted(() => {
+onMounted(async () => {
   _playOnce()
   phraseTimer = setInterval(_nextPhrase, 4000)
-  window.addEventListener("scroll", handleScroll)
-  handleScroll() // initial check
+  window.addEventListener('scroll', handleScroll)
+  handleScroll()
+
+  try {
+    const response = await fetch('/linkedin-posts.json')
+    if (!response.ok) throw new Error('Unable to load posts')
+    posts.value = await response.json()
+  } catch (error) {
+    console.error('Could not load LinkedIn posts:', error)
+  }
 })
 
 onBeforeUnmount(() => {
   if (phraseTimer) clearInterval(phraseTimer)
-  window.removeEventListener("scroll", handleScroll)
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <style scoped>
-.logo {
-  width: 56px;
+/*================================
+O!clok Design System
+================================*/
+:root {
+  --primary: var(--color-primary);
+  --primary-dark: var(--color-primary-hover);
+  --secondary: var(--color-secondary);
+  --dark: var(--bg-dark);
+  --dark2: var(--surface-dark);
+  --grey: var(--text-muted);
+  --light: var(--surface-alt);
+  --radius: var(--radius-lg);
+  --shadow: var(--shadow-md);
+  --transition: 0.35s ease;
+  --max-width: 1200px;
 }
 
-.header-container h1 {
-  margin-left: 5px; /* FIXED */
-  font-size: 2rem;
-  color: #ffffff;
-  white-space: nowrap;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-/* Header container – ONE ROW */
+html{
+  scroll-behaviour:smooth;
+}
+
+body {
+  font-family: Inter, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.page{
+  overflow-x:hidden;
+}
+
+.hero{
+
+background:
+linear-gradient(
+180deg,
+rgba(15,17,24,0.88),
+rgba(15,17,24,0.62),
+rgba(15,17,24,0.88)),
+url('/images/deliDrone.jpeg') center/cover no-repeat;
+
+min-height:78vh;
+display:flex;
+align-items:center;
+padding:clamp(64px, 8vw, 96px) 24px;
+position:relative;
+
+overflow:hidden;
+
+}
+
+.hero::before{
+
+content:"";
+
+position:absolute;
+
+width:450px;
+
+height:450px;
+
+background:
+
+radial-gradient(
+circle,
+rgba(15,157,138,.18),
+transparent);
+
+top:-180px;
+
+right:-120px;
+
+border-radius:50%;
+
+}
+
+.hero::after{
+
+content:"";
+
+position:absolute;
+
+width:350px;
+
+height:350px;
+
+background:
+
+radial-gradient(
+circle,
+rgba(255,122,0,.18),
+transparent);
+
+bottom:-120px;
+
+left:-80px;
+
+border-radius:50%;
+
+}
+
+.header-container{
+
+position:relative;
+
+z-index:2;
+
+display:grid;
+
+grid-template-columns:
+
+1.2fr
+1fr;
+
+gap:clamp(24px, 5vw, 50px);
+
+align-items:center;
+
+width:min(100%, var(--max-width));
+
+margin:auto;
+
+}
+
+.header-container h1{
+
+font-size:
+
+clamp(
+2.6rem,
+5vw,
+4.7rem);
+
+font-weight:800;
+
+line-height:1.05;
+
+color:white;
+
+margin:0;
+
+}
+
+.hero-brand{
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.hero-brand-name{
+  color: var(--primary);
+}
+
+.hero-brand-service{
+  color: var(--secondary);
+}
+.background-notanimated{
+
+background:
+
+rgba(255,255,255,.08);
+
+backdrop-filter:
+
+blur(14px);
+
+border:
+
+1px solid rgba(255,255,255,.08);
+
+border-radius:14px;
+
+padding:18px 24px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:flex-start;
+
+min-height:86px;
+
+width:min(100%, 520px);
+
+box-shadow:
+
+var(--shadow);
+
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15,17,24,0.24), rgba(15,17,24,0.84));
+  z-index: 1;
+}
+
 .header-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+.animated-text{
 
-  padding: 10px 20px;
-  min-height: 20vh;
-  width: 100%;
-  box-sizing: border-box;
+font-size:
+
+clamp(
+1rem,
+2vw,
+1.3rem);
+
+font-weight:500;
+
+color:white;
+
+margin:0;
+
+opacity:0;
+
+transform:
+
+translateY(30px);
+
 }
 
-/* Static ticker background – EDGE TO EDGE */
-.background-notanimated {
-  background: rgba(255, 102, 0, 0.95);
-  height: 45px;
-  padding: 10px 5px;
-  border-radius: 5px;
+.animated-text.play{
 
-  flex: 1;                 /* 🔑 fills remaining row space */
-  overflow: hidden;
+animation:
 
-  display: flex;
-  align-items: center;
+fadeTicker
+
+4s ease;
+
 }
 
-/* Animated text ONLY */
-.animated-text {
-  font-size: 1.4rem;
-  color: #fff;
-  white-space: nowrap;
-  line-height: 1.2;      /* 🔑 removes extra vertical space */
-  margin: 30px;
-  display: flex;
-  align-items: center;
-  height: 100%;
+@keyframes fadeTicker{
 
-  opacity: 0;
-  transform: translateY(100%);
+0%{
+
+opacity:0;
+
+transform:
+translateY(25px);
+
 }
 
-.animated-text.play {
-  animation: verticalTicker 4s ease-in-out forwards;
+15%{
+
+opacity:1;
+
+transform:
+translateY(0);
+
 }
 
-/* Vertical ticker animation */
-@keyframes verticalTicker {
-  0% {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  15% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  80% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-120%);
-  }
+80%{
+
+opacity:1;
+
+transform:
+translateY(0);
+
 }
 
-/* --- About Tabs --- */
-/* About Section */
+100%{
+
+opacity:0;
+
+transform:
+translateY(-25px);
+
+}
+
+}
+.hero-buttons{
+
+display:flex;
+
+gap:18px;
+
+margin-top:35px;
+
+flex-wrap:wrap;
+
+}
+
+.hero-btn{
+
+padding:
+
+14px 28px;
+
+border-radius:50px;
+
+font-weight:700;
+
+transition:.3s;
+
+text-decoration:none;
+
+}
+
+.hero-btn-primary{
+
+background:var(--primary);
+
+color:white;
+
+}
+
+.hero-btn-primary:hover{
+
+background:var(--primary-dark);
+
+transform:translateY(-3px);
+
+}
+
+.hero-btn-outline{
+
+border:2px solid white;
+
+color:white;
+
+}
+
+.hero-btn-outline:hover{
+
+background:white;
+
+color:#111;
+
+}
+@media(max-width:900px){
+
+.hero{
+
+padding:50px 20px;
+
+}
+
+.header-container{
+
+grid-template-columns:1fr;
+
+text-align:center;
+
+gap:30px;
+
+}
+
+.background-notanimated{
+
+justify-content:center;
+
+min-height:72px;
+
+margin-inline:auto;
+
+}
+
+.header-container h1{
+
+font-size:2.4rem;
+
+}
+
+.about-container{
+
+grid-template-columns:1fr;
+
+}
+
+.about-image{
+
+order:1;
+
+}
+
+.about-text{
+
+order:2;
+
+}
+
+}
+
+@media(max-width:600px){
+
+.hero{
+
+padding:40px 16px;
+
+min-height:auto;
+
+}
+
+.header-container h1{
+
+font-size:clamp(1.9rem, 7vw, 2.4rem);
+
+line-height:1.15;
+
+}
+
+.background-notanimated{
+
+padding:16px;
+
+width:100%;
+
+}
+
+.animated-text{
+
+text-align:center;
+
+font-size:1rem;
+
+}
+
+.tabs{
+
+padding:0 16px;
+
+margin-bottom:32px;
+
+}
+
+.tabs button{
+
+max-width:none;
+
+flex-basis:100%;
+
+}
+
+.about{
+
+padding:40px 16px 60px;
+
+}
+
+.about-image img{
+
+height:280px;
+
+min-height:280px;
+
+border-radius:18px;
+
+}
+
+.tab-content{
+
+padding:28px;
+
+}
+
+}
+
+
+/*================================
+ABOUT SECTION
+================================*/
 .about {
-  padding: 20px 10px; /* reduce top/bottom padding */
+  padding: clamp(64px, 8vw, 92px) 24px 100px;
+  background: var(--surface-alt);
 }
 
 .about-container {
+  max-width:var(--max-width);
+  margin:auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 60px);
+  align-items: center;
+}
+
+.about-image{
+
+    position:relative;
+
+}
+
+.about-image img{
+
+    width:100%;
+
+    height:auto;
+
+    min-height:320px;
+
+    aspect-ratio:4 / 5;
+
+    object-fit:cover;
+
+    border-radius:22px;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,.18);
+
+    transition:.45s ease;
+
+}
+
+.about-image img:hover{
+
+    transform:
+    scale(1.02);
+
+}
+.about-text{
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+}
+.tabs{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:16px;
+
+max-width:var(--max-width);
+
+margin:0 auto 45px;
+
+padding:0 24px;
+
+flex-wrap:wrap;
+
+}
+.tabs button{
+
+background:var(--surface);
+
+border:none;
+
+padding:14px 28px;
+
+border-radius:50px;
+
+cursor:pointer;
+
+font-size:15px;
+
+font-weight:700;
+
+color:var(--text-muted);
+
+transition:.35s ease;
+
+box-shadow:0 10px 24px rgba(0,0,0,.08);
+
+flex:1 1 220px;
+
+max-width:220px;
+
+}
+
+.tabs button:hover{
+
+transform:
+
+translateY(-3px);
+
+background:var(--secondary);
+
+color:var(--surface);
+
+}
+
+.tabs button.active{
+
+background:var(--primary);
+
+color:var(--surface);
+
+box-shadow:
+
+0 15px 35px rgba(255,107,26,.35);
+
+}
+.tab-content{
+
+background:var(--surface);
+
+padding:40px;
+
+border-radius:22px;
+
+box-shadow:
+
+0 20px 45px rgba(0,0,0,.08);
+
+opacity:0;
+
+transform:
+
+translateY(35px);
+
+transition:
+
+.6s ease;
+
+}
+.tab-content.show{
+
+opacity:1;
+
+transform:
+
+translateY(0);
+
+}
+.tab-content h2{
+
+font-size:
+
+clamp(
+1.9rem,
+3vw,
+2.5rem);
+
+margin-bottom:20px;
+
+color:var(--dark);
+
+font-weight:800;
+
+position:relative;
+
+}
+
+.tab-content h2::after{
+
+content:"";
+
+display:block;
+
+width:70px;
+
+height:5px;
+
+margin-top:12px;
+
+border-radius:5px;
+
+background:
+
+linear-gradient(
+90deg,
+#ff6b1a,
+#18d5c2);
+
+}
+.tab-content p{
+
+margin-bottom:18px;
+
+font-size:1.05rem;
+
+line-height:1.8;
+
+color:var(--grey);
+
+}
+.social-icons{
+
+display:flex;
+
+gap:16px;
+
+margin-top:35px;
+
+}
+.social-icons a{
+
+width:52px;
+
+height:52px;
+
+border-radius:50%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:var(--surface);
+
+color:var(--primary);
+
+font-size:20px;
+
+text-decoration:none;
+
+box-shadow:
+
+0 15px 35px rgba(0,0,0,.08);
+
+transition:.35s ease;
+
+}
+.social-icons a:hover{
+
+background:var(--primary);
+
+color:var(--surface);
+
+transform:
+
+translateY(-6px);
+
+}
+.animate-on-scroll{
+
+opacity:0;
+
+transform:
+
+translateY(35px);
+
+transition:
+
+all .8s ease;
+
+}
+
+.animate-on-scroll.show{
+
+opacity:1;
+
+transform:
+
+translateY(0);
+
+}
+
+@media(max-width:900px){
+
+.about{
+
+padding:60px 20px;
+
+}
+
+.about-container{
+
+grid-template-columns:1fr;
+
+gap:40px;
+
+}
+
+.about-image{
+
+order:1;
+
+}
+
+.about-text{
+
+order:2;
+
+}
+
+.about-image img{
+
+height:380px;
+
+}
+
+.tabs{
+
+justify-content:center;
+
+}
+
+}
+@media(max-width:600px){
+
+.about{
+
+padding:40px 16px;
+
+}
+
+.about-image img{
+
+height:280px;
+
+border-radius:18px;
+
+}
+
+.tab-content{
+
+padding:28px;
+
+}
+
+.tab-content h2{
+
+font-size:1.7rem;
+
+}
+
+.tab-content p{
+
+font-size:.97rem;
+
+}
+
+.tabs button{
+
+width:100%;
+
+}
+
+.social-icons{
+
+justify-content:center;
+
+}
+
+}
+
+/* ===========================
+   FEATURED PROJECTS
+=========================== */
+
+.featured-projects{
+    padding:90px 24px;
+    background:linear-gradient(
+        180deg,
+        var(--surface-alt) 0%,
+        var(--bg) 100%
+    );
+}
+
+.featured-projects .section-title{
+
+    text-align:center;
+
+    font-size:
+    clamp(2.2rem,4vw,3.4rem);
+
+    color:var(--text);
+
+    font-weight:800;
+
+    margin-bottom:16px;
+
+}
+
+.projects-subtitle{
+
+    max-width:700px;
+
+    margin:0 auto 60px;
+
+    text-align:center;
+
+    color:var(--grey);
+
+    font-size:1.05rem;
+
+}
+
+.projects-grid{
+
+    max-width:1200px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:32px;
+
+}
+.project-card{
+
+    background:var(--surface);
+
+    border-radius:22px;
+
+    height:100%;
+
+    overflow:hidden;
+
+    box-shadow:
+
+    0 20px 45px rgba(0,0,0,.08);
+
+    transition:
+
+    transform .35s ease,
+
+    box-shadow .35s ease;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+.project-card:hover{
+
+    transform:
+    translateY(-12px);
+
+    box-shadow:
+
+    0 30px 60px rgba(0,0,0,.15);
+
+}
+.project-card img{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+
+    transition:.45s ease;
+
+}
+
+.project-card:hover img{
+
+    transform:scale(1.05);
+
+}
+.project-content{
+
+    padding:28px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    flex:1;
+
+    justify-content:space-between;
+
+}
+.project-source{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    width:max-content;
+
+    padding:
+
+    6px 14px;
+
+    background:
+
+    rgba(15,157,138,.12);
+
+    color:var(--color-secondary);
+
+    border-radius:30px;
+
+    font-size:.75rem;
+
+    font-weight:700;
+
+    letter-spacing:.05em;
+
+    margin-bottom:18px;
+
+}
+.project-content h3{
+
+    font-size:1.45rem;
+
+    margin-bottom:14px;
+
+    color:var(--text);
+
+}
+.project-content p{
+
+    color:var(--grey);
+
+    line-height:1.7;
+
+    margin-bottom:25px;
+
+    flex:1;
+
+}
+.project-btn{
+
+    align-self:flex-start;
+
+    text-decoration:none;
+
+    padding:
+
+    14px 26px;
+
+    border-radius:50px;
+
+    background:
+
+    linear-gradient(
+    135deg,
+    var(--primary),
+    var(--secondary));
+
+    color:var(--surface);
+
+    font-weight:700;
+
+    transition:.35s ease;
+
+}
+.project-btn:hover{
+
+    transform:
+    translateY(-3px);
+
+    box-shadow:
+
+    0 14px 30px rgba(255,107,26,.35);
+
+}
+
+.fade-up{
+
+    opacity:0;
+
+    transform:translateY(35px);
+
+    transition:.7s ease;
+
+}
+
+.fade-up.show{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+.section-title::after{
+
+    content:"";
+
+    display:block;
+
+    width:80px;
+
+    height:5px;
+
+    margin:18px auto 0;
+
+    border-radius:50px;
+
+    background:
+
+    linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-secondary));
+
+}
+@media(max-width:900px){
+
+.featured-projects{
+
+padding:70px 20px;
+
+}
+
+.projects-grid{
+
+gap:24px;
+
+}
+
+.project-card img{
+
+height:200px;
+
+}
+
+}
+@media(max-width:600px){
+
+.featured-projects{
+
+padding:50px 16px;
+
+}
+
+.projects-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.project-card{
+
+border-radius:18px;
+
+}
+
+.project-card img{
+
+height:180px;
+
+}
+
+.project-content{
+
+padding:22px;
+
+}
+
+.project-content h3{
+
+font-size:1.25rem;
+
+}
+
+.project-btn{
+
+width:100%;
+
+text-align:center;
+
+}
+
+}
+
+/* ===========================
+   NEW HOMEPAGE SECTIONS
+=========================== */
+.section-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.section-heading {
+  max-width: 720px;
+  margin-bottom: 36px;
+}
+.section-heading h2,
+.why-grid h2,
+.featured-word-card h2,
+.contact-card h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--text);
+  margin: 0;
+}
+.trusted-by,
+.services-section,
+.featured-word,
+.why-oclok,
+.testimonials,
+.latest-articles,
+.contact-cta {
+  padding: 72px 0;
+}
+.trusted-by {
+  background: var(--surface-alt);
+}
+.trusted-top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.trusted-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+.stat-card {
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-card strong {
+  font-size: 1.4rem;
+  color: var(--color-primary);
+}
+.stat-card span {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+.logo-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;         /* reduce gap between image & text */
-  align-items: flex-start; /* align top */
-  padding: 15px;     /* less padding */
-  background: #fff;
-  color: #111;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  gap: 14px;
 }
-
-.about-image {
-  flex: 1;
-  text-align: left;
+.logo-row span {
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  font-weight: 600;
 }
-
-.about-image img {
-  max-width: 100%;
-  border-radius: 12px;
-  display: block;
-}
-
-.about-text {
-  flex: 1;
-  padding: 10px 15px;  /* reduce padding */
-  text-align: left;    /* optional, cleaner layout */
-}
-
-.tab-content h2 {
-  margin: 0 0 10px 0;   /* reduce top/bottom margin */
-  font-size: 1.5rem;    /* slightly smaller */
-  color: #ff6600;
-}
-
-.tab-content p {
-  margin: 5px 0;        /* tighter spacing */
-  line-height: 1.4;     /* slightly compact */
-  color: #333;
-}
-
-/* Social Icons */
-.social-icons {
-  display: flex;
-  padding-top: 20px;
-  margin-top: 10px;      /* reduce extra spacing */
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.tabs { 
-  display: flex; 
-  gap: 10px; 
-  justify-content: flex-end; 
-  margin-right: 100px; 
-  margin-bottom: 20px; 
-}
-
-.tabs button { 
-  background: #ffcc99 !important;
-  border: none; 
-  padding: 10px 18px; 
-  border-radius: 6px; 
-  cursor: pointer; 
-  font-weight: bold; 
-  transition: all 0.3s ease; 
-  color: #111 !important;
-}
-
-.tabs button:hover { 
-  background: #ff6600 !important;
-  color: #fff !important;
-}
-
-.tabs button.active { 
-  background: #ff6600 !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.5) !important;
-}
-.tab-content { transition: all 0.6s ease; opacity:0; transform:translateX(40px); }
-.tab-content.show { opacity:1; transform:translateX(0); }
-.animate-on-scroll { opacity:0; transform:translateY(30px); transition: all 0.8s ease-out; }
-.animate-on-scroll.show { opacity:1; transform:translateY(0); }
-.social-icons a { color:#fff; background:#ff6600; width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%; font-size:1.2rem; transition: transform 0.2s, background 0.3s; }
-.social-icons a:hover { transform:scale(1.2); background:#cc5200; color:#fff; }
-
-/* --- Top Services --- */
-.featured-services {
-  padding: 60px 30px;
-  background: #fafafa;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 40px;
-  color: #222;
-}
-
-.services-grid {
+.services-grid,
+.testimonial-grid,
+.article-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
 }
-
-.service-card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease;
+.service-card,
+.testimonial-card,
+.article-card {
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
-
-.service-card:hover {
-  transform: translateY(-6px);
+.service-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(24, 213, 194, 0.16);
+  color: var(--color-primary);
+  margin-bottom: 16px;
 }
-
-.service-card img {
+.service-card h3,
+.article-card h3,
+.why-item h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+.service-card p,
+.article-card p,
+.why-item p,
+.testimonial-card p,
+.contact-card p,
+.featured-word-card p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+.featured-word-card {
+  padding: 40px 32px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(24, 213, 194, 0.12), rgba(255, 107, 26, 0.12));
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.why-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.why-image {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+.why-list {
+  display: grid;
+  gap: 16px;
+}
+.why-item {
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.testimonial-card strong {
+  display: block;
+  margin-top: 16px;
+  color: var(--text);
+}
+.testimonial-image {
   width: 100%;
   height: 180px;
   object-fit: cover;
-}
-
-.card-content {
-  padding: 18px;
-}
-
-.card-content h3 {
-  margin: 0 0 8px;
-  font-size: 1.2rem;
-}
-
-.card-content p {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: #555;
-}
-
-.price {
-  display: block;
-  margin: 10px 0;
-  font-weight: bold;
-  color: #ff6600;
-}
-
-.cta-btn {
-  background: #ff6600;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.cta-btn:hover {
-  background: #e65a00;
-}
-
-/* --- Featured Projects --- */
-.featured-projects {
-  padding: 60px 30px;
-  background: #fff7f2;
-}
-
-.projects-subtitle {
-  text-align: center;
-  margin: -20px auto 36px;
-  max-width: 720px;
-  color: #6b7280;
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-}
-
-.project-card {
-  background: #ffffff;
   border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 16px;
 }
-
-.project-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+.testimonial-card span {
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
-
-.project-card img {
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
-}
-
-.project-content {
-  padding: 16px;
-}
-
-.project-source {
+.article-card a {
   display: inline-block;
-  margin-bottom: 10px;
-  font-size: 0.78rem;
+  margin-top: 16px;
   font-weight: 700;
-  color: #ff6600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.project-content h3 {
-  margin: 0 0 8px;
-  font-size: 1.1rem;
-}
-
-.project-content p {
-  margin: 0 0 14px;
-  font-size: 0.92rem;
-  color: #4b5563;
-  line-height: 1.5;
-}
-
-.project-btn {
-  display: inline-block;
-  background: #ff6600;
-  color: #ffffff;
+  color: var(--color-primary);
   text-decoration: none;
-  padding: 9px 14px;
-  border-radius: 7px;
-  font-weight: 600;
 }
-
-.project-btn:hover {
-  background: #e65a00;
+.contact-card {
+  padding: 40px 32px;
+  border-radius: 24px;
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
-
-/* --- Responsive --- */
-@media(max-width:768px){.about-container{flex-direction:column;text-align:center;}.about-text{text-align:center;}.social-icons{justify-content:center;}}
-
+.contact-card p {
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 10px;
+}
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+}
+.primary-btn,
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+.primary-btn {
+  background: var(--color-primary);
+  color: var(--text-dark);
+}
+.secondary-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--text-dark);
+}
 @media (max-width: 900px) {
-  .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-  }
-
-  .header-container h1 {
-    white-space: normal;
-    font-size: 1.7rem;
-  }
-
-  .background-notanimated {
-    width: 100%;
-    height: 40px;
-  }
-
-  .animated-text {
-    font-size: 1rem;
-    margin: 0;
-  }
-
-  .tabs {
-    justify-content: center;
-    margin-right: 0;
-    flex-wrap: wrap;
+  .why-grid {
+    grid-template-columns: 1fr;
   }
 }
-
 @media (max-width: 600px) {
-  .tabs {
-    gap: 6px;
+  .trusted-by,
+  .services-section,
+  .featured-word,
+  .why-oclok,
+  .testimonials,
+  .latest-articles,
+  .contact-cta {
+    padding: 56px 0;
   }
-
-  .tabs button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+  .section-shell {
+    padding: 0 16px;
   }
-
-  .about-container {
-    padding: 12px;
+  .featured-word-card,
+  .contact-card {
+    padding: 28px 20px;
   }
-}
-
-@media (max-width: 420px) {
-  .header-container {
-    padding: 12px;
-    gap: 8px;
-    min-height: 16vh;
-  }
-
-  .header-container h1 {
-    font-size: 1.45rem;
-    line-height: 1.15;
-  }
-
-  .background-notanimated {
-    height: auto;
-    padding: 8px 10px;
-  }
-
-  .animated-text {
-    font-size: 0.95rem;
-    white-space: normal;
-    text-align: left;
-  }
-
-  .tabs {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .tabs button {
-    padding: 7px 10px;
-    font-size: 0.85rem;
-  }
-
-  .about {
-    padding: 16px 6px;
-  }
-
-  .about-container {
-    padding: 10px;
-    gap: 14px;
-  }
-
-  .about-text {
-    padding: 6px 8px;
-  }
-
-  .tab-content h2 {
-    font-size: 1.3rem;
-  }
-
-  .tab-content p {
-    font-size: 0.95rem;
-  }
-
-  .social-icons {
-    gap: 8px;
-  }
-
-  .social-icons a {
-    width: 34px;
-    height: 34px;
-    font-size: 1rem;
-  }
-
-  .featured-services,
-  .featured-projects {
-    padding: 40px 18px;
-  }
-
-  .section-title {
-    font-size: 1.6rem;
-    margin-bottom: 28px;
-  }
-
-  .projects-subtitle {
-    margin: -10px auto 24px;
-  }
-
-  .services-grid,
-  .projects-grid {
-    gap: 16px;
-  }
-
-  .service-card img {
-    height: 160px;
-  }
-
-  .project-card img {
-    height: 150px;
+  .contact-actions {
+    flex-direction: column;
   }
 }
 </style>

@@ -172,8 +172,8 @@ onMounted(() => {
 
 .media-page {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #f1f5f9;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%);
+  color: var(--text-dark);
   min-height: 100vh;
   padding: 2rem 1rem;
 }
@@ -236,7 +236,7 @@ onMounted(() => {
 .cta-button {
   display: inline-block;
   padding: 0.9rem 1.8rem;
-  border-radius: 50px;
+  border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -248,8 +248,8 @@ onMounted(() => {
 }
 
 .watch-button {
-  background: linear-gradient(90deg, #ff6b00, #ff4500);
-  color: white;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+  color: var(--text-dark);
 }
 
 .watch-button:hover {

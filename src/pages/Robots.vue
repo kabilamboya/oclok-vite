@@ -171,13 +171,13 @@ const robotAssistants = computed(() => {
 
 <style scoped>
 .robots-page {
-  --bg: #0f1319;
-  --panel: #171d28;
-  --card: #1d2431;
-  --line: #303b4e;
-  --text: #e9eff7;
-  --muted: #b3bfd0;
-  --accent: #35d6a6;
+  --bg: var(--bg-dark);
+  --panel: var(--surface-dark);
+  --card: var(--surface-dark-alt);
+  --line: var(--border-dark);
+  --text: var(--text-dark);
+  --muted: var(--text-muted-dark);
+  --accent: var(--color-secondary);
   max-width: 1160px;
   margin: 0 auto;
   padding: 22px 16px 40px;

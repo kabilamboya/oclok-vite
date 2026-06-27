@@ -12,6 +12,7 @@ const activeCategory = ref("All");
 const kisumu_estates = [
   "Arina",
   "Airport",
+  "CBD",
   "Dunga",
   "Kaloleni",
   "Kanyamedha",
@@ -27,8 +28,10 @@ const kisumu_estates = [
   "Nyalenda",
   "Nyamasaria",
   "Obunga",
+  "Ondiek",
   "Pipeline",
   "RIAT",
+  "Rabuor",
   "Stage",
   "Tom Mboya",
 ];
@@ -853,14 +856,14 @@ function handleMediaUpload(event) {
 
 <style scoped>
 .discover-page {
-  --bg: #0f1218;
-  --panel: #171b23;
-  --soft-panel: #1d2330;
-  --line: #2c3442;
-  --accent: #ff7a18;
-  --accent-soft: #ffb25f;
-  --text: #ecf1f6;
-  --muted: #afbac8;
+  --bg: var(--bg-dark);
+  --panel: var(--surface-dark);
+  --soft-panel: var(--surface-dark-alt);
+  --line: var(--border-dark);
+  --accent: var(--color-primary);
+  --accent-soft: var(--color-secondary);
+  --text: var(--text-dark);
+  --muted: var(--text-muted-dark);
   max-width: 1180px;
   margin: 0 auto;
   padding: 28px 18px 54px;

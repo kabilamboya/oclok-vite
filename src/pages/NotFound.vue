@@ -16,11 +16,12 @@ export default {
 .notfound {
   text-align: center;
   padding: 50px;
+  color: var(--text);
 }
 .notfound h1 {
   font-size: 3rem;
   margin-bottom: 20px;
-  color: #ff6600;
+  color: var(--color-primary);
 }
 .notfound p {
   margin-bottom: 20px;

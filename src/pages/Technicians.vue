@@ -192,7 +192,7 @@
 <style scoped>
 .page {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--surface-alt);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -200,7 +200,7 @@
 
 .title {
   text-align: center;
-  color: #222;
+  color: var(--text);
   font-size: 1.8rem;
   margin-bottom: 2rem;
   font-weight: 700;
@@ -218,15 +218,15 @@
 .specialty-select {
   padding: 0.7rem 1rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   transition: 0.3s;
 }
 
 .search-input:focus,
 .specialty-select:focus {
-  border-color: #ffcc00;
-  box-shadow: 0 0 4px rgba(255, 204, 0, 0.4);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .cards {
@@ -249,7 +249,7 @@
 }
 
 .pagination button {
-  background: #ffcc00;
+  background: var(--color-primary);
   border: none;
   padding: 0.55rem 1.2rem;
   border-radius: 0.4rem;
@@ -264,7 +264,7 @@
 
 .booking-summary {
   margin-top: 2rem;
-  background: #fff;
+  background: var(--surface);
   padding: 1.3rem;
   border-radius: 0.8rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -276,7 +276,7 @@
 }
 
 .clear-btn {
-  background: #ffcc00;
+  background: var(--color-primary);
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 0.5rem;

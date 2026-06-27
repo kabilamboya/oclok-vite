@@ -543,21 +543,21 @@ export default {
   position: fixed;
   width: 320px;
   height: 430px;
-  background: linear-gradient(160deg, #1f232a 0%, #16191f 100%);
-  color: #f7f9fb;
+  background: linear-gradient(160deg, var(--surface-dark) 0%, var(--surface-dark-alt) 100%);
+  color: var(--text-dark);
   border-radius: 14px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  border: 1px solid #2c313a;
-  box-shadow: 0 12px 32px rgba(10, 12, 16, 0.45);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 .chatbot-header {
   padding: 12px 14px;
-  background: #11141a;
-  border-bottom: 1px solid #2e333b;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -568,14 +568,14 @@ export default {
 .header-copy h4 {
   margin: 0;
   font-size: 0.96rem;
-  color: #f7f9fb;
+  color: var(--text-dark);
 }
 
 .header-copy small {
   display: block;
   margin-top: 2px;
   font-size: 0.72rem;
-  color: #a4abb5;
+  color: var(--text-muted-dark);
 }
 
 .close-btn {
@@ -583,13 +583,13 @@ export default {
   height: 28px;
   border: 0;
   border-radius: 8px;
-  background: #272c35;
-  color: #cbd2db;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-dark);
   cursor: pointer;
 }
 
 .close-btn:hover {
-  background: #313743;
+  background: rgba(255,255,255,0.16);
 }
 
 .chatbot-messages {
@@ -621,7 +621,7 @@ export default {
 }
 
 .message-row.user .message-author {
-  color: #f4c63f;
+  color: var(--color-primary);
 }
 
 .message-bubble {
@@ -634,14 +634,14 @@ export default {
 }
 
 .message-bubble.bot {
-  background: #2a3039;
-  color: #edf1f5;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-dark);
   border-top-left-radius: 5px;
 }
 
 .message-bubble.user {
-  background: linear-gradient(135deg, #ffd54d 0%, #ffb300 100%);
-  color: #19160f;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: var(--text-dark);
   border-top-right-radius: 5px;
 }
 
@@ -656,15 +656,15 @@ export default {
   font-size: 0.66rem;
   padding: 3px 8px;
   border-radius: 999px;
-  border: 1px solid #3e4552;
-  color: #c3cad4;
-  background: #20242c;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-muted-dark);
+  background: rgba(255,255,255,0.06);
 }
 
 .chatbot-input {
   display: flex;
-  border-top: 1px solid #2e343d;
-  background: #13161c;
+  border-top: 1px solid var(--border-dark);
+  background: var(--bg-dark);
 }
 
 .chatbot-input input {
@@ -673,24 +673,24 @@ export default {
   border: 0;
   outline: none;
   background: transparent;
-  color: #f5f8fb;
+  color: var(--text-dark);
 }
 
 .chatbot-input input::placeholder {
-  color: #8f97a3;
+  color: var(--text-muted-dark);
 }
 
 .chatbot-input button {
   border: 0;
   padding: 0 15px;
-  background: #ffca2c;
-  color: #181511;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: var(--text-dark);
   font-weight: 700;
   cursor: pointer;
 }
 
 .chatbot-input button:hover {
-  background: #f4bb0a;
+  filter: brightness(1.05);
 }
 
 .chat-bubble {
@@ -700,8 +700,8 @@ export default {
 
 .bubble-icon {
   border: 0;
-  background: #ffcc00;
-  color: #101010;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+  color: var(--text-dark);
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -710,11 +710,11 @@ export default {
   align-items: center;
   font-size: 1.45rem;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-md);
 }
 
 .bubble-icon:hover {
-  background: #f4bf07;
+  filter: brightness(1.05);
 }
 
 .suggestion-box {
@@ -722,23 +722,23 @@ export default {
   bottom: 58px;
   left: 10px;
   right: 10px;
-  background: #262c35;
-  color: #edf1f5;
+  background: var(--surface-dark);
+  color: var(--text-dark);
   border-radius: 9px;
   max-height: 185px;
   overflow-y: auto;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.33);
+  box-shadow: var(--shadow-md);
   list-style: none;
   padding: 0;
   margin: 0;
   z-index: 10000;
-  border: 1px solid #363d48;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .suggestion-box li {
   padding: 10px 12px;
   cursor: pointer;
-  border-bottom: 1px solid #3f4653;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   font-size: 0.85rem;
 }
 
@@ -747,7 +747,7 @@ export default {
 }
 
 .suggestion-box li:hover {
-  background: #313845;
+  background: rgba(255,255,255,0.08);
 }
 
 .fade-scale-enter-active,
