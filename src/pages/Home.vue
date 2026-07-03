@@ -222,7 +222,7 @@ O!clok Design System
 }
 
 html{
-  scroll-behaviour:smooth;
+  scroll-behavior:smooth;
 }
 
 body {

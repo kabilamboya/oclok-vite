@@ -247,11 +247,11 @@ export default {
   color: #fff;
   cursor: pointer;
   font-weight: 600;
-  transition: brightness 0.15s ease;
+  transition: filter 0.15s ease;
 }
 
 .search-btn:hover {
-  brightness: 1.1;
+  filter: brightness(1.1);
 }
 
 .filter-dropdown {
