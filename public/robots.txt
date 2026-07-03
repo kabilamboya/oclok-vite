@@ -1,0 +1,6 @@
+# Robots.txt for O!clok
+User-agent: *
+Allow: /
+
+Sitemap: https://www.oclok.co.ke/sitemap.xml
+Host: www.oclok.co.ke

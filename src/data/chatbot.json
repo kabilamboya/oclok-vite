@@ -1,0 +1,75 @@
+{
+  "faqData": [
+    {
+      "title": "Ordering",
+      "items": [
+        {
+          "question": "How do I place an order?",
+          "answer": "Browse products, add to cart, and proceed to checkout."
+        },
+        {
+          "question": "What payment methods are supported?",
+          "answer": "We accept M-Pesa, Airtel Money, Visa, Mastercard, and bank transfers."
+        },
+        {
+          "question": "Can I change or cancel my order after placing it?",
+          "answer": "Yes, if the order has not been dispatched yet. Contact support immediately."
+        }
+      ]
+    },
+    {
+      "title": "Delivery",
+      "items": [
+        {
+          "question": "How do I track my delivery?",
+          "answer": "A tracking link is sent by SMS or email once your order ships."
+        },
+        {
+          "question": "Do you deliver outside Nairobi or Kisumu?",
+          "answer": "Yes, we deliver across Kenya, including Eldoret, Vihiga, and Mombasa."
+        },
+        {
+          "question": "Where can I get a reliable technician?",
+          "answer": "Use the Technicians page to review specialties and profiles."
+        }
+      ]
+    },
+    {
+      "title": "Support and Returns",
+      "items": [
+        {
+          "question": "Do you offer returns or refunds?",
+          "answer": "Yes, returns are accepted within 7 days, and refunds process in 3 to 5 business days."
+        },
+        {
+          "question": "What if I receive the wrong product?",
+          "answer": "Share your order number and a photo, and we will replace or refund."
+        },
+        {
+          "question": "Is there a warranty on products?",
+          "answer": "Most electronics include a manufacturer warranty."
+        }
+      ]
+    },
+    {
+      "title": "Account and Security",
+      "items": [
+        {
+          "question": "How do I reset my password?",
+          "answer": "Use the Forgot Password option on the login screen."
+        },
+        {
+          "question": "Is my personal data safe?",
+          "answer": "Yes, we use encrypted systems and strict access controls."
+        }
+      ]
+    }
+  ],
+  "quickPrompts": [
+    "What services does O!clok provide?",
+    "Show product categories and prices",
+    "Find technicians for networking",
+    "What places can I discover in Kisumu?",
+    "How can I contact support?"
+  ]
+}

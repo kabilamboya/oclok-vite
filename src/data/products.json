@@ -1318,7 +1318,7 @@
     {
         "id": 102,
         "name": "Smart Light Bulbs",
-        "price": 2500,
+        "price": 20500,
         "description": "Dimmable smart light bulbs with app control and voice activation.",
         "image": "/images/smart-bulbs.jpg",
         "images": ["/images/smart-bulbs.jpg"],
@@ -1354,7 +1354,7 @@
     {
         "id": 104,
         "name": "Smart Speaker",
-        "price": 5000,
+        "price": 50000,
         "description": "Voice-activated smart speaker with music streaming and smart home control.",
         "image": "/images/smart-speaker-new.jpg",
         "images": ["/images/smart-speaker-new.jpg"],
@@ -1372,7 +1372,7 @@
     {
         "id": 105,
         "name": "Smart Plug",
-        "price": 1200,
+        "price": 12000,
         "description": "Smart outlet adapter for remote device control and power monitoring.",
         "image": "/images/smart-plug.jpg",
         "images": ["/images/smart-plug.jpg"],
@@ -1390,7 +1390,7 @@
     {
         "id": 106,
         "name": "Smart Humidifier",
-        "price": 8000,
+        "price": 28000,
         "description": "Wi-Fi enabled humidifier with remote humidity control.",
         "image": "/images/smart-humidifier.jpg",
         "images": ["/images/smart-humidifier.jpg"],
@@ -1480,7 +1480,7 @@
     {
         "id": 111,
         "name": "Smart Water Leak Detector",
-        "price": 3500,
+        "price": 13500,
         "description": "Water leak sensor with real-time alerts to prevent water damage.",
         "image": "/images/smart-leak-detector.jpg",
         "images": ["/images/smart-leak-detector.jpg"],
@@ -1498,7 +1498,7 @@
     {
         "id": 112,
         "name": "Smart Smoke Detector",
-        "price": 4000,
+        "price": 14000,
         "description": "Connected smoke detector with instant smartphone notifications.",
         "image": "/images/smart-smoke-detector.jpg",
         "images": ["/images/smart-smoke-detector.jpg"],
@@ -1516,7 +1516,7 @@
     {
         "id": 113,
         "name": "Smart CO2 Detector",
-        "price": 5500,
+        "price": 55000,
         "description": "Air quality monitor with CO2, VOC, and humidity sensors.",
         "image": "/images/smart-co2-detector.jpg",
         "images": ["/images/smart-co2-detector.jpg"],
@@ -1534,7 +1534,7 @@
     {
         "id": 114,
         "name": "Smart Irrigation Controller",
-        "price": 6000,
+        "price": 60000,
         "description": "Weather-aware sprinkler controller for efficient garden watering.",
         "image": "/images/smart-irrigation.jpg",
         "images": ["/images/smart-irrigation.jpg"],
@@ -1552,7 +1552,7 @@
     {
         "id": 115,
         "name": "Smart Pet Feeder",
-        "price": 7000,
+        "price": 70000,
         "description": "Automatic pet feeder with portion control and video monitoring.",
         "image": "/images/smart-pet-feeder.jpg",
         "images": ["/images/smart-pet-feeder.jpg"],
@@ -1570,7 +1570,7 @@
     {
         "id": 116,
         "name": "Smart Pet Camera",
-        "price": 9000,
+        "price": 19000,
         "description": "Pet camera with night vision, two-way audio, and treat dispenser.",
         "image": "/images/smart-pet-camera.jpg",
         "images": ["/images/smart-pet-camera.jpg"],
@@ -1606,7 +1606,7 @@
     {
         "id": 118,
         "name": "Smart Motion Sensor",
-        "price": 2000,
+        "price": 20000,
         "description": "Multi-sensor for occupancy detection and scene automation.",
         "image": "/images/smart-motion-sensor.jpg",
         "images": ["/images/smart-motion-sensor.jpg"],
@@ -1624,7 +1624,7 @@
     {
         "id": 119,
         "name": "Smart Temperature Sensor",
-        "price": 1800,
+        "price": 18000,
         "description": "Wireless temperature and humidity remote sensor.",
         "image": "/images/smart-temp-sensor.jpg",
         "images": ["/images/smart-temp-sensor.jpg"],
@@ -1642,7 +1642,7 @@
     {
         "id": 120,
         "name": "Smart Moisture Sensor",
-        "price": 1500,
+        "price": 15000,
         "description": "Plant soil moisture sensor with app alerts.",
         "image": "/images/smart-moisture-sensor.jpg",
         "images": ["/images/smart-moisture-sensor.jpg"],
@@ -1732,7 +1732,7 @@
     {
         "id": 125,
         "name": "Smart Slow Cooker",
-        "price": 9500,
+        "price": 25000,
         "description": "Programmable slow cooker with remote cooking control.",
         "image": "/images/smart-slow-cooker.jpg",
         "images": ["/images/smart-slow-cooker.jpg"],
@@ -1750,7 +1750,7 @@
     {
         "id": 126,
         "name": "Smart Toaster",
-        "price": 5000,
+        "price": 10000,
         "description": "Smart toaster with custom browning levels and app notifications.",
         "image": "/images/smart-toaster.jpg",
         "images": ["/images/smart-toaster.jpg"],
@@ -1768,7 +1768,7 @@
     {
         "id": 127,
         "name": "Smart Kettle",
-        "price": 4500,
+        "price": 15000,
         "description": "Wi-Fi enabled kettle with precise temperature control.",
         "image": "/images/smart-kettle.jpg",
         "images": ["/images/smart-kettle.jpg"],
@@ -1786,7 +1786,7 @@
     {
         "id": 128,
         "name": "Smart Blender",
-        "price": 8000,
+        "price": 10000,
         "description": "Programmable blender with preset recipes and app control.",
         "image": "/images/smart-blender.jpg",
         "images": ["/images/smart-blender.jpg"],
@@ -1804,7 +1804,7 @@
     {
         "id": 129,
         "name": "Smart Multicooker",
-        "price": 11000,
+        "price": 17000,
         "description": "All-in-one cooker with 8+ cooking functions and app recipes.",
         "image": "/images/smart-multicooker.jpg",
         "images": ["/images/smart-multicooker.jpg"],
@@ -1822,7 +1822,7 @@
     {
         "id": 130,
         "name": "Smart Security Camera",
-        "price": 7500,
+        "price": 35000,
         "description": "1080p Wi-Fi security camera with night vision and cloud storage.",
         "image": "/images/smart-security-camera.jpg",
         "images": ["/images/smart-security-camera.jpg"],
@@ -1858,7 +1858,7 @@
     {
         "id": 132,
         "name": "Smart Sprinkler Timer",
-        "price": 4000,
+        "price": 40000,
         "description": "Outdoor sprinkler controller with weather forecasting.",
         "image": "/images/smart-sprinkler-timer.jpg",
         "images": ["/images/smart-sprinkler-timer.jpg"],
@@ -1876,7 +1876,7 @@
     {
         "id": 133,
         "name": "Smart Plant Monitor",
-        "price": 3000,
+        "price": 30000,
         "description": "Plant health monitor with soil, light, and water sensors.",
         "image": "/images/smart-plant-monitor.jpg",
         "images": ["/images/smart-plant-monitor.jpg"],
@@ -1894,7 +1894,7 @@
     {
         "id": 134,
         "name": "Smart Door Sensor",
-        "price": 1500,
+        "price": 15000,
         "description": "Wireless door/window open-close sensor with alerts.",
         "image": "/images/smart-door-sensor.jpg",
         "images": ["/images/smart-door-sensor.jpg"],
@@ -1912,7 +1912,7 @@
     {
         "id": 135,
         "name": "Smart Surge Protector",
-        "price": 2800,
+        "price": 28000,
         "description": "Intelligent power strip with USB ports and energy monitoring.",
         "image": "/images/smart-surge-protector.jpg",
         "images": ["/images/smart-surge-protector.jpg"],

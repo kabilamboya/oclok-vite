@@ -86,6 +86,11 @@ const robotAssistants = computed(() => {
       <div class="hero-text">
         <h1>Don't just imagine a smart world...</h1>
         <p>Live it with us!</p>
+
+        <div class="hero-actions">
+          <router-link class="cta primary" to="/products">Shop Assistant Devices</router-link>
+          <router-link class="cta ghost" to="/discover">See Delivery and Field Use Cases</router-link>
+        </div>
       </div>
       <div class="hero-copy">
       <img src="/images/ROBOto.jpg" alt="Robot assistant concept" />
@@ -95,10 +100,7 @@ const robotAssistants = computed(() => {
           This page explains practical robot assistants for homes, schools, business operations,
           and logistics. You can also explore assistant devices sold through the O!clok Store.
         </p>
-        <div class="hero-actions">
-          <router-link class="cta primary" to="/products">Shop Assistant Devices</router-link>
-          <router-link class="cta ghost" to="/discover">See Delivery and Field Use Cases</router-link>
-        </div>
+        
       </div>
     </section>
 
@@ -120,8 +122,8 @@ const robotAssistants = computed(() => {
 
     <section class="daily-life">
       <div class="section-head">
-        <h2>Everyday assistant scenarios</h2>
-        <p>Practical examples of where robot assistants add measurable value.</p>
+        <h2>Everyday smart assistant scenarios</h2>
+        <p>Practical examples of where smart robot assistants add measurable value.</p>
       </div>
       <div class="use-case-grid">
         <article v-for="caseItem in dailyUseCases" :key="caseItem.title" class="use-case-card">
@@ -152,7 +154,7 @@ const robotAssistants = computed(() => {
           </div>
         </router-link>
       </div>
-      <router-link class="inline-link" to="/products">Browse full O!clok Store catalog</router-link>
+      <router-link class="inline-link" to="/products">Browse full O!clok Store catalog for smart robots</router-link>
     </section>
 
     <section class="faq">

@@ -2,6 +2,19 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-grid">
+        <section class="footer-col">
+          <h3>Mission</h3>
+          <div class="footer-links mission-vision">
+            <div class="vision-block">
+              <p>To make delivery and digital services easier, faster, and more trusted for individuals and businesses.</p>
+            </div>
+            <div class="vision-block">
+              <h4>Vision</h4>
+              <p>To become a leading smart platform that shapes the future of logistics, commerce, and digital engagement.</p>
+            </div>
+          </div>
+        </section>
+        
         <section class="footer-col footer-brand">
           <div class="brand-head">
             <h3>Resources</h3>
@@ -10,6 +23,13 @@
           <div class="footer-links">
             <a href="#">Help Center</a>
             <a href="#">User Guide</a>
+          </div>
+
+          <div class="brand-head">
+            <h3>Donations</h3>
+          </div>
+
+          <div class="footer-links">
             <a href="#">Community Forum</a>
             <a href="#">Partner Program</a>
           </div>
@@ -27,25 +47,12 @@
         </section>
 
         <section class="footer-col">
-          <h3>Vision & Mission</h3>
-          <div class="footer-links mission-vision">
-            <div class="vision-block">
-              <h4>Mission</h4>
-              <p>To make delivery and digital services easier, faster, and more trusted for individuals and businesses.</p>
-            </div>
-            <div class="vision-block">
-              <h4>Vision</h4>
-              <p>To become a leading smart platform that shapes the future of logistics, commerce, and digital engagement.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="footer-col">
           <h3>Follow Us</h3>
 
           <div class="social-icons">
             <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
             <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
             <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
             <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
           </div>
@@ -71,46 +78,13 @@
 
       <div class="footer-bottom">
         <p>&copy; {{ currentYear }} O!clok Media - All Rights Reserved.</p>
-        <a
-          href="#"
-          class="back-to-top"
-          :class="{ show: isVisible }"
-          @click.prevent="scrollToTop"
-        >
-          Back to top
-        </a>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-
 const currentYear = new Date().getFullYear();
-const isVisible = ref(false);
-
-const updateBackToTop = () => {
-  if (typeof window === 'undefined') return;
-
-  const hero = document.querySelector('.hero');
-  const heroHeight = hero ? hero.offsetHeight : 700;
-  isVisible.value = window.scrollY > heroHeight;
-};
-
-const scrollToTop = () => {
-  if (typeof window === 'undefined') return;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-onMounted(() => {
-  updateBackToTop();
-  window.addEventListener('scroll', updateBackToTop, { passive: true });
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateBackToTop);
-});
 </script>
 
 <style scoped>
@@ -225,9 +199,9 @@ margin:20px 0;
 
 .social-icons a{
 
-width:48px;
+width:32px;
 
-height:48px;
+height:32px;
 
 border-radius:50%;
 
@@ -309,37 +283,6 @@ gap:15px;
 
 color:#94a3b8;
 
-}
-
-.back-to-top{
-  text-decoration:none;
-  background:var(--color-accent);
-  padding:12px 24px;
-  border-radius:50px;
-  color:var(--text-dark);
-  font-weight:700;
-  transition:.25s ease;
-  position: fixed;
-  bottom: 1.25rem;
-  right: 5.25rem;
-  z-index: 2000;
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transform:translateY(8px);
-  box-shadow:var(--shadow-md);
-}
-
-.back-to-top.show{
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
-  transform:translateY(0);
-}
-
-.back-to-top:hover{
-  background:var(--color-secondary);
-  transform:translateY(-3px);
 }
 
 @media(max-width:768px){

@@ -2,11 +2,20 @@
   <div>
     <div
       v-if="!isOpen"
-      class="chat-bubble"
+      class="floating-controls"
       :style="{ top: bubblePos.top + 'px', left: bubblePos.left + 'px' }"
       @mousedown="startBubbleDrag"
     >
-      <button type="button" class="bubble-icon" aria-label="Open chatbot" @click.stop="toggleChat">&#128172;</button>
+      <button type="button" class="floating-action bubble-icon" aria-label="Open chatbot" @click.stop="toggleChat">💬</button>
+      <button
+        v-if="showBackToTop"
+        type="button"
+        class="floating-action back-to-top"
+        aria-label="Back to top"
+        @click.stop="scrollToTop"
+      >
+        ↑
+      </button>
     </div>
 
     <transition name="fade-scale">
@@ -79,6 +88,7 @@ export default {
   data() {
     return {
       isOpen: false,
+      showBackToTop: false,
       userInput: "",
       suggestions: [],
       services: servicesData,
@@ -176,8 +186,10 @@ export default {
   },
   mounted() {
     window.addEventListener("resize", this.clampFloatingPositions);
+    window.addEventListener("scroll", this.updateBackToTopVisibility, { passive: true });
     this.setInitialPositions();
     this.clampFloatingPositions();
+    this.updateBackToTopVisibility();
   },
   beforeUnmount() {
     document.removeEventListener("mousemove", this.onDrag);
@@ -185,8 +197,20 @@ export default {
     document.removeEventListener("mousemove", this.onBubbleDrag);
     document.removeEventListener("mouseup", this.stopBubbleDrag);
     window.removeEventListener("resize", this.clampFloatingPositions);
+    window.removeEventListener("scroll", this.updateBackToTopVisibility);
   },
   methods: {
+    updateBackToTopVisibility() {
+      if (typeof window === "undefined") return;
+
+      const hero = document.querySelector(".hero");
+      const heroHeight = hero ? hero.offsetHeight : 700;
+      this.showBackToTop = window.scrollY > heroHeight;
+    },
+    scrollToTop() {
+      if (typeof window === "undefined") return;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
     toggleChat() {
       this.isOpen = !this.isOpen;
       if (this.isOpen) this.scrollToBottom();
@@ -447,14 +471,14 @@ export default {
 
       this.position.left = bounds.maxLeft;
       this.position.top = bounds.maxTop;
-      this.bubblePos.left = Math.max(10, bounds.viewportWidth - 70);
+      this.bubblePos.left = Math.max(10, bounds.viewportWidth - 120);
       this.bubblePos.top = Math.max(10, bounds.viewportHeight - 70);
     },
     clampFloatingPositions() {
       const bounds = this.getChatBounds();
       if (!bounds.viewportWidth || !bounds.viewportHeight) return;
 
-      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 70);
+      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 120);
       const maxBubbleTop = Math.max(10, bounds.viewportHeight - 70);
 
       this.position.left = Math.min(bounds.maxLeft, Math.max(10, this.position.left));
@@ -693,28 +717,38 @@ export default {
   filter: brightness(1.05);
 }
 
-.chat-bubble {
+.floating-controls {
   position: fixed;
   z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.bubble-icon {
+.floating-action {
   border: 0;
   background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
   color: var(--text-dark);
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.45rem;
+  font-size: 1.2rem;
   cursor: pointer;
   box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.bubble-icon:hover {
+.floating-action:hover {
   filter: brightness(1.05);
+  transform: translateY(-2px);
+}
+
+.back-to-top {
+  font-size: 1.35rem;
+  font-weight: 700;
 }
 
 .suggestion-box {

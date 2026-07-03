@@ -173,7 +173,6 @@
     </RteLayout>
 </template>
 
-
 <script setup>
 
 import { ref, reactive, watch, onMounted } from "vue"
@@ -243,8 +242,6 @@ name:""
 
 const file = ref(null)
 
-
-
 function initCanvas(){
 
 studioCanvas.value = new FabricCanvas(canvasElement.value,{
@@ -257,8 +254,6 @@ studioCanvas.value.renderAll()
 bindDesignConstraints()
 
 }
-
-
 
 function addTextLayer(){
 
@@ -277,8 +272,6 @@ studioCanvas.value.setActiveObject(text)
 
 }
 
-
-
 function addRectLayer(){
 
 const rect = new Rect({
@@ -295,8 +288,6 @@ studioCanvas.value.add(rect)
 studioCanvas.value.setActiveObject(rect)
 
 }
-
-
 
 function addCircleLayer(){
 
@@ -321,7 +312,6 @@ function handleShapeSelected(shape) {
     handler.call(this)
   }
 }
-
 
 
 function removeSelectedLayer(){
@@ -350,16 +340,11 @@ function removeDesignImage(){
   studioCanvas.value.requestRenderAll()
 }
 
-
-
 function toggleDrawingMode(){
 
 drawingMode.value=!drawingMode.value
 updateBrushSettings()
-
 }
-
-
 
 function updateBrushSettings(){
 
@@ -376,17 +361,11 @@ studioCanvas.value.freeDrawingBrush.width=brushSize.value
 studioCanvas.value.freeDrawingBrush.color=brushColor.value
 
 }
-
 }
-
-
 
 watch([brushSize,brushColor,drawingMode],updateBrushSettings)
 
-
-
 function applyLayerControls(){
-
 const active=studioCanvas.value.getActiveObject()
 
 if(!active) return
@@ -406,7 +385,6 @@ angle:layerControls.angle
   if(active?.data?.role === "design"){
     enforceDesignBounds()
   }
-
 }
 
 function applyElementColor(){
@@ -418,7 +396,6 @@ function applyElementColor(){
   }
 }
 
-
 function clearCanvasObjects(){
 
 studioCanvas.value.getObjects().forEach(o=>{
@@ -427,10 +404,7 @@ studioCanvas.value.getObjects().forEach(o=>{
   }
   studioCanvas.value.remove(o)
 })
-
 }
-
-
 
 function downloadCanvas(){
 
@@ -445,9 +419,7 @@ link.href=url
 link.download="mockup.png"
 
 link.click()
-
 }
-
 
 
 function onFileChange(e){
@@ -479,14 +451,10 @@ fitDesignToPrintArea()
 applyDesignClip()
 studioCanvas.value.setActiveObject(img)
 studioCanvas.value.requestRenderAll()
-
 }
 
 reader.readAsDataURL(file.value)
-
 }
-
-
 
 function onUpload(){
  if(!file.value) return
@@ -762,13 +730,9 @@ onMounted(()=>{
  initCanvas()
  loadDefaultMockup()
 })
-
-
 </script>
 
-
 <style scoped>
-
 .mockups-wrapper {
   height: 100%;
   display: flex;
@@ -1061,5 +1025,4 @@ button {
     font-size: 0.9rem;
   }
 }
-
 </style>

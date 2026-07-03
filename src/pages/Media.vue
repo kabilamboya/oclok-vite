@@ -1,8 +1,13 @@
 <template>
-  <section class="hero" aria-hidden="false">
-    <div class="hero-text">
-      <h1>Stories that makes you wanna live some more!</h1>
-      <p>Tell It or Tell Us!</p>
+  <section class="hero media-hero" aria-hidden="false">
+    <div class="hero-text media-hero-content">
+      <p class="eyebrow">Kenyayouth Channel</p>
+      <h1>Stories that make you want to live some more.</h1>
+      <p>Watch, read, and explore purpose-driven content from the O!clok media space.</p>
+      <div class="hero-actions">
+        <a :href="featuredVideo?.youtubeLink" target="_blank" rel="noopener noreferrer" class="watch-button">Watch Featured Video</a>
+        <a href="https://www.youtube.com/@kenyayouthchannel" target="_blank" rel="noopener noreferrer" class="secondary-link">Visit Channel</a>
+      </div>
     </div>
   </section>
 
@@ -89,6 +94,29 @@
       </div>
     </section>
 
+    <section class="latest-posts-section">
+      <div class="section-heading">
+        <p class="eyebrow">Latest Posts</p>
+        <h2>Fresh updates from the O!clok team.</h2>
+      </div>
+      <div v-if="posts.length" class="post-grid">
+        <article v-for="post in posts" :key="post.id" class="post-card">
+          <img
+            v-if="post.image"
+            :src="post.image"
+            :alt="post.title"
+            class="post-thumbnail"
+            loading="lazy"
+          />
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt }}</p>
+          <small>{{ formatDate(post.date) }}</small>
+          <a :href="post.url" target="_blank" rel="noopener noreferrer">View on LinkedIn</a>
+        </article>
+      </div>
+      <p v-else class="empty-state">Posts will appear here as soon as they are added.</p>
+    </section>
+
     <!-- Blogs Section -->
     <section class="blogs-section">
       <h2 class="section-title">BLOG ARTICLES</h2>
@@ -136,6 +164,7 @@ import mediaService from '../services/media.service';
 const selectedVideoTab = ref('recorded');
 const videos = ref([]);
 const blogs = ref([]);
+const posts = ref([]);
 const videoTabs = ['live', 'recorded', 'commissioned'];
 
 // Computed
@@ -143,10 +172,10 @@ const filteredVideos = computed(() => {
   return mediaService.getVideosByType(selectedVideoTab.value);
 });
 
-const featuredVideo = computed(() => {
-  const featured = mediaService.getFeatured(1);
-  return featured[0] || videos.value[0];
-});
+const featuredVideo = computed(() => ({
+  videoUrl: 'https://www.youtube.com/embed/tjqoAs_MgXA?si=4Q1xxwhSnw6win2T',
+  youtubeLink: 'https://youtu.be/tjqoAs_MgXA?si=4Q1xxwhSnw6win2T'
+}));
 
 // Methods
 const capitalizeTab = (str) => {
@@ -159,9 +188,17 @@ const formatDate = (dateString) => {
 };
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
   videos.value = mediaService.getVideos();
   blogs.value = mediaService.getBlogs();
+
+  try {
+    const response = await fetch('/linkedin-posts.json');
+    if (!response.ok) throw new Error('Unable to load posts');
+    posts.value = await response.json();
+  } catch (error) {
+    console.error('Could not load LinkedIn posts:', error);
+  }
 });
 </script>
 
@@ -178,7 +215,128 @@ onMounted(() => {
   padding: 2rem 1rem;
 }
 
+/* ===== HERO SECTION ===== */
+.media-hero {
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4rem 2rem;
+  background:
+    linear-gradient(135deg, rgba(10, 15, 25, 0.92), rgba(34, 39, 57, 0.86)),
+    radial-gradient(circle at top left, rgba(255, 107, 0, 0.3), transparent 35%),
+    url('/images/ROBOto.jpg') center/cover no-repeat;
+}
+
+.media-hero-content {
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.media-hero .eyebrow {
+  color: #ffb36b;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.media-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0;
+  color: white;
+}
+
+.media-hero p {
+  margin: 0;
+  color: #e2e8f0;
+  font-size: 1.05rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.secondary-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* ===== FEATURED SECTION ===== */
+.latest-posts-section {
+  margin: 3rem 0 4rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.latest-posts-section .section-heading {
+  margin-bottom: 1.5rem;
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.post-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: rgba(10, 15, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.post-thumbnail {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.post-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.post-card p,
+.post-card small {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.post-card a {
+  margin-top: auto;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.post-card a:hover {
+  color: var(--color-primary-hover);
+}
+
 .media-header {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);

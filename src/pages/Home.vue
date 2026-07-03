@@ -92,24 +92,6 @@
       </div>
     </section>
 
-    <section class="latest-articles">
-      <div class="section-shell">
-        <div class="section-heading">
-          <p class="eyebrow">Latest Posts</p>
-          <h2>Fresh updates from the O!clok team.</h2>
-        </div>
-        <div v-if="posts.length" class="article-grid">
-          <article v-for="post in posts" :key="post.id" class="article-card">
-            <h3>{{ post.title }}</h3>
-            <p>{{ post.excerpt }}</p>
-            <small>{{ formatDate(post.date) }}</small>
-            <a :href="post.url" target="_blank" rel="noopener noreferrer">View on LinkedIn</a>
-          </article>
-        </div>
-        <p v-else class="empty-state">Posts will appear here as soon as they are added.</p>
-      </div>
-    </section>
-
     <section class="contact-cta">
       <div class="section-shell contact-card">
         <h2>Ready to launch something smarter?</h2>
@@ -128,11 +110,11 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import services from '../data/services.json'
 
 const featuredServices = services.slice(0, 4)
-const trustedBy = ['Kisumu SMEs', 'Campus Networks', 'Creative Brands', 'Local Entrepreneurs']
+const trustedBy = ['SMEs', 'Government Institutions', 'Schools', 'Campus Networks', 'Creative Brands', 'Local Entrepreneurs']
 const trustedStats = [
-  { value: '50+', label: 'Clients served' },
-  { value: '24/7', label: 'Support coverage' },
-  { value: '98%', label: 'Repeat engagement' }
+  { value: '50+', label: 'Clients' },
+  { value: '24/7', label: 'Support' },
+  { value: '98%', label: 'Engagement' }
 ]
 const whyPoints = [
   {
@@ -153,31 +135,25 @@ const testimonials = [
     name: 'Winnie A.',
     role: 'Small Business Owner',
     quote: 'Their team made our launch feel effortless and professional.',
-    image: '/images/ROBOto.jpg'
+    image: '/images/test1.jpeg'
   },
   {
     name: 'Daniel M.',
     role: 'Creative Director',
     quote: 'The delivery and digital support helped us respond faster than ever.',
-    image: '/images/dgtl.jpg'
+    image: '/images/test2.jpeg'
+  },
+  {
+    name: 'Albert M.',
+    role: 'Ward Admin',
+    quote: 'Their branding made our communications impactful.',
+    image: '/images/test3.jpeg'
   }
 ]
-const posts = ref([])
-
-const formatDate = (value) => {
-  if (!value) return ''
-  const date = new Date(value)
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
-
 // Animated phrases
 const phrases = [
-  'We serve individuals, families, and businesses',
-  'by providing convenient technical services.',
+  'We provide convenient technical services.',
+  'That serve individuals, families, and businesses.',
   'Saving you time through smart digital solutions'
 ]
 const phraseIndex = ref(0)
@@ -208,19 +184,11 @@ const handleScroll = () => {
   })
 }
 
-onMounted(async () => {
+onMounted(() => {
   _playOnce()
   phraseTimer = setInterval(_nextPhrase, 4000)
   window.addEventListener('scroll', handleScroll)
   handleScroll()
-
-  try {
-    const response = await fetch('/linkedin-posts.json')
-    if (!response.ok) throw new Error('Unable to load posts')
-    posts.value = await response.json()
-  } catch (error) {
-    console.error('Could not load LinkedIn posts:', error)
-  }
 })
 
 onBeforeUnmount(() => {
@@ -387,11 +355,11 @@ margin:0;
 }
 
 .hero-brand-name{
-  color: var(--primary);
+  color: var(--secondary);
 }
 
 .hero-brand-service{
-  color: var(--secondary);
+  color: var(--primary);
 }
 .background-notanimated{
 
@@ -1423,7 +1391,6 @@ text-align:center;
 .featured-word,
 .why-oclok,
 .testimonials,
-.latest-articles,
 .contact-cta {
   padding: 72px 0;
 }
@@ -1471,15 +1438,13 @@ text-align:center;
   font-weight: 600;
 }
 .services-grid,
-.testimonial-grid,
-.article-grid {
+.testimonial-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
 }
 .service-card,
-.testimonial-card,
-.article-card {
+.testimonial-card {
   padding: 24px;
   border-radius: 20px;
   background: var(--surface);
@@ -1496,13 +1461,11 @@ text-align:center;
   margin-bottom: 16px;
 }
 .service-card h3,
-.article-card h3,
 .why-item h3 {
   margin: 0 0 10px;
   font-size: 1.1rem;
 }
 .service-card p,
-.article-card p,
 .why-item p,
 .testimonial-card p,
 .contact-card p,
@@ -1560,13 +1523,6 @@ text-align:center;
   color: var(--text-muted);
   font-size: 0.95rem;
 }
-.article-card a {
-  display: inline-block;
-  margin-top: 16px;
-  font-weight: 700;
-  color: var(--color-primary);
-  text-decoration: none;
-}
 .contact-card {
   padding: 40px 32px;
   border-radius: 24px;
@@ -1613,7 +1569,6 @@ text-align:center;
   .featured-word,
   .why-oclok,
   .testimonials,
-  .latest-articles,
   .contact-cta {
     padding: 56px 0;
   }
