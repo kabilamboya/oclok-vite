@@ -1,0 +1,38 @@
+[
+  {
+    "phase": "Central Zone",
+    "description": "Central service hub and main transit points",
+    "price": "KES 250",
+    "estates": ["CBD", "Stage", "Milimani"]
+  },
+  {
+    "phase": "Western Zone",
+    "description": "Western estates coverage",
+    "price": "KES 450",
+    "estates": ["Obunga", "Pipeline", "Kisian", "Airport", "Kibuye", "Arina", "Kondele", "Kaloleni"]
+  },
+  {
+    "phase": "Northern Zone",
+    "description": "Northern estates expansion",
+    "price": "KES 500",
+    "estates": ["Mowlem", "Nyamasaria", "Nyalenda"]
+  },
+  {
+    "phase": "Eastern Zone",
+    "description": "Eastern estates coverage",
+    "price": "KES 550",
+    "estates": ["Dunga", "Manyatta", "Tom Mboya"]
+  },
+  {
+    "phase": "Southern Zone",
+    "description": "Southern estates network",
+    "price": "KES 500",
+    "estates": ["Mamboleo", "Lolwe", "RIAT", "Kanyamedha"]
+  },
+  {
+    "phase": "Other Zones",
+    "description": "Surrounding cities and towns",
+    "price": "KES 1,000",
+    "estates": ["Busia", "Limuru", "Rangwe", "Kisii"]
+  }
+]

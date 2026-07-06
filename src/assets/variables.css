@@ -12,6 +12,14 @@
 
   --color-accent: #6d28d9;
 
+  /* Phase colors */
+  --phase-cbd-zone: #3b82f6;
+  --phase-west-zone-1: #f59e0b;
+  --phase-north-zone: #10b981;
+  --phase-east-zone: #8b5cf6;
+  --phase-west-zone-2: #06b6d4;
+  --phase-south-zone: #ef4444;
+
   /* Cyber theme aliases */
   --primary-orange: #ff7a00;
   --primary-orange-hover: #e56600;

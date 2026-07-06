@@ -8,17 +8,20 @@
           alt="Oclok Logo"
         >
         <div class="brand">
-        <h2>O!clok</h2>
-        <span>Technology - Media - Commerce </span>
+        
+        <span>Technology . Media . E-Commerce </span>
       </div>
       </div>
 
       <!-- Hamburger button (mobile) -->
-      <button class="hamburger" @click="toggleMenu">☰</button>
+      <button class="hamburger" @click="toggleMenu" :aria-expanded="isMenuOpen" aria-label="Toggle navigation menu">☰</button>
+
+      <div v-if="isMenuOpen" class="mobile-overlay" @click="closeMenu"></div>
 
       <!-- Navigation Links -->
       <div class="cta-buttons">
         <nav :class="['nav-links', { active: isMenuOpen }]" role="navigation" aria-label="Main Navigation">
+          <button class="drawer-close" @click="closeMenu" aria-label="Close navigation menu">×</button>
           <router-link :to="{ name: 'Home' }" @click="closeMenu">Home</router-link>
           <router-link :to="{ name: 'Products' }" @click="closeMenu">Store</router-link>
           <router-link :to="{ name: 'Media' }" @click="closeMenu">Media</router-link>
@@ -414,6 +417,18 @@ cursor:pointer;
 
 }
 
+.mobile-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2, 6, 23, 0.6);
+  backdrop-filter:blur(3px);
+  z-index:9998;
+}
+
+.drawer-close{
+  display:none;
+}
+
 /* Mobile */
 
 @media(max-width:900px){
@@ -436,38 +451,64 @@ margin-left:auto;
 
 .cta-buttons{
 
-width:100%;
+width:auto;
 
-order:3;
+order:0;
 
 }
 
 .nav-links{
-
-display:none;
-
-width:100%;
-
-flex-direction:column;
-
-gap:18px;
-
-padding:22px;
-
-margin-top:18px;
-
-background:#171f2b;
-
-border-radius:18px;
-
+  position:fixed;
+  top:0;
+  right:0;
+  height:100vh;
+  width:min(84vw, 320px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:18px;
+  padding:24px 20px 28px;
+  margin-top:0;
+  background:linear-gradient(180deg, #171f2b 0%, #101722 100%);
+  border-radius:0;
+  border-left:1px solid rgba(255,255,255,0.08);
+  box-shadow:-12px 0 35px rgba(0,0,0,0.28);
+  transform:translateX(100%);
+  opacity:0;
+  pointer-events:none;
+  transition:transform .3s ease, opacity .3s ease;
+  z-index:9999;
 }
 
 .nav-links.active{
+  display:flex;
+  transform:translateX(0);
+  opacity:1;
+  pointer-events:auto;
+}
 
-display:flex;
+.drawer-close{
+  display:inline-flex;
+  align-self:flex-end;
+  justify-content:center;
+  align-items:center;
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  color:white;
+  font-size:1.4rem;
+  cursor:pointer;
+}
 
-animation:fadeDown .35s ease;
+.nav-links a{
+  color:#f8fafc;
+  font-size:1rem;
+}
 
+.nav-links a::after{
+  display:none;
 }
 
 .nav-actions{

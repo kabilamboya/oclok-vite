@@ -1,0 +1,23 @@
+{
+  "CBD": ["City Center", "Imperial", "Blackberry", "Sports Ground","Tivoli", "Oginga Odinga Street", "Law Courts"],
+  "Stage": ["Stage", "Market", "Town Centre", "Old Town", "Stage Road"],
+  "Milimani": ["Milimani", "Milimani Shopping", "Milimani Crest", "Club Milimani"],
+  "Obunga": ["Obunga Market", "Obunga Beach", "Obunga Road", "Makao"],
+  "Pipeline": ["Pipeline", "Pipeline Road", "Chevron", "Oil Depot"],
+  "Kisian": ["Kisian", "Kisian Market", "New Kisian", "Kisian Cross"],
+  "Airport": ["Airport", "Airport Road", "Airport Inn", "Kisumu Airport"],
+  "Mowlem": ["Mowlem", "Mowlem Market", "Mowlem Shopping", "Mowlem Road"],
+  "Nyamasaria": ["Nyamasaria", "Nyamasaria Market", "Nyamasaria Road", "Karachuonyo"],
+  "Nyalenda": ["Nyalenda", "Nyalenda Market", "Nyalenda Estate", "Nyalenda Cross"],
+  "Dunga": ["Dunga", "Dunga Beach", "Dunga Market", "Fish Landing"],
+  "Manyatta": ["Manyatta", "Manyatta Market", "Manyatta Shopping", "Manyatta Road"],
+  "Tom Mboya": ["Tom Mboya", "Tom Mboya Market", "Tom Mboya Estate", "Tom Mboya Road"],
+  "Kibuye": ["Kibuye", "Kibuye Market", "Kibuye Road", "Kibuye Estate"],
+  "Arina": ["Arina", "Arina Market", "Arina Shopping", "Arina Road"],
+  "Kondele": ["Kondele", "Kondele Market", "Kondele Road", "Kondele Shopping"],
+  "Kaloleni": ["Kaloleni", "Kaloleni Market", "Kaloleni Road", "Kaloleni Estate"],
+  "Mamboleo": ["Mamboleo", "Mamboleo Market", "Mamboleo Estate", "Mamboleo Road"],
+  "Lolwe": ["Lolwe", "Lolwe Beach", "Lolwe Market", "Lolwe Road"],
+  "RIAT": ["RIAT", "RIAT Road", "Research Institute", "RIAT Area"],
+  "Kanyamedha": ["Kanyamedha", "Kanyamedha Market", "Kanyamedha Road", "Kanyamedha Estate"]
+}

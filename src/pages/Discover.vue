@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref, watch, nextTick } from "vue";
 import places from "../data/places.json";
+import estateLocations from "../data/estateLocations.json";
+import estatePhases from "../data/estatePhases.json";
 import PlaceCard from "../components/PlaceCard.vue";
 import {
   createDeliboisOrder,
@@ -9,56 +11,6 @@ import {
 const search = ref("");
 const activeCategory = ref("All");
 
-const estatePhases = [
-  {
-    phase: "CBD Zone",
-    title: "CBD & Hub",
-    description: "Central service hub and main transit points",
-    price: "KES 250",
-    color: "#3b82f6",
-    estates: ["CBD", "Stage", "Milimani"],
-  },
-  {
-    phase: "West Zone",
-    title: "West Zone 1",
-    description: "Western zone coverage",
-    price: "KES 300",
-    color: "#f59e0b",
-    estates: ["Obunga", "Pipeline", "Kisian", "Airport"],
-  },
-  {
-    phase: "North Zone",
-    title: "North Zone",
-    description: "Northern estates expansion",
-    price: "KES 300",
-    color: "#10b981",
-    estates: ["Mowlem", "Nyamasaria", "Nyalenda"],
-  },
-  {
-    phase: "East Zone",
-    title: "East Zone",
-    description: "Eastern estates coverage",
-    price: "KES 350",
-    color: "#8b5cf6",
-    estates: ["Dunga", "Manyatta", "Tom Mboya"],
-  },
-  {
-    phase: "West Zone 2",
-    title: "West Zone 2",
-    description: "Western estates service area",
-    price: "KES 350",
-    color: "#06b6d4",
-    estates: ["Kibuye", "Arina", "Kondele", "Kaloleni"],
-  },
-  {
-    phase: "South Zone",
-    title: "South Zone",
-    description: "Southern estates network",
-    price: "KES 400",
-    color: "#ef4444",
-    estates: ["Mamboleo", "Lolwe", "RIAT", "Kanyamedha"],
-  },
-];
 
 const kisumu_estates = computed(() => [
   "CBD",
@@ -66,30 +18,6 @@ const kisumu_estates = computed(() => [
 ]);
 
 const estatesExcludingCBD = computed(() => kisumu_estates.value.filter((e) => e !== "CBD"));
-
-const estateLocations = {
-  "CBD": ["City Center", "CTC", "Main Street", "River Road", "Kenyatta Avenue"],
-  "Stage": ["Stage", "Market", "Town Centre", "Old Town", "Stage Road"],
-  "Milimani": ["Milimani", "Milimani Shopping", "Milimani Crest", "Club Milimani"],
-  "Obunga": ["Obunga Market", "Obunga Beach", "Obunga Road", "Makao"],
-  "Pipeline": ["Pipeline", "Pipeline Road", "Chevron", "Oil Depot"],
-  "Kisian": ["Kisian", "Kisian Market", "New Kisian", "Kisian Cross"],
-  "Airport": ["Airport", "Airport Road", "Airport Inn", "Kisumu Airport"],
-  "Mowlem": ["Mowlem", "Mowlem Market", "Mowlem Shopping", "Mowlem Road"],
-  "Nyamasaria": ["Nyamasaria", "Nyamasaria Market", "Nyamasaria Road", "Karachuonyo"],
-  "Nyalenda": ["Nyalenda", "Nyalenda Market", "Nyalenda Estate", "Nyalenda Cross"],
-  "Dunga": ["Dunga", "Dunga Beach", "Dunga Market", "Fish Landing"],
-  "Manyatta": ["Manyatta", "Manyatta Market", "Manyatta Shopping", "Manyatta Road"],
-  "Tom Mboya": ["Tom Mboya", "Tom Mboya Market", "Tom Mboya Estate", "Tom Mboya Road"],
-  "Kibuye": ["Kibuye", "Kibuye Market", "Kibuye Road", "Kibuye Estate"],
-  "Arina": ["Arina", "Arina Market", "Arina Shopping", "Arina Road"],
-  "Kondele": ["Kondele", "Kondele Market", "Kondele Road", "Kondele Shopping"],
-  "Kaloleni": ["Kaloleni", "Kaloleni Market", "Kaloleni Road", "Kaloleni Estate"],
-  "Mamboleo": ["Mamboleo", "Mamboleo Market", "Mamboleo Estate", "Mamboleo Road"],
-  "Lolwe": ["Lolwe", "Lolwe Beach", "Lolwe Market", "Lolwe Road"],
-  "RIAT": ["RIAT", "RIAT Road", "Research Institute", "RIAT Area"],
-  "Kanyamedha": ["Kanyamedha", "Kanyamedha Market", "Kanyamedha Road", "Kanyamedha Estate"],
-};
 
 const whatsappNumber = "254732379292"; // WhatsApp international format
 const phoneDisplay = "+254 0732379292"; // Display format for call/booking
@@ -264,6 +192,23 @@ const featuredCount = computed(() => places.length);
 const availableLocations = computed(() => {
   return estateLocations[orderForm.value.estate] || [];
 });
+
+function phaseClass(phase) {
+  const normalized = String(phase || "")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+
+  const phaseClassMap = {
+    "central-zone": "phase-cbd-zone",
+    "western-zone": "phase-west-zone",
+    "northern-zone": "phase-north-zone",
+    "eastern-zone": "phase-east-zone",
+    "southern-zone": "phase-south-zone",
+  };
+
+  return phaseClassMap[normalized] || `phase-${normalized}`;
+}
 
 // Get current delivery cost based on selected estate's zone
 const currentDeliveryCost = computed(() => {
@@ -520,44 +465,32 @@ function handleMediaUpload(event) {
   <main class="discover-page">
 
     <section class="hero-highlights">
-      <div class="hero-highlights-intro card">
-        <h3>Why Delibois is the trusted choice in Kisumu</h3>
-        <p>From urgent pickups to thoughtful shopping assistance, our local team makes every delivery and errand safer, faster, and easier.</p>
-        <p>Real delivery workflows, careful handling, and service touchpoints that protect your parcel from pickup to drop-off.</p>
-      </div>
-
       <div class="hero-highlights-main card-wrapper">
-        <div class="service-highlight-grid">
-          <article v-for="card in serviceCards" :key="card.title" class="service-card">
-            <div class="service-icon">{{ card.icon }}</div>
-            <div>
-              <h3>{{ card.title }}</h3>
-              <p>{{ card.description }}</p>
-            </div>
-          </article>
+        <div class="hero-highlights-intro">
+          <h3>Why Delibois is the trusted choice in Kisumu</h3>
+          <p>From urgent pickups to thoughtful shopping assistance, our local team makes every delivery and errand safer, faster, and easier.</p>
+          <p>Real delivery workflows, careful handling, and service touchpoints that protect your parcel from pickup to drop-off.</p>
         </div>
 
-        <div class="trust-highlight-grid">
-          <div class="trust-cards">
-            <article v-for="item in trustIndicators" :key="item.title" class="trust-card">
-              <strong>{{ item.title }}</strong>
-              <p>{{ item.subtitle }}</p>
+        <div class="hero-highlights-bottom">
+          <div class="service-highlight-grid">
+            <article v-for="card in serviceCards" :key="card.title" class="service-card">
+              <div class="service-icon">{{ card.icon }}</div>
+              <div>
+                <h3>{{ card.title }}</h3>
+                <p>{{ card.description }}</p>
+              </div>
             </article>
           </div>
-        </div>
-      </div>
 
-      <div class="hero-highlights-pictorials-wrap card-wrapper">
-        <h3>See how our local errands come together</h3>
-        <p>STEP 1</p>
-        <div class="hero-highlights-pictorials">
-          <article v-for="item in pictorials.slice(0, 3)" :key="item.title" class="highlight-pictorial">
-            <img :src="item.src" :alt="item.alt" />
-            <div>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.caption }}</p>
+          <div class="trust-highlight-grid">
+            <div class="trust-cards">
+              <article v-for="item in trustIndicators" :key="item.title" class="trust-card">
+                <strong>{{ item.title }}</strong>
+                <p>{{ item.subtitle }}</p>
+              </article>
             </div>
-          </article>
+          </div>
         </div>
       </div>
     </section>
@@ -698,27 +631,27 @@ function handleMediaUpload(event) {
             <div class="legend-title">Service Zones by Phase</div>
             <div class="legend-items">
               <div class="legend-item">
-                <span class="legend-color" style="background: #3b82f6;"></span>
+                <span class="legend-color phase-cbd-zone"></span>
                 <span class="legend-label">CBD Zone</span>
               </div>
               <div class="legend-item">
-                <span class="legend-color" style="background: #f59e0b;"></span>
+                <span class="legend-color phase-west-zone-1"></span>
                 <span class="legend-label">West Zone 1</span>
               </div>
               <div class="legend-item">
-                <span class="legend-color" style="background: #10b981;"></span>
+                <span class="legend-color phase-north-zone"></span>
                 <span class="legend-label">North Zone</span>
               </div>
               <div class="legend-item">
-                <span class="legend-color" style="background: #8b5cf6;"></span>
+                <span class="legend-color phase-east-zone"></span>
                 <span class="legend-label">East Zone</span>
               </div>
               <div class="legend-item">
-                <span class="legend-color" style="background: #06b6d4;"></span>
+                <span class="legend-color phase-west-zone-2"></span>
                 <span class="legend-label">West Zone 2</span>
               </div>
               <div class="legend-item">
-                <span class="legend-color" style="background: #ef4444;"></span>
+                <span class="legend-color phase-south-zone"></span>
                 <span class="legend-label">South Zone</span>
               </div>
             </div>
@@ -728,13 +661,12 @@ function handleMediaUpload(event) {
       <div class="estates-phases">
         <div v-for="phaseGroup in estatePhases" :key="phaseGroup.phase" class="phase-group">
           <div class="phase-header">
-            <span class="phase-badge" :style="{ backgroundColor: phaseGroup.color }">{{ phaseGroup.phase }}</span>
-            <h3>{{ phaseGroup.title }}</h3>
-            <span class="phase-price" :style="{ backgroundColor: phaseGroup.color, borderColor: phaseGroup.color }">{{ phaseGroup.price }}</span>
+            <span class="phase-badge" :class="phaseClass(phaseGroup.phase)">{{ phaseGroup.phase }}</span>
+            <span class="phase-price" :class="phaseClass(phaseGroup.phase)">{{ phaseGroup.price }}</span>
           </div>
           <p class="phase-description">{{ phaseGroup.description }}</p>
           <div class="phase-estates">
-            <div v-for="estate in phaseGroup.estates" :key="estate" class="estate-badge" :style="{ borderColor: phaseGroup.color, color: phaseGroup.color }">{{ estate }}</div>
+            <div v-for="estate in phaseGroup.estates" :key="estate" class="estate-badge" :class="phaseClass(phaseGroup.phase)">{{ estate }}</div>
           </div>
         </div>
       </div>
@@ -744,13 +676,12 @@ function handleMediaUpload(event) {
     <h3>See how our local errands come together</h3>
 
     <section class="pictorials">
-      <h3>See how our local errands come together</h3>
       <div class="section-head">
         <h2>Using Smart Delibois</h2>
         <p>Smart Delibois technology used to execute errands and delivery flow.</p>
       </div>
-      <div class="pictorial-grid">
-        <article v-for="item in pictorials" :key="item.title" class="pictorial-card">
+      <div class="pictorial-grid horizontal-layout">
+        <article v-for="item in pictorials.slice(0, 3)" :key="item.title" class="pictorial-card">
           <img :src="item.src" :alt="item.alt" loading="lazy" />
           <div class="pictorial-copy">
             <h3>{{ item.title }}</h3>
@@ -1394,6 +1325,57 @@ function handleMediaUpload(event) {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
+.phase-price {
+  color: #0f1218;
+}
+
+.phase-cbd-zone {
+  color: var(--phase-cbd-zone);
+  background-color: var(--phase-cbd-zone);
+  border-color: var(--phase-cbd-zone);
+}
+
+.phase-west-zone-1 {
+  color: var(--phase-west-zone-1);
+  background-color: var(--phase-west-zone-1);
+  border-color: var(--phase-west-zone-1);
+}
+
+.phase-north-zone {
+  color: var(--phase-north-zone);
+  background-color: var(--phase-north-zone);
+  border-color: var(--phase-north-zone);
+}
+
+.phase-east-zone {
+  color: var(--phase-east-zone);
+  background-color: var(--phase-east-zone);
+  border-color: var(--phase-east-zone);
+}
+
+.phase-west-zone-2 {
+  color: var(--phase-west-zone-2);
+  background-color: var(--phase-west-zone-2);
+  border-color: var(--phase-west-zone-2);
+}
+
+.phase-south-zone {
+  color: var(--phase-south-zone);
+  background-color: var(--phase-south-zone);
+  border-color: var(--phase-south-zone);
+}
+
+.legend-color.phase-cbd-zone,
+.legend-color.phase-west-zone-1,
+.legend-color.phase-north-zone,
+.legend-color.phase-east-zone,
+.legend-color.phase-west-zone-2,
+.legend-color.phase-south-zone {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
 .phase-header h3 {
   margin: 0;
   font-size: 0.95rem;
@@ -1488,6 +1470,10 @@ function handleMediaUpload(event) {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.pictorial-grid.horizontal-layout {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .pictorial-card {
@@ -1919,34 +1905,36 @@ function handleMediaUpload(event) {
 
   /* Hero highlights (desktop defaults) */
   .hero-highlights {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 18px;
     margin-bottom: 24px;
     width: 100%;
   }
 
-  .hero-highlights > * {
-    flex: 1 1 0;
-    min-width: 260px;
-    box-sizing: border-box;
-  }
-
-  /* Column proportions for desktop: intro / main / pictorials */
-  .hero-highlights-intro {
-    flex: 0 0 28%;
-    padding: 18px;
-  }
-
   .hero-highlights-main {
-    flex: 0 0 44%;
     display: grid;
-    gap: 16px;
+    gap: 18px;
   }
 
-  .hero-highlights-pictorials-wrap {
-    flex: 0 0 28%;
+  .hero-highlights-intro {
+    padding: 4px 2px 0;
+  }
+
+  .hero-highlights-intro h3 {
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+    color: var(--text);
+  }
+
+  .hero-highlights-intro p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .hero-highlights-bottom {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
   }
 
   .card-wrapper {
@@ -1959,13 +1947,9 @@ function handleMediaUpload(event) {
   }
 
   .service-highlight-grid {
-    display: flex;
+    display: grid;
     gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scroll-snap-type: x mandatory;
     align-items: stretch;
-    -webkit-overflow-scrolling: touch;
   }
 
   .service-highlight-grid::-webkit-scrollbar {
@@ -2140,40 +2124,23 @@ function handleMediaUpload(event) {
   }
 
   .hero-highlights {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 18px;
     margin-bottom: 24px;
     width: 100%;
-  }
-
-  .hero-highlights > * {
-    flex: 1 1 0;
-    min-width: 260px;
-    box-sizing: border-box;
-  }
-
-  /* Column proportions for desktop: intro / main / pictorials */
-  .hero-highlights-intro {
-    flex: 0 0 28%;
-  }
-
-  .hero-highlights-main {
-    flex: 0 0 44%;
-  }
-
-  .hero-highlights-pictorials-wrap {
-    flex: 0 0 28%;
-  }
-
-  .hero-highlights-intro {
-    padding: 18px;
   }
 
   .hero-highlights-main {
     display: grid;
     gap: 16px;
+  }
+
+  .hero-highlights-intro {
+    padding: 4px 2px 0;
+  }
+
+  .hero-highlights-bottom {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .card-wrapper {
@@ -2186,13 +2153,9 @@ function handleMediaUpload(event) {
   }
 
   .service-highlight-grid {
-    display: flex;
+    display: grid;
     gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scroll-snap-type: x mandatory;
     align-items: stretch;
-    -webkit-overflow-scrolling: touch;
   }
 
   .service-highlight-grid::-webkit-scrollbar {
@@ -2214,9 +2177,7 @@ function handleMediaUpload(event) {
     grid-template-columns: auto 1fr;
     align-items: flex-start;
     gap: 12px;
-    min-width: 200px;
-    flex: 0 0 auto;
-    scroll-snap-align: start;
+    min-width: 0;
     color: var(--text);
   }
 
