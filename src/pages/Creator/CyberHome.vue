@@ -100,11 +100,7 @@
   font-size: 2.6rem;
   font-weight: 800;
   background: linear-gradient(90deg, var(--primary-orange), var(--secondary-teal));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.lead {
+  background-clip: text;
   margin: 0.75rem 0 1.2rem;
   color: var(--text-muted-dark);
   font-size: 1rem;

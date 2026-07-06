@@ -9,35 +9,6 @@ import {
 const search = ref("");
 const activeCategory = ref("All");
 
-const kisumu_estates = [
-  "Arina",
-  "Airport",
-  "CBD",
-  "Dunga",
-  "Kaloleni",
-  "Kanyamedha",
-  "Kibuye",
-  "Kisian",
-  "Kondele",
-  "Lolwe",
-  "Makasembo",
-  "Mamboleo",
-  "Manyatta",
-  "Milimani",
-  "Mowlem",
-  "Nyalenda",
-  "Nyamasaria",
-  "Obunga",
-  "Ondiek",
-  "Pipeline",
-  "RIAT",
-  "Rabuor",
-  "Stage",
-  "Tom Mboya",
-];
-
-const estatesExcludingCBD = computed(() => kisumu_estates.filter(e => e !== "CBD"));
-
 const estatePhases = [
   {
     phase: "CBD Zone",
@@ -88,6 +59,13 @@ const estatePhases = [
     estates: ["Mamboleo", "Lolwe", "RIAT", "Kanyamedha"],
   },
 ];
+
+const kisumu_estates = computed(() => [
+  "CBD",
+  ...estatePhases.flatMap((phase) => phase.estates),
+]);
+
+const estatesExcludingCBD = computed(() => kisumu_estates.value.filter((e) => e !== "CBD"));
 
 const estateLocations = {
   "CBD": ["City Center", "CTC", "Main Street", "River Road", "Kenyatta Avenue"],
@@ -314,10 +292,17 @@ function toFriendlyDate(isoValue) {
 }
 
 function isPersonalDetailsComplete() {
-  return (
+  const baseReady =
     sanitize(orderForm.value.customerName) &&
     validatePhone(orderForm.value.phone) &&
-    sanitize(orderForm.value.estate)
+    sanitize(orderForm.value.estate);
+
+  if (!baseReady) return false;
+  if (orderForm.value.sameAsCustomer) return true;
+
+  return (
+    sanitize(orderForm.value.recipientName) &&
+    validatePhone(orderForm.value.recipientPhone)
   );
 }
 
@@ -764,7 +749,7 @@ function handleMediaUpload(event) {
             @click="orderTab = 'personal'; nextTick(scrollToOrderTabs)"
           >
             <span class="tab-number">1</span>
-            Personal Details
+            Sender & Recipient Details
           </button>
           <button
             type="button"
@@ -773,21 +758,21 @@ function handleMediaUpload(event) {
             :disabled="!canProceedToItemsTab"
           >
             <span class="tab-number">2</span>
-            Item & Delivery Details
+            Item Details
           </button>
         </div>
-        <p class="tab-hint" v-if="!canProceedToItemsTab">Complete your personal details first to unlock item & delivery details.</p>
+        <p class="tab-hint" v-if="!canProceedToItemsTab">Complete sender and recipient details first to unlock item details.</p>
 
         <!-- Step 1: Personal Details Tab -->
         <form v-if="orderTab === 'personal'" class="smart-form" @submit.prevent="proceedToItemsTab">
           <div class="form-grid two">
             <label class="field">
-              <span>Customer name *</span>
+              <span>Customer name <span class="required">*</span></span>
               <input v-model="orderForm.customerName" type="text" placeholder="Full name" />
               <small v-if="orderErrors.customerName" class="field-error">{{ orderErrors.customerName }}</small>
             </label>
             <label class="field">
-              <span>Phone number *</span>
+              <span>Phone number <span class="required">*</span></span>
               <input v-model="orderForm.phone" type="tel" placeholder="+254..." />
               <small v-if="orderErrors.phone" class="field-error">{{ orderErrors.phone }}</small>
             </label>
@@ -799,12 +784,30 @@ function handleMediaUpload(event) {
               <input v-model="orderForm.email" type="email" placeholder="name@email.com" />
             </label>
             <label class="field">
-              <span>Estate / Area *</span>
+              <span>Estate / Area <span class="required">*</span></span>
               <select v-model="orderForm.estate">
                 <option v-for="estate in kisumu_estates" :key="estate" :value="estate">{{ estate }}</option>
               </select>
               <small v-if="orderErrors.estate" class="field-error">{{ orderErrors.estate }}</small>
               <small class="cost-display">Delivery cost: {{ currentDeliveryCost }}</small>
+            </label>
+          </div>
+
+          <label class="checkbox-line">
+            <input v-model="orderForm.sameAsCustomer" type="checkbox" />
+            <span>Recipient is the same person (use my details above)</span>
+          </label>
+
+          <div v-if="!orderForm.sameAsCustomer" class="form-grid two">
+            <label class="field">
+              <span>Recipient name <span class="required">*</span></span>
+              <input v-model="orderForm.recipientName" type="text" placeholder="Full name" />
+              <small v-if="orderErrors.recipientName" class="field-error">{{ orderErrors.recipientName }}</small>
+            </label>
+            <label class="field">
+              <span>Recipient phone <span class="required">*</span></span>
+              <input v-model="orderForm.recipientPhone" type="tel" placeholder="+254..." />
+              <small v-if="orderErrors.recipientPhone" class="field-error">{{ orderErrors.recipientPhone }}</small>
             </label>
           </div>
 
@@ -819,7 +822,7 @@ function handleMediaUpload(event) {
             <h3 class="section-title">Item Information</h3>
             
             <label class="field">
-              <span>Item title *</span>
+              <span>Item title <span class="required">*</span></span>
               <input v-model="orderItemDetails.title" type="text" placeholder="e.g., Electronics package" />
             </label>
 
@@ -859,7 +862,7 @@ function handleMediaUpload(event) {
             </div>
             
             <label class="field">
-              <span>Pickup location / Area *</span>
+              <span>Pickup location / Area <span class="required">*</span></span>
               <select v-model="orderForm.pickup">
                 <option value="">-- Select pickup area --</option>
                 <option v-for="location in availableLocations" :key="location" :value="location">
@@ -886,43 +889,21 @@ function handleMediaUpload(event) {
 
             <div class="form-grid two">
               <label class="field">
-                <span>Service type *</span>
+                <span>Service type <span class="required">*</span></span>
                 <select v-model="orderForm.orderType">
                   <option v-for="type in orderTypes" :key="type" :value="type">{{ type }}</option>
                 </select>
                 <small v-if="orderErrors.orderType" class="field-error">{{ orderErrors.orderType }}</small>
               </label>
               <label class="field">
-                <span>Preferred time *</span>
+                <span>Preferred time <span class="required">*</span></span>
                 <input v-model="orderForm.preferredTime" type="datetime-local" />
                 <small v-if="orderErrors.preferredTime" class="field-error">{{ orderErrors.preferredTime }}</small>
               </label>
             </div>
 
-            <div class="form-section">
-              <h3 class="section-title">Recipient Details</h3>
-              
-              <label class="checkbox-line">
-                <input v-model="orderForm.sameAsCustomer" type="checkbox" />
-                <span>Recipient is the same person (use my details above)</span>
-              </label>
-
-              <div v-if="!orderForm.sameAsCustomer" class="form-grid two">
-                <label class="field">
-                  <span>Recipient name *</span>
-                  <input v-model="orderForm.recipientName" type="text" placeholder="Full name" />
-                  <small v-if="orderErrors.recipientName" class="field-error">{{ orderErrors.recipientName }}</small>
-                </label>
-                <label class="field">
-                  <span>Recipient phone *</span>
-                  <input v-model="orderForm.recipientPhone" type="tel" placeholder="+254..." />
-                  <small v-if="orderErrors.recipientPhone" class="field-error">{{ orderErrors.recipientPhone }}</small>
-                </label>
-              </div>
-            </div>
-
             <label class="field">
-              <span>Drop-off location / Area *</span>
+              <span>Drop-off location / Area <span class="required">*</span></span>
               <select v-model="orderForm.dropoff">
                 <option value="">-- Select drop-off area --</option>
                 <option v-for="location in availableLocations" :key="location" :value="location">
@@ -1560,6 +1541,10 @@ function handleMediaUpload(event) {
 .field span {
   font-size: 0.84rem;
   color: #dbe2eb;
+}
+
+.field span .required {
+  color: #ff6b6b;
 }
 
 .field input,

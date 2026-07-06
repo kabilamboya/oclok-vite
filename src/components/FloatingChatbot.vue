@@ -816,6 +816,18 @@ export default {
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+@media (max-width: 600px) {
+  .floating-action {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .back-to-top {
+    font-size: 1rem;
+  }
+}
+
 .floating-action:hover {
   filter: brightness(1.05);
   transform: translateY(-2px);

@@ -812,6 +812,7 @@ margin-bottom:50px;
 font-size:3rem;
 font-weight:800;
 background:linear-gradient(90deg,#ff6b00,#39ff14);
+background-clip:text;
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
@@ -918,6 +919,7 @@ background:linear-gradient(90deg,#ff6b00,#39ff14);
   font-size:0.9rem;
   display:-webkit-box;
   -webkit-line-clamp:2;
+  line-clamp:2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }

@@ -211,16 +211,18 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+  align-items: stretch;
   margin-bottom: 2rem;
 }
 
 .search-input,
 .specialty-select {
-  padding: 0.7rem 1rem;
+  padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   transition: 0.3s;
+  min-width: 220px;
 }
 
 .search-input:focus,
@@ -277,12 +279,13 @@
 
 .clear-btn {
   background: var(--color-primary);
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.2rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   margin-top: 1rem;
+  width: auto;
 }
 
 @media (max-width: 768px) {
@@ -308,6 +311,24 @@
 @media (max-width: 480px) {
   .cards .cards-container {
     grid-template-columns: 1fr;
+  }
+
+  .filters {
+    gap: 0.75rem;
+  }
+
+  .search-input,
+  .specialty-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .booking-summary {
+    padding: 1rem;
+  }
+
+  .clear-btn {
+    width: 100%;
   }
 }
 

@@ -343,10 +343,9 @@ export default {
 }
 
 .card-footer {
-  display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
     padding: 0.8rem;
     border-top: 1px solid var(--border);
     background: var(--surface-alt);
@@ -354,24 +353,28 @@ export default {
 
   .primary-btn,
   .secondary-btn {
-    flex: 1 1 10rem;
-    min-width: 9rem;
+    flex: 1 1 0;
+    min-width: 0;
     text-align: center;
     margin: 0;
-    padding: 0.6rem 0.85rem;
+    padding: 0.75rem 0.85rem;
     border: none;
     border-radius: 0.85rem;
     cursor: pointer;
     font-weight: 600;
     text-transform: none;
-    white-space: nowrap;
+    white-space: normal;
     letter-spacing: 0.01em;
     transition: 0.24s ease;
+    width: 100%;
+    box-sizing: border-box;
   }
-.primary-btn {
+
+  .primary-btn {
     background: var(--color-primary);
     color: var(--text-dark);
   }
+
   .primary-btn:hover {
     background: var(--color-primary-hover);
   }
@@ -381,22 +384,21 @@ export default {
     color: var(--text-dark);
     text-decoration: none;
   }
+
   .secondary-btn:hover {
     background: var(--color-secondary-hover);
   }
 
 @media (max-width: 600px) {
   .card-footer {
-    flex-direction: column;
-    gap: 0.5rem;
+    grid-template-columns: 1fr;
+    padding: 0.75rem 0.75rem 0.9rem;
   }
 
   .primary-btn,
   .secondary-btn {
     width: 100%;
-    margin: 0;
   }
-
   .star {
     font-size: 2.4rem;
   }
