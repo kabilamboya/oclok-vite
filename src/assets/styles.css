@@ -18,6 +18,14 @@ body {
   color: var(--text);
 }
 
+.hero-accent-primary {
+  color: var(--color-primary);
+}
+
+.hero-accent-secondary {
+  color: var(--color-secondary);
+}
+
 /* Floating chat: responsive, token-driven, lower stacking than global chrome */
 .chat-window {
   position: fixed;

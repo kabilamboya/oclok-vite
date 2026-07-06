@@ -7,7 +7,7 @@
 <div class="practice-tracking-row">
 
 <div class="practice-col">
-<h2>Draft Prompt</h2>
+<h2><span class="hero-accent-primary">Draft</span> <span class="hero-accent-secondary">Prompt</span></h2>
 <label class="practice-label" for="practicePrompt">Prompt text</label>
 
 <textarea
@@ -107,7 +107,7 @@ Tip: {{ tip }}
 
 <div class="framework-header">
   <div>
-    <h2>Prompt Framework</h2>
+    <h2><span class="hero-accent-primary">Prompt</span> <span class="hero-accent-secondary">Framework</span></h2>
     <p class="framework-subtitle">Tap a step to expand the details.</p>
   </div>
   <button

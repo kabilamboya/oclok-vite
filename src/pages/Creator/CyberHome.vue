@@ -3,7 +3,7 @@
     <header class="hero">
       <div class="hero-text">
         <p class="eyebrow">O!clok Cyber Studio</p>
-        <h1>AI Prompt Mastery</h1>
+        <h1><span class="hero-accent-primary">AI</span> Prompt <span class="hero-accent-secondary">Mastery</span></h1>
         <p class="lead">
           Write better prompts, craft campaign copy, and build mockups faster. Pick a workspace
           below to get started.

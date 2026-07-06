@@ -2,19 +2,28 @@
   <div>
     <div
       v-if="!isOpen"
-      class="floating-controls"
-      :style="{ top: bubblePos.top + 'px', left: bubblePos.left + 'px' }"
+      :class="['floating-controls', { 'single-action': !showBackToTop }]"
+      :style="{ top: bubblePos.top + 'px', right: bubbleRight + 'px' }"
       @mousedown="startBubbleDrag"
     >
-      <button type="button" class="floating-action bubble-icon" aria-label="Open chatbot" @click.stop="toggleChat">💬</button>
       <button
         v-if="showBackToTop"
         type="button"
         class="floating-action back-to-top"
         aria-label="Back to top"
         @click.stop="scrollToTop"
+        @mousedown.stop
       >
         ↑
+      </button>
+      <button
+        type="button"
+        class="floating-action bubble-icon"
+        aria-label="Open chatbot"
+        @click.stop="toggleChat"
+        @mousedown.stop
+      >
+        💬
       </button>
     </div>
 
@@ -22,7 +31,7 @@
       <div
         v-if="isOpen"
         class="chatbot-window"
-        :style="{ top: position.top + 'px', left: position.left + 'px' }"
+        :style="{ top: position.top + 'px', right: chatRightCss }"
       >
         <div class="chatbot-header" @mousedown.stop="startDrag">
           <div class="header-copy">
@@ -38,7 +47,7 @@
             :key="idx"
             :class="['message-row', msg.sender]"
           >
-            <p class="message-author">{{ msg.sender === "bot" ? "O!clok Assistant" : "You" }}</p>
+            <p class="message-author">{{ msg.sender === 'bot' ? 'O!clok Assistant' : 'You' }}</p>
             <div :class="['message-bubble', msg.sender]">{{ msg.text }}</div>
             <div v-if="msg.references && msg.references.length" class="message-references">
               <span
@@ -183,6 +192,31 @@ export default {
       drag: { active: false, offsetX: 0, offsetY: 0 },
       bubbleDrag: { active: false, offsetX: 0, offsetY: 0 },
     };
+  },
+  computed: {
+    bubbleRight() {
+      const bounds = this.getChatBounds();
+      const buttonWidth = 52;
+      const margin = 12;
+      if (!bounds.viewportWidth) return margin;
+      const right = bounds.viewportWidth - (this.bubblePos.left + buttonWidth);
+      // clamp right between margin and max possible
+      const maxRight = Math.max(margin, bounds.viewportWidth - buttonWidth - margin);
+      return Math.max(margin, Math.min(maxRight, right));
+    },
+    bubbleRightCss() {
+      // add safe-area inset to the computed right value
+      return `calc(${this.bubbleRight}px + env(safe-area-inset-right, 12px))`;
+    },
+    chatRightCss() {
+      const bounds = this.getChatBounds();
+      if (!bounds.viewportWidth || !bounds.chatWidth) return '12px';
+      const right = bounds.viewportWidth - (this.position.left + bounds.chatWidth);
+      const margin = 12;
+      const maxRight = Math.max(margin, bounds.viewportWidth - bounds.chatWidth - margin);
+      const clamped = Math.max(margin, Math.min(maxRight, right));
+      return `calc(${clamped}px + env(safe-area-inset-right, 12px))`;
+    },
   },
   mounted() {
     window.addEventListener("resize", this.clampFloatingPositions);
@@ -471,15 +505,22 @@ export default {
 
       this.position.left = bounds.maxLeft;
       this.position.top = bounds.maxTop;
-      this.bubblePos.left = Math.max(10, bounds.viewportWidth - 120);
-      this.bubblePos.top = Math.max(10, bounds.viewportHeight - 70);
+      const buttonWidth = 52;
+      const marginRight = 12;
+      const containerHeight = 120; // matches CSS min-height
+      const bottomSpacing = 16; // extra spacing below the container
+      this.bubblePos.left = Math.max(10, bounds.viewportWidth - buttonWidth - marginRight);
+      this.bubblePos.top = Math.max(10, bounds.viewportHeight - containerHeight - bottomSpacing);
     },
     clampFloatingPositions() {
       const bounds = this.getChatBounds();
       if (!bounds.viewportWidth || !bounds.viewportHeight) return;
-
-      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 120);
-      const maxBubbleTop = Math.max(10, bounds.viewportHeight - 70);
+      const buttonWidth = 52;
+      const marginRight = 12;
+      const containerHeight = 120;
+      const bottomSpacing = 16;
+      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - buttonWidth - marginRight);
+      const maxBubbleTop = Math.max(10, bounds.viewportHeight - containerHeight - bottomSpacing);
 
       this.position.left = Math.min(bounds.maxLeft, Math.max(10, this.position.left));
       this.position.top = Math.min(bounds.maxTop, Math.max(10, this.position.top));
@@ -524,8 +565,12 @@ export default {
       const bounds = this.getChatBounds();
       if (!bounds.viewportWidth || !bounds.viewportHeight) return;
 
-      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - 70);
-      const maxBubbleTop = Math.max(10, bounds.viewportHeight - 70);
+      const buttonWidth = 52;
+      const margin = 12;
+      const containerHeight = 120;
+      const bottomSpacing = 16;
+      const maxBubbleLeft = Math.max(10, bounds.viewportWidth - buttonWidth - margin);
+      const maxBubbleTop = Math.max(10, bounds.viewportHeight - containerHeight - bottomSpacing);
       this.bubblePos.left = Math.min(
         maxBubbleLeft,
         Math.max(10, event.clientX - this.bubbleDrag.offsetX)
@@ -721,8 +766,38 @@ export default {
   position: fixed;
   z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  padding: 12px;
+  min-height: auto;
+  background: rgba(8, 12, 20, 0.55);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.24);
+}
+
+.floating-controls.single-action {
+  justify-content: center;
+}
+
+.floating-controls.single-action::before {
+  display: none;
+}
+
+.floating-controls::before {
+  content: "";
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+  order: 1;
+}
+
+.floating-action + .floating-action {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .floating-action {

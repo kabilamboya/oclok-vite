@@ -84,7 +84,7 @@ const robotAssistants = computed(() => {
   <main class="robots-page">
     <section class="heros">
       <div class="hero-text">
-        <h1>Don't just imagine a smart world...</h1>
+        <h1>Don't just imagine a <span class="hero-accent-primary">smart</span> <span class="hero-accent-secondary">world</span>...</h1>
         <p>Live it with us!</p>
 
         <div class="hero-actions">
@@ -95,7 +95,7 @@ const robotAssistants = computed(() => {
       <div class="hero-copy">
       <img src="/images/ROBOto.jpg" alt="Robot assistant concept" />
         <p class="eyebrow">Robot Assistant Knowledge Base</p>
-        <h1>How robots assist in daily life</h1>
+        <h1>How <span class="hero-accent-primary">robots</span> assist in <span class="hero-accent-secondary">daily life</span></h1>
         <p>
           This page explains practical robot assistants for homes, schools, business operations,
           and logistics. You can also explore assistant devices sold through the O!clok Store.
@@ -179,7 +179,7 @@ const robotAssistants = computed(() => {
   --line: var(--border-dark);
   --text: var(--text-dark);
   --muted: var(--text-muted-dark);
-  --accent: var(--color-secondary);
+  --accent: var(--color-primary);
   max-width: 1160px;
   margin: 0 auto;
   padding: 22px 16px 40px;
@@ -280,20 +280,20 @@ const robotAssistants = computed(() => {
   color: #081218;
 }
 
-.cta.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(53, 214, 166, 0.3);
-}
+  .cta.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 122, 0, 0.28);
+  }
 
 .cta.ghost {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.cta.ghost:hover {
-  background: rgba(53, 214, 166, 0.1);
-  transform: translateY(-2px);
-}
+  .cta.ghost:hover {
+    background: rgba(255, 122, 0, 0.08);
+    transform: translateY(-2px);
+  }
 
 .knowledge-grid,
 .daily-life,

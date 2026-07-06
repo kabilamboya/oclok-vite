@@ -3,10 +3,9 @@
     <section class="hero" aria-hidden="false">
       <div class="header-container">
         <h1>
-          Welcome to
+          <span class="hero-accent-secondary">0!clok </span> 
           <span class="hero-brand">
-            <span class="hero-brand-name">O!clok</span>
-            <span class="hero-brand-service">services</span>
+            <span class="hero-accent-primary"> Services</span>
           </span>
         </h1>
         <div class="background-notanimated">

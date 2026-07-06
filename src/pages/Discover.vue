@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import places from "../data/places.json";
 import PlaceCard from "../components/PlaceCard.vue";
 import {
@@ -150,6 +150,7 @@ const orderFeedback = ref({ type: "", message: "" });
 const orderSubmitting = ref(false);
 const latestOrder = ref(null);
 const orderTab = ref("personal"); // "personal" or "items"
+const orderTabsRef = ref(null);
 
 const orderItemDetails = ref({
   show: false,
@@ -160,18 +161,83 @@ const orderItemDetails = ref({
   mediaType: null,
   description: "",
   instructions: "",
+  fragile: false,
 });
+
+const serviceCards = [
+  {
+    icon: "🚚",
+    title: "Parcel Delivery",
+    description: "Fast same-day parcel pickup and delivery across Kisumu.",
+  },
+  {
+    icon: "🛒",
+    title: "Grocery Shopping",
+    description: "Shop from local supermarkets and deliver groceries to your door.",
+  },
+  {
+    icon: "📄",
+    title: "Document Delivery",
+    description: "Secure document pickup, drop-off and courier support for important files.",
+  },
+  {
+    icon: "⏳",
+    title: "Wait-in-Line Services",
+    description: "Save time with queue waiting services for bills, permits and appointments.",
+  },
+  {
+    icon: "🛍️",
+    title: "Shopping Assistance",
+    description: "Personal shopping help for clothes, food and household essentials.",
+  },
+  {
+    icon: "🔁",
+    title: "Item Returns",
+    description: "Convenient returns delivery for online orders and store exchanges.",
+  },
+];
+
+const trustIndicators = [
+  {
+    title: "Same-day delivery",
+    subtitle: "Quick pickups and fast local drop-offs across Kisumu.",
+  },
+  {
+    title: "Real-time WhatsApp updates",
+    subtitle: "Track your delivery and get status updates instantly.",
+  },
+  {
+    title: "Transparent pricing",
+    subtitle: "Know your delivery cost before you book.",
+  },
+  {
+    title: "Secure handling",
+    subtitle: "Trusted handling for packages and personal errands.",
+  },
+  {
+    title: "Local Kisumu team",
+    subtitle: "Delivered by local riders who know Kisumu neighborhoods.",
+  },
+];
 
 // Watch for sameAsCustomer toggle to update recipient fields
 watch(() => orderForm.value.sameAsCustomer, (newVal) => {
   if (newVal) {
-    // When checked, copy customer details to recipient
     orderForm.value.recipientName = orderForm.value.customerName;
     orderForm.value.recipientPhone = orderForm.value.phone;
   } else {
-    // When unchecked, clear recipient fields
     orderForm.value.recipientName = "";
     orderForm.value.recipientPhone = "";
+  }
+});
+
+watch([
+  () => orderForm.value.customerName,
+  () => orderForm.value.phone,
+], ([name, phone]) => {
+  if (orderForm.value.sameAsCustomer) {
+    orderForm.value.recipientName = name;
+    orderForm.value.recipientPhone = phone;
   }
 });
 
@@ -238,13 +304,30 @@ function sanitize(value) {
 }
 
 function validatePhone(value) {
-  const clean = sanitize(value);
-  return /^\+?[0-9\s-]{9,15}$/.test(clean);
+  const clean = sanitize(value).replace(/[\s\-()]/g, "");
+  return /^(?:\+254|254|0)?7\d{8}$/.test(clean);
 }
 
 function toFriendlyDate(isoValue) {
   const parsed = new Date(isoValue || Date.now());
   return Number.isNaN(parsed.getTime()) ? new Date().toLocaleString() : parsed.toLocaleString();
+}
+
+function isPersonalDetailsComplete() {
+  return (
+    sanitize(orderForm.value.customerName) &&
+    validatePhone(orderForm.value.phone) &&
+    sanitize(orderForm.value.estate)
+  );
+}
+
+const canProceedToItemsTab = computed(() => isPersonalDetailsComplete());
+
+function scrollToOrderTabs() {
+  const target = orderTabsRef.value?.closest?.(".engagement") || orderTabsRef.value;
+  if (target && typeof target.scrollIntoView === "function") {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function openWhatsAppMessage(message) {
@@ -263,12 +346,19 @@ function buildOrderWhatsAppMessage(payload) {
     `Email: ${payload.email || "-"}`,
     `Estate: ${payload.estate || "-"}`,
     `Order Type: ${payload.orderType || "-"}`,
+    `Delivery Cost: ${payload.deliveryCost || "-"}`,
     `Recipient Name: ${recipientName || "-"}`,
     `Recipient Phone: ${recipientPhone || "-"}`,
     `Pickup: ${payload.pickup || "-"}`,
     `Drop-off: ${payload.dropoff || "-"}`,
     `Preferred Time: ${payload.preferredTime || "-"}`,
     `Urgent: ${payload.urgent ? "Yes" : "No"}`,
+    `Item title: ${payload.itemDetails?.title || "-"}`,
+    `Item description: ${payload.itemDetails?.description || "-"}`,
+    `Item instructions: ${payload.itemDetails?.instructions || "-"}`,
+    `Fragile / delicate: ${payload.itemDetails?.fragile || "No"}`,
+    `Media type: ${payload.itemDetails?.mediaType || "none"}`,
+    `Media file: ${payload.itemDetails?.mediaFileName || "none"}`,
     `Notes: ${payload.notes || "-"}`,
   ].join("\n");
 }
@@ -302,7 +392,13 @@ function validatePersonalDetails() {
 function proceedToItemsTab() {
   if (validatePersonalDetails()) {
     orderTab.value = "items";
+    nextTick(scrollToOrderTabs);
   }
+}
+
+function goToPersonalDetails() {
+  orderTab.value = "personal";
+  nextTick(scrollToOrderTabs);
 }
 
 async function submitOrder() {
@@ -317,7 +413,23 @@ async function submitOrder() {
 
   orderSubmitting.value = true;
   orderFeedback.value = { type: "", message: "" };
-  const snapshot = { ...orderForm.value }; // Capture form data before clearing
+  const snapshot = {
+    ...orderForm.value,
+    deliveryCost: currentDeliveryCost.value,
+    itemDetails: {
+      title: orderItemDetails.value.title,
+      description: orderItemDetails.value.description,
+      instructions: orderItemDetails.value.instructions,
+      mediaType: orderItemDetails.value.mediaType || "none",
+      mediaFileName: orderItemDetails.value.imageFile?.name || orderItemDetails.value.videoFile?.name || "",
+      fragile: orderItemDetails.value.fragile ? "Yes" : "No",
+    },
+  }; // Capture form data before clearing
+
+  let whatsappWindow = null;
+  if (typeof window !== "undefined") {
+    whatsappWindow = window.open("about:blank", "_blank", "noopener,noreferrer");
+  }
 
   try {
     const response = await createDeliboisOrder(orderForm.value);
@@ -335,14 +447,20 @@ async function submitOrder() {
     };
     orderErrors.value = {};
     orderForm.value = createDefaultOrderForm();
-    
-    // Open WhatsApp with order details
-    setTimeout(() => {
-      openWhatsAppMessage(buildOrderWhatsAppMessage(snapshot));
-    }, 500);
-    
+
+    const message = buildOrderWhatsAppMessage(snapshot);
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    if (whatsappWindow && !whatsappWindow.closed) {
+      whatsappWindow.location.href = url;
+    } else {
+      openWhatsAppMessage(message);
+    }
+
     return true;
   } catch (error) {
+    if (whatsappWindow && !whatsappWindow.closed) {
+      whatsappWindow.close();
+    }
     orderFeedback.value = {
       type: "error",
       message:
@@ -384,12 +502,58 @@ function handleMediaUpload(event) {
 
   <section class="hero" aria-hidden="false">
       <div class="hero-text">
-        <h1>Fast Errand Bois Across Kisumu City</h1>
-        <p>Delibois handles your tasks while you focus on what matters.</p>
+        <h1>
+          <span class="hero-accent-primary">Your Personal Errand</span>
+          <span class="hero-accent-white"> Partner in Kisumu</span>
+        </h1>
+        <p class="hero-accent-secondary">Shopping. Deliveries. Pickups. Returns. All in one place.</p>
       </div>
   </section>
 
   <main class="discover-page">
+
+    <section class="hero-highlights">
+      <div class="hero-highlights-intro card">
+        <h3>Why Delibois is the trusted choice in Kisumu</h3>
+        <p>From urgent pickups to thoughtful shopping assistance, our local team makes every delivery and errand safer, faster, and easier.</p>
+        <p>Real delivery workflows, careful handling, and service touchpoints that protect your parcel from pickup to drop-off.</p>
+      </div>
+
+      <div class="hero-highlights-main card-wrapper">
+        <div class="service-highlight-grid">
+          <article v-for="card in serviceCards" :key="card.title" class="service-card">
+            <div class="service-icon">{{ card.icon }}</div>
+            <div>
+              <h3>{{ card.title }}</h3>
+              <p>{{ card.description }}</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="trust-highlight-grid">
+          <div class="trust-cards">
+            <article v-for="item in trustIndicators" :key="item.title" class="trust-card">
+              <strong>{{ item.title }}</strong>
+              <p>{{ item.subtitle }}</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-highlights-pictorials-wrap card-wrapper">
+        <h3>See how our local errands come together</h3>
+        <p>STEP 1</p>
+        <div class="hero-highlights-pictorials">
+          <article v-for="item in pictorials.slice(0, 3)" :key="item.title" class="highlight-pictorial">
+            <img :src="item.src" :alt="item.alt" />
+            <div>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.caption }}</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <section class="operations">
       <article class="coverage card">
@@ -572,8 +736,8 @@ function handleMediaUpload(event) {
 
     <section class="pictorials">
       <div class="section-head">
-        <h2>Digital Delibois</h2>
-        <p>Future delibois tehnology used to execute errands and delivery flow.</p>
+        <h2>Smart Delibois</h2>
+        <p>Smart Delibois technology used to execute errands and delivery flow.</p>
       </div>
       <div class="pictorial-grid">
         <article v-for="item in pictorials" :key="item.title" class="pictorial-card">
@@ -589,26 +753,30 @@ function handleMediaUpload(event) {
     <section class="engagement">
       <article class="card">
         <div class="section-head">
-          <h2>Order your errand boi</h2>
+          <h2>Schedule a Delivery</h2>
           <p>Step-by-step process to submit your order details.</p>
         </div>
 
-        <div class="order-tabs">
+        <div class="order-tabs" ref="orderTabsRef">
           <button
-            :class="['tab-btn', { active: orderTab === 'personal' }]"
-            @click="orderTab = 'personal'"
+            type="button"
+            :class="['tab-btn', { 'active-primary': orderTab === 'personal' }]"
+            @click="orderTab = 'personal'; nextTick(scrollToOrderTabs)"
           >
             <span class="tab-number">1</span>
             Personal Details
           </button>
           <button
-            :class="['tab-btn', { active: orderTab === 'items' }]"
-            @click="orderTab = 'items'"
+            type="button"
+            :class="['tab-btn', { 'active-secondary': orderTab === 'items', disabled: !canProceedToItemsTab }]"
+            @click="proceedToItemsTab"
+            :disabled="!canProceedToItemsTab"
           >
             <span class="tab-number">2</span>
             Item & Delivery Details
           </button>
         </div>
+        <p class="tab-hint" v-if="!canProceedToItemsTab">Complete your personal details first to unlock item & delivery details.</p>
 
         <!-- Step 1: Personal Details Tab -->
         <form v-if="orderTab === 'personal'" class="smart-form" @submit.prevent="proceedToItemsTab">
@@ -678,6 +846,17 @@ function handleMediaUpload(event) {
                 placeholder="e.g., Place on porch, fragile, requires signature"
               ></textarea>
             </label>
+
+            <div class="checkbox-row">
+              <label class="checkbox-line">
+                <input v-model="orderItemDetails.fragile" type="checkbox" />
+                <span>Item is delicate / fragile</span>
+              </label>
+              <label class="checkbox-line">
+                <input v-model="orderForm.urgent" type="checkbox" />
+                <span>Mark as urgent priority request</span>
+              </label>
+            </div>
             
             <label class="field">
               <span>Pickup location / Area *</span>
@@ -761,24 +940,10 @@ function handleMediaUpload(event) {
                 placeholder="Package details, special instructions, or delivery constraints"
               ></textarea>
             </label>
-
-            <label class="field">
-              <span>Delivery instructions</span>
-              <textarea
-                v-model="orderItemDetails.instructions"
-                rows="3"
-                placeholder="e.g., Place on porch, fragile, requires signature"
-              ></textarea>
-            </label>
-
-            <label class="checkbox-line">
-              <input v-model="orderForm.urgent" type="checkbox" />
-              <span>Mark as urgent priority request</span>
-            </label>
           </div>
 
           <div class="tab-actions">
-            <button class="form-btn secondary" type="button" @click="orderTab = 'personal'">← Back</button>
+            <button class="form-btn secondary" type="button" @click="goToPersonalDetails">← Back</button>
             <button class="form-btn primary" type="submit" :disabled="orderSubmitting">
               {{ orderSubmitting ? "Submitting..." : "Submit order" }}
             </button>
@@ -812,6 +977,7 @@ function handleMediaUpload(event) {
           v-model="search"
           class="search"
           type="search"
+          aria-label="Search places, category, or location"
           placeholder="Search places, category, or location"
         />
         <div class="category-tabs">
@@ -883,6 +1049,7 @@ function handleMediaUpload(event) {
   justify-content: center;
   min-height: 320px;
   margin-bottom: 32px;
+  color: var(--text-dark);
 }
 
 .hero-text {
@@ -893,26 +1060,20 @@ function handleMediaUpload(event) {
   margin: 0 0 12px;
   font-size: clamp(2rem, 3vw, 2.6rem);
   line-height: 1.2;
-  color: var(--text);
   font-weight: 700;
+  color: var(--text);
 }
 
-.hero-text p {
-  margin: 0;
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
-  color: var(--muted);
+.hero-text h1 .hero-accent-primary {
+  color: var(--color-primary);
 }
 
-.delibois-hero {
-  background:
-    radial-gradient(circle at right top, rgba(255, 138, 44, 0.35), transparent 48%),
-    linear-gradient(145deg, #151a23 0%, #0f131a 100%);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 24px;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 18px;
+.hero-text h1 .hero-accent-white {
+  color: var(--text);
+}
+
+.hero-accent-team {
+  color: var(--color-secondary);
 }
 
 .eyebrow {
@@ -1338,7 +1499,8 @@ function handleMediaUpload(event) {
 
 .pictorial-card img {
   width: 100%;
-  height: 190px;
+  height: auto;
+  max-height: 220px;
   object-fit: cover;
   display: block;
 }
@@ -1446,6 +1608,13 @@ function handleMediaUpload(event) {
   gap: 8px;
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .checkbox-line input {
@@ -1703,9 +1872,140 @@ function handleMediaUpload(event) {
   background: rgba(255, 122, 24, 0.05);
 }
 
-.tab-btn.active {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
+  .tab-btn.disabled,
+  .tab-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    color: var(--muted);
+    background: transparent;
+  }
+
+.tab-hint {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.tab-btn.active-primary,
+.tab-btn.active-secondary {
+  border-bottom-color: currentColor;
+  color: currentColor;
+}
+
+.tab-btn.active-primary {
+  color: var(--color-primary);
+}
+
+.tab-btn.active-secondary {
+  color: var(--color-secondary);
+}
+
+.tab-btn.active-primary .tab-number,
+.tab-btn.active-secondary .tab-number {
+  background: currentColor;
+  border-color: currentColor;
+  color: #0f1218;
+}
+
+  /* Hero highlights (desktop defaults) */
+  .hero-highlights {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .hero-highlights > * {
+    flex: 1 1 0;
+    min-width: 260px;
+    box-sizing: border-box;
+  }
+
+  /* Column proportions for desktop: intro / main / pictorials */
+  .hero-highlights-intro {
+    flex: 0 0 28%;
+    padding: 18px;
+  }
+
+  .hero-highlights-main {
+    flex: 0 0 44%;
+    display: grid;
+    gap: 16px;
+  }
+
+  .hero-highlights-pictorials-wrap {
+    flex: 0 0 28%;
+  }
+
+  .card-wrapper {
+    background: var(--soft-panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    min-height: 100%;
+  }
+
+  .service-highlight-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+    align-items: stretch;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .service-highlight-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .service-card,
+  .trust-card {
+    background: var(--soft-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 200px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    color: var(--text);
+  }
+
+  .service-icon {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 138, 44, 0.12);
+    border-radius: 14px;
+    font-size: 1.2rem;
+  }
+
+  .service-card h3,
+  .trust-card strong {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .service-card p,
+  .trust-card p {
+    color: var(--muted);
+    margin: 0;
+  }
+
+.tab-number {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  color: var(--muted);
 }
 
 .tab-number {
@@ -1721,7 +2021,8 @@ function handleMediaUpload(event) {
   font-weight: 700;
 }
 
-.tab-btn.active .tab-number {
+.tab-btn.active-primary .tab-number,
+.tab-btn.active-secondary .tab-number {
   background: var(--accent);
   border-color: var(--accent);
   color: #0f1218;
@@ -1826,6 +2127,193 @@ function handleMediaUpload(event) {
 
   .hero-text h1 {
     margin-bottom: 8px;
+  }
+
+  .hero-highlights {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .hero-highlights > * {
+    flex: 1 1 0;
+    min-width: 260px;
+    box-sizing: border-box;
+  }
+
+  /* Column proportions for desktop: intro / main / pictorials */
+  .hero-highlights-intro {
+    flex: 0 0 28%;
+  }
+
+  .hero-highlights-main {
+    flex: 0 0 44%;
+  }
+
+  .hero-highlights-pictorials-wrap {
+    flex: 0 0 28%;
+  }
+
+  .hero-highlights-intro {
+    padding: 18px;
+  }
+
+  .hero-highlights-main {
+    display: grid;
+    gap: 16px;
+  }
+
+  .card-wrapper {
+    background: var(--soft-panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    min-height: 100%;
+  }
+
+  .service-highlight-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+    align-items: stretch;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .service-highlight-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trust-cards {
+    display: grid;
+    gap: 10px;
+  }
+
+  .service-card,
+  .trust-card {
+    background: var(--soft-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 200px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    color: var(--text);
+  }
+
+  .service-icon {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 138, 44, 0.12);
+    border-radius: 14px;
+    font-size: 1.2rem;
+  }
+
+  .service-card h3,
+  .trust-card strong {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .service-card p,
+  .trust-card p {
+    color: var(--muted);
+    margin: 0;
+  }
+
+  @media (min-width: 980px) {
+    .service-highlight-grid {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .service-card {
+      flex: 0 0 calc(50% - 12px);
+      min-width: 180px;
+    }
+  }
+
+  .hero-highlights-pictorials-wrap {
+    margin-top: 8px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .hero-highlights-pictorials-wrap h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+    color: var(--text);
+  }
+
+  .hero-highlights-pictorials-wrap p {
+    margin: 0 0 16px;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+
+  .hero-highlights-pictorials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .highlight-pictorial {
+    display: grid;
+    gap: 10px;
+    background: var(--soft-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .highlight-pictorial img {
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .highlight-pictorial h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .highlight-pictorial p {
+    margin: 0;
+    padding: 0 14px 16px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .trust-highlight-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .trust-heading h2 {
+    margin: 0 0 8px;
+    font-size: 1.18rem;
+  }
+
+  .trust-heading p {
+    margin: 0;
+    color: var(--muted);
   }
 
   .zone-grid,

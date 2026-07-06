@@ -22,7 +22,7 @@
 
       <section class="hero" aria-hidden="false">
         <div class="hero-text">
-          <h1>Our Certified O!clok Doctors</h1>
+          <h1>Our Certified <span class="hero-accent-primary">O!clok</span> <span class="hero-accent-secondary">Doctors</span></h1>
           <p>Available remotely at your convenience</p>
         </div>
       </section>

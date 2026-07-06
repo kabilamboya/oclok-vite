@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- NavBar with Cart Button -->
-    <NavBar :cartCount="cart.length" @open-cart="cartOpen = true" />
+    <NavBar v-if="showShell" :cartCount="cart.length" @open-cart="cartOpen = true" />
 
     <!-- Router pages render here -->
     <router-view :cart="cart" @add-to-cart="addToCart" />
@@ -16,9 +16,9 @@
       @remove="removeFromCart"
       @checkout="goToCheckout"
     />
-    <FloatingChatbot/>
+    <FloatingChatbot v-if="showShell" />
     
-    <Footer />
+    <Footer v-if="showShell" />
   </div>
 </template>
 
@@ -45,6 +45,11 @@ export default {
       cart: [],
       cartOpen: false
     };
+  },
+  computed: {
+    showShell() {
+      return this.$route.name !== "NotFound";
+    }
   },
   mounted() {
     this.syncCartFromStorage();

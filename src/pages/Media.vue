@@ -29,7 +29,7 @@
       </section>
 
       <section class="media-intro">
-        <h1>Media Hub</h1>
+        <h1><span class="hero-accent-primary">Media</span> Hub</h1>
         <p>
           Explore our tech podcasts, blogs, and digital media services.
           We blend storytelling with technology to amplify your voice.
