@@ -95,9 +95,9 @@ const whatsappNumber = "254732379292"; // WhatsApp international format
 const phoneDisplay = "+254 0732379292"; // Display format for call/booking
 const orderTypes = [
   "Parcel pick-up",
-  "Grocery shopping",
+  "Grocery/household shopping",
   "Supermarket shopping",
-  "Household shopping",
+  "Parcel drop-off",
   "Wait-for service",
   "Office errands",
   "B2B deliveries",
@@ -321,30 +321,52 @@ function openWhatsAppMessage(message) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
+function formatFileSize(bytes) {
+  if (!bytes || bytes < 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  let i = 0;
+  let value = Number(bytes);
+  while (value >= 1024 && i < units.length - 1) {
+    value /= 1024;
+    i += 1;
+  }
+  return `${value.toFixed(1)} ${units[i]}`;
+}
+
 function buildOrderWhatsAppMessage(payload) {
   const recipientName = payload.sameAsCustomer ? payload.customerName : payload.recipientName;
   const recipientPhone = payload.sameAsCustomer ? payload.phone : payload.recipientPhone;
+  const mediaSize = payload.itemDetails?.mediaFileSize ? formatFileSize(payload.itemDetails.mediaFileSize) : "-";
+  const mediaPreview = payload.itemDetails?.mediaPreviewAvailable ? "Yes" : "No";
+
   return [
     "Delibois Order Request",
-    `Name: ${payload.customerName || "-"}`,
-    `Phone: ${payload.phone || "-"}`,
-    `Email: ${payload.email || "-"}`,
+    "--- Sender ---",
+    `Sender name: ${payload.customerName || "-"}`,
+    `Sender phone: ${payload.phone || "-"}`,
+    `Sender email: ${payload.email || "-"}`,
+    "--- Recipient ---",
+    `Recipient name: ${recipientName || "-"}`,
+    `Recipient phone: ${recipientPhone || "-"}`,
+    "--- Delivery ---",
     `Estate: ${payload.estate || "-"}`,
-    `Order Type: ${payload.orderType || "-"}`,
-    `Delivery Cost: ${payload.deliveryCost || "-"}`,
-    `Recipient Name: ${recipientName || "-"}`,
-    `Recipient Phone: ${recipientPhone || "-"}`,
+    `Order type: ${payload.orderType || "-"}`,
+    `Delivery cost: ${payload.deliveryCost || "-"}`,
     `Pickup: ${payload.pickup || "-"}`,
     `Drop-off: ${payload.dropoff || "-"}`,
-    `Preferred Time: ${payload.preferredTime || "-"}`,
+    `Preferred time: ${payload.preferredTime || "-"}`,
     `Urgent: ${payload.urgent ? "Yes" : "No"}`,
-    `Item title: ${payload.itemDetails?.title || "-"}`,
-    `Item description: ${payload.itemDetails?.description || "-"}`,
-    `Item instructions: ${payload.itemDetails?.instructions || "-"}`,
+    "--- Item ---",
+    `Title: ${payload.itemDetails?.title || "-"}`,
+    `Description: ${payload.itemDetails?.description || "-"}`,
+    `Instructions: ${payload.itemDetails?.instructions || "-"}`,
     `Fragile / delicate: ${payload.itemDetails?.fragile || "No"}`,
     `Media type: ${payload.itemDetails?.mediaType || "none"}`,
     `Media file: ${payload.itemDetails?.mediaFileName || "none"}`,
-    `Notes: ${payload.notes || "-"}`,
+    `Media size: ${mediaSize}`,
+    `Media preview included: ${mediaPreview}`,
+    "--- Notes ---",
+    `${payload.notes || "-"}`,
   ].join("\n");
 }
 
@@ -407,14 +429,11 @@ async function submitOrder() {
       instructions: orderItemDetails.value.instructions,
       mediaType: orderItemDetails.value.mediaType || "none",
       mediaFileName: orderItemDetails.value.imageFile?.name || orderItemDetails.value.videoFile?.name || "",
+      mediaFileSize: orderItemDetails.value.imageFile?.size || orderItemDetails.value.videoFile?.size || 0,
+      mediaPreviewAvailable: Boolean(orderItemDetails.value.imageFile || orderItemDetails.value.videoFile),
       fragile: orderItemDetails.value.fragile ? "Yes" : "No",
     },
   }; // Capture form data before clearing
-
-  let whatsappWindow = null;
-  if (typeof window !== "undefined") {
-    whatsappWindow = window.open("about:blank", "_blank", "noopener,noreferrer");
-  }
 
   try {
     const response = await createDeliboisOrder(orderForm.value);
@@ -432,20 +451,23 @@ async function submitOrder() {
     };
     orderErrors.value = {};
     orderForm.value = createDefaultOrderForm();
+    orderItemDetails.value = {
+      show: false,
+      title: "",
+      image: "",
+      imageFile: null,
+      videoFile: null,
+      mediaType: null,
+      description: "",
+      instructions: "",
+      fragile: false,
+    };
 
     const message = buildOrderWhatsAppMessage(snapshot);
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    if (whatsappWindow && !whatsappWindow.closed) {
-      whatsappWindow.location.href = url;
-    } else {
-      openWhatsAppMessage(message);
-    }
+    openWhatsAppMessage(message);
 
     return true;
   } catch (error) {
-    if (whatsappWindow && !whatsappWindow.closed) {
-      whatsappWindow.close();
-    }
     orderFeedback.value = {
       type: "error",
       message:
@@ -719,9 +741,12 @@ function handleMediaUpload(event) {
       </article>
     </section>
 
+    <h3>See how our local errands come together</h3>
+
     <section class="pictorials">
+      <h3>See how our local errands come together</h3>
       <div class="section-head">
-        <h2>Smart Delibois</h2>
+        <h2>Using Smart Delibois</h2>
         <p>Smart Delibois technology used to execute errands and delivery flow.</p>
       </div>
       <div class="pictorial-grid">
