@@ -1,6 +1,28 @@
 <template>
   <div class="products-page">
 
+    <header class="store-intro">
+      <p class="eyebrow">O!clok marketplace</p>
+      <h1>Learn, build, and wear your ideas.</h1>
+      <p>Shop practical learning content, stationery, trusted tutors, smart electronics, and O!clok branded essentials.</p>
+    </header>
+
+    <nav class="category-chips" aria-label="Shop by category">
+      <button class="category-chip" :class="{ active: selectedCategory === '' }" type="button" @click="selectCategory('')">
+        Everything
+      </button>
+      <button
+        v-for="category in categories"
+        :key="category"
+        class="category-chip"
+        :class="{ active: selectedCategory === category }"
+        type="button"
+        @click="selectCategory(category)"
+      >
+        {{ category }}
+      </button>
+    </nav>
+
     <div class="filters" role="search" aria-label="Product filters">
       <div class="search-wrapper">
         <input
@@ -149,6 +171,11 @@ export default {
       currentPage.value = 1;
     };
 
+    const selectCategory = (category) => {
+      selectedCategory.value = category;
+      currentPage.value = 1;
+    };
+
     const addToCart = (product) => {
       cart.value = addProductToCart(cart.value, product);
       persistCart(cart.value, `${product?.name || "Item"} added to cart`);
@@ -213,6 +240,7 @@ export default {
       normalizeProduct,
       goToProduct,
       onFilterChange,
+      selectCategory,
       addToCart,
       saveCart,
       increaseQty,
@@ -225,6 +253,62 @@ export default {
 </script>
 
 <style scoped>
+.store-intro {
+  max-width: 760px;
+  margin: 28px auto 8px;
+  padding: 32px 24px 20px;
+  text-align: center;
+}
+
+.store-intro .eyebrow {
+  margin: 0 0 8px;
+  color: #ff6600;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.store-intro h1 {
+  margin: 0;
+  color: #111827;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  line-height: 1;
+}
+
+.store-intro > p:last-child {
+  max-width: 590px;
+  margin: 18px auto 0;
+  color: #5b6472;
+  line-height: 1.6;
+}
+
+.category-chips {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 20px 4px;
+  flex-wrap: wrap;
+}
+
+.category-chip {
+  border: 1px solid #d7dce3;
+  border-radius: 999px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 9px 14px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.category-chip:hover,
+.category-chip.active {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+}
+
 .hero {
   padding: 48px 20px;
   text-align: center;
