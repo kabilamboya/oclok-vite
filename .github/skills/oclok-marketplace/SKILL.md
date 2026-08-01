@@ -8,7 +8,7 @@ argument-hint: "Describe the marketplace product, category, or store workflow to
 
 ## Purpose
 
-Keep the O!clok store coherent as it grows from a smart-electronics catalog into a marketplace for learning, services, stationery, electronics, and branded apparel.
+Keep the O!clok store coherent as it grows from a smart-electronics catalog into a marketplace for learning, media, services, stationery, electronics, and branded apparel.
 
 ## Store Surfaces
 
@@ -25,6 +25,7 @@ Keep the O!clok store coherent as it grows from a smart-electronics catalog into
 Use clear, customer-facing categories. Current marketplace groups include:
 
 - `Learning Videos` for courses, tutorials, and other digital learning content
+- `Audio` for downloadable podcasts, audio lessons, and audio collections
 - `Stationery` for notebooks, study kits, writing tools, and project supplies
 - `Tutors` for bookable educational or technical sessions
 - Existing smart-electronics categories such as `Smart Home`, `Sounds`, `Accessories`, `Watches`, `Safety`, `Sensors`, and `Security`
@@ -42,7 +43,7 @@ Every product in `src/data/products.json` should include:
 - `brand`, `model`, `weight`, `dimensions`, and `warranty`
 - `specs`, `howToUse`, `dos`, and `donts` arrays
 
-Use numeric prices in Kenyan shillings. Keep descriptions specific about what the customer receives. For digital products, describe access and lesson format. For tutors, describe session length and delivery method. For clothing, include sizes, material, care, and exchange information.
+Use numeric prices in Kenyan shillings. Keep descriptions specific about what the customer receives. For digital products, describe access and lesson format. For audio/video downloads, add `mediaType` (`audio` or `video`) and a `downloadUrl` only when the file exists under `public/media/` or is served by a real backend. For tutors, describe session length and delivery method. For clothing, include sizes, material, care, and exchange information.
 
 ## Adding A Product
 
@@ -52,6 +53,7 @@ Use numeric prices in Kenyan shillings. Keep descriptions specific about what th
 4. Confirm the item works with the existing product listing, detail route, cart, and checkout without special-case code.
 5. Add special UI logic only when the product type genuinely needs behavior that generic products cannot provide.
 6. For clothing, expose size selection requirements clearly before payment. For tutor services, make scheduling or contact requirements clear. For digital content, do not imply instant access unless delivery is implemented.
+7. For downloadable media, keep the download action behind registered-user state. Never treat a public YouTube embed as a downloadable file. Upload the actual file before adding or enabling `downloadUrl`.
 
 ## Store UI Guidelines
 
@@ -60,6 +62,7 @@ Use numeric prices in Kenyan shillings. Keep descriptions specific about what th
 - Keep product cards scannable: name, category, price, image, and concise description.
 - Use accessible labels for search, category controls, cart actions, and product images.
 - Do not break `/products/:id`, cart persistence, or checkout navigation.
+- Registered-user download gating currently uses `src/services/auth.service.js`; it is suitable for this frontend demo, not production authorization.
 - Avoid hardcoding a category list in multiple places when it can be derived from product data.
 
 ## Validation
@@ -75,4 +78,4 @@ For catalog-only changes, also verify that the JSON parses and that all product 
 
 ## Boundaries
 
-This skill guides the storefront and catalog. Do not invent payment processing, digital-content access control, tutor availability, stock management, or delivery promises without an implementation or an explicit product requirement.
+This skill guides the storefront and catalog. Do not invent payment processing, production digital-content authorization, tutor availability, stock management, or delivery promises without an implementation or an explicit product requirement. Production downloads must be protected by server-side authentication and signed or authorized URLs.

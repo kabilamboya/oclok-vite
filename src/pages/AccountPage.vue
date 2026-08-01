@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { registerUser } from "../services/auth.service";
+
 export default {
   name: "CreateAccount",
   data() {
@@ -46,6 +48,7 @@ export default {
         alert("Passwords do not match!");
         return;
       }
+      registerUser(this.form);
       alert(`Account created for ${this.form.name} (${this.form.email})`);
       this.$router.push("/products"); // redirect after creation
     }

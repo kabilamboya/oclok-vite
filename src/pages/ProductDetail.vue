@@ -41,7 +41,10 @@
         <!-- Buttons -->
         <div class="actions">
           <button class="buy-btn" @click="CartModal">🛒 Add to Cart</button>
-          <button class="account-btn" @click="$router.push('/account')">👤 Create Account</button>
+          <button v-if="isMediaProduct && !registeredUser" class="account-btn" @click="$router.push('/account')">👤 Register to Download</button>
+          <button v-else-if="isMediaProduct && product.downloadUrl" class="download-btn" @click="downloadMedia">⬇ Download Media</button>
+          <span v-else-if="isMediaProduct" class="media-status">Download will be available after the media file is uploaded.</span>
+          <button v-else class="account-btn" @click="$router.push('/account')">👤 Create Account</button>
           <button class="contact-btn" @click="contactSupplier">📞 Contact Supplier</button>
         </div>
       </div>
@@ -100,6 +103,7 @@
 <script>
 import productsData from "../data/products.json";
 import { addProductToCart, persistCart, readCart } from "../services/cart.service";
+import { getRegisteredUser } from "../services/auth.service";
 
 export default {
   props: ["id"],
@@ -109,6 +113,7 @@ export default {
       products: [],
       product: null,
       activeImage: null,
+      registeredUser: null,
       defaultUsage: [
         "Unbox the product carefully.",
         "Follow included manual instructions.",
@@ -135,6 +140,7 @@ export default {
   },
 
   created() {
+    this.registeredUser = getRegisteredUser();
     this.products = (productsData || []).map((product) => this.normalizeProduct(product));
     this.loadProduct();
   },
@@ -179,6 +185,24 @@ export default {
 
       const cart = addProductToCart(readCart(), this.product);
       persistCart(cart, `${this.product.name} added to cart`);
+    },
+
+    downloadMedia() {
+      if (!this.product?.downloadUrl || !this.registeredUser) return;
+      const link = document.createElement("a");
+      link.href = this.product.downloadUrl;
+      link.download = "";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    },
+  },
+
+  computed: {
+    isMediaProduct() {
+      return this.product?.mediaType === "audio" || this.product?.mediaType === "video";
     },
   },
 };
@@ -340,6 +364,22 @@ export default {
 .account-btn:hover {
   background: var(--surface-dark);
   transform: translateY(-2px);
+}
+
+.download-btn {
+  background: #16803c;
+  color: #fff;
+}
+
+.download-btn:hover {
+  background: #11632f;
+  transform: translateY(-2px);
+}
+
+.media-status {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 /* Tertiary */

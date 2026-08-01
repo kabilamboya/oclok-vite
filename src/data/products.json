@@ -2046,5 +2046,43 @@
         "howToUse": ["Select your size at checkout", "Wash inside out on a gentle cycle"],
         "dos": ["Follow the care label"],
         "donts": ["Do not bleach", "Do not tumble dry on high heat"]
+    },
+    {
+        "id": 207,
+        "name": "O!clok Tech Stories Audio Collection",
+        "price": 900,
+        "description": "A downloadable audio collection of conversations about technology, creativity, and building in Africa.",
+        "image": "/images/BiGmage.jpg",
+        "category": "Audio",
+        "mediaType": "audio",
+        "downloadUrl": "/media/audio/oclok-tech-stories.zip",
+        "brand": "O!clok Media",
+        "model": "Audio collection",
+        "weight": "Digital download",
+        "dimensions": "6 audio episodes",
+        "warranty": "Registered-user access",
+        "specs": ["MP3 audio files", "Six curated episodes", "Downloadable ZIP archive"],
+        "howToUse": ["Complete checkout", "Register or sign in to your account", "Download the audio archive from this page"],
+        "dos": ["Keep a backup of your download", "Use headphones for the best experience"],
+        "donts": ["Do not redistribute the files", "Do not share your download link"]
+    },
+    {
+        "id": 208,
+        "name": "Digital Skills Video Masterclass",
+        "price": 2200,
+        "description": "A practical video masterclass covering digital skills, online safety, productivity, and creative tools.",
+        "image": "/images/dgtl.jpg",
+        "category": "Learning Videos",
+        "mediaType": "video",
+        "downloadUrl": "/media/video/digital-skills-masterclass.zip",
+        "brand": "O!clok Academy",
+        "model": "Video masterclass",
+        "weight": "Digital download",
+        "dimensions": "10 video lessons",
+        "warranty": "Registered-user access",
+        "specs": ["HD video lessons", "Downloadable worksheets", "Practical projects"],
+        "howToUse": ["Complete checkout", "Register or sign in to your account", "Download the masterclass from this page"],
+        "dos": ["Work through lessons in order", "Complete the included exercises"],
+        "donts": ["Do not redistribute the videos", "Do not share your download link"]
     }
 ]
