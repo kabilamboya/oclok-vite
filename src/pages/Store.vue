@@ -52,11 +52,27 @@
       @update:current-page="currentPage = $event"
     />
 
+    <button class="floating-cart" type="button" aria-label="Open shopping cart" @click="isCartOpen = true">
+      🛒 Cart
+      <span class="badge">{{ cartItemCount }}</span>
+    </button>
+
+    <CartModal
+      :cart="cart"
+      :is-open="isCartOpen"
+      @close="isCartOpen = false"
+      @increase="increaseQty"
+      @decrease="decreaseQty"
+      @remove="removeItem"
+      @checkout="goToCheckout"
+    />
+
   </div>
 </template>
 
 <script>
 import CardList from "../components/CardList.vue";
+import CartModal from "../components/CartModal.vue";
 import PaginationControls from "../components/PaginationControls.vue";
 import productsData from "../data/products.json";
 import { addProductToCart, persistCart, readCart } from "../services/cart.service";
@@ -64,7 +80,7 @@ import { computed, ref, watch } from "vue";
 
 export default {
   name: "ProductsPage",
-  components: { CardList, PaginationControls },
+  components: { CardList, PaginationControls, CartModal },
 
   setup() {
     const products = ref([]);
@@ -73,6 +89,7 @@ export default {
     const selectedCategory = ref("");
     const currentPage = ref(1);
     const cart = ref(readCart());
+    const isCartOpen = ref(false);
     const pageSize = 12;
 
     const categories = computed(() => {
@@ -93,6 +110,8 @@ export default {
     const totalPages = computed(() => {
       return Math.max(1, Math.ceil(filteredProducts.value.length / pageSize));
     });
+
+    const cartItemCount = computed(() => cart.value.reduce((total, item) => total + (Number(item.quantity) || 0), 0));
 
     const paginatedProducts = computed(() => {
       const start = (currentPage.value - 1) * pageSize;
@@ -184,6 +203,8 @@ export default {
       selectedCategory,
       currentPage,
       cart,
+      isCartOpen,
+      cartItemCount,
       pageSize,
       categories,
       filteredProducts,

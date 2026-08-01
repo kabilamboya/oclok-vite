@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     showShell() {
-      return this.$route.name !== "NotFound";
+      return this.$route.name !== "NotFound" && this.$route.name !== "AdminDashboard";
     }
   },
   mounted() {

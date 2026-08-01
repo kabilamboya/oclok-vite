@@ -2,6 +2,10 @@
 <template>
   <div class="dashboard-wrapper">
 
+    <div class="page-navigation">
+      <RouterLink to="/technicians" class="back-link">&larr; Technicians</RouterLink>
+    </div>
+
     <!-- HEADER -->
     <section class="dashboard-header">
       <h1>Hellen – Sales & Customer Engagement Assistant</h1>
@@ -275,14 +279,31 @@ function downloadPDF() {
 <style scoped>
 .dashboard-wrapper{
   max-width:1000px;
-  margin:auto;
-  padding:32px;
+  margin:0 auto;
+  padding:2rem clamp(1rem, 4vw, 2rem);
   background:var(--surface-alt);
-  font-family:Arial, Helvetica, sans-serif;
+  color:var(--text);
+  font-family:Manrope, Arial, Helvetica, sans-serif;
 }
 
 .dashboard-header h1{
-  font-size:28px;
+  font-size:clamp(2rem, 5vw, 3.4rem);
+  line-height:1.05;
+  letter-spacing:-.04em;
+}
+
+.page-navigation {
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  color:var(--text);
+  text-decoration:none;
+  font-weight:700;
+}
+
+.back-link:hover {
+  color:var(--color-secondary);
 }
 
 .employee-info{
@@ -293,8 +314,10 @@ function downloadPDF() {
 .profile-section{
   margin-top:25px;
   background:var(--surface);
-  padding:20px;
-  border-radius:10px;
+  padding:1.5rem;
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-sm);
 }
 
 .summary-grid{
@@ -306,9 +329,10 @@ function downloadPDF() {
 
 .summary-card{
   background:var(--surface);
-  padding:20px;
-  border-radius:12px;
+  padding:1.25rem;
+  border-radius:var(--radius-md);
   border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
 }
 
 .value{
@@ -350,9 +374,11 @@ function downloadPDF() {
 }
 
 .skills span{
-  background:#eef2ff;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text-muted);
   padding:6px 12px;
-  border-radius:6px;
+  border-radius:var(--radius-sm);
 }
 
 .list{
@@ -368,9 +394,11 @@ function downloadPDF() {
 .chart-box{
   flex:1;
   min-width:300px;
-  background:#fff;
+  background:var(--surface);
   padding:16px;
-  border-radius:10px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-sm);
 }
 
 .action-bar{
@@ -387,7 +415,7 @@ function downloadPDF() {
 }
 
 .btn.primary{
-  background:#0f62fe;
+  background:var(--color-primary);
   color:#fff;
 }
 

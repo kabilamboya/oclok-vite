@@ -32,23 +32,18 @@
         </nav>
       </div>
 
-      <!-- Cart -->
       <div class="nav-actions">
-        <div class="cart-wrap">
-          <div class="cart-icon" :class="{ pulse: cartPulse }" @click="openCart">
-            🛒
-            <span v-if="cartCount > 0" class="badge">{{ cartCount }}</span>
-            <span
-              v-if="showCartToast"
-              class="cart-toast"
-              role="status"
-              aria-live="polite"
-            >
-              {{ cartToastMessage }}
-            </span>
+        <div class="user-menu">
+          <button class="user-button" type="button" aria-label="Open user menu" :aria-expanded="isUserMenuOpen" @click="isUserMenuOpen = !isUserMenuOpen">
+            <span class="user-avatar" aria-hidden="true">👤</span>
+            <span class="user-label">Profile</span>
+            <span class="user-chevron">⌄</span>
+          </button>
+          <div v-if="isUserMenuOpen" class="user-dropdown">
+            <router-link :to="{ name: 'AccountPage' }" @click="closeUserMenu">User Profile</router-link>
+            <router-link :to="{ name: 'AdminDashboard' }" @click="closeUserMenu">Admin Dashboard</router-link>
           </div>
         </div>
-
       </div>
     </div>
   </header>
@@ -66,6 +61,7 @@ export default {
   data() {
     return {
       isMenuOpen: false,
+      isUserMenuOpen: false,
       showCartToast: false,
       cartToastMessage: "",
       cartPulse: false,
@@ -106,9 +102,10 @@ export default {
     closeMenu() {
       this.isMenuOpen = false;
     },
-    openCart() {
-      this.$emit("open-cart");
-    }
+    closeUserMenu() {
+      this.isUserMenuOpen = false;
+      this.closeMenu();
+    },
   }
 };
 
@@ -301,6 +298,66 @@ align-items:center;
 
 gap:20px;
 
+}
+
+.user-menu{
+  position:relative;
+}
+
+.user-button{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:var(--text-dark);
+  padding:5px 10px 5px 6px;
+  cursor:pointer;
+  font:600 .78rem Arial, sans-serif;
+}
+
+.user-avatar{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--color-primary);
+  color:white;
+  font-size:.75rem;
+}
+
+.user-chevron{
+  color:var(--text-muted-dark);
+  font-size:1rem;
+}
+
+.user-dropdown{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  min-width:175px;
+  display:grid;
+  padding:7px;
+  border:1px solid var(--border-dark);
+  border-radius:var(--radius-sm);
+  background:var(--surface-dark);
+  box-shadow:var(--shadow-md);
+  z-index:10001;
+}
+
+.user-dropdown a{
+  padding:9px 10px;
+  border-radius:6px;
+  color:var(--text-dark);
+  text-decoration:none;
+  font-size:.8rem;
+}
+
+.user-dropdown a:hover{
+  background:var(--surface-dark-alt);
+  color:var(--color-primary);
 }
 
 .cart-wrap{
@@ -515,6 +572,14 @@ order:0;
 
 margin-left:auto;
 
+}
+
+.user-label{
+  display:none;
+}
+
+.user-button{
+  padding-right:7px;
 }
 
 }

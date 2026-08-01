@@ -303,6 +303,7 @@
 <script>
 import { Chart, registerables } from "chart.js";
 import techniciansData from "../data/technicians.json";
+import { applyProfileOverride } from "../services/userProfiles.service";
 
 Chart.register(...registerables);
 
@@ -394,7 +395,7 @@ export default {
       return;
     }
 
-    this.technician = this.normalizeTechnician(found);
+    this.technician = this.normalizeTechnician(applyProfileOverride(found));
     this.computeAverageRating();
     this.reviewCount = this.technician.reviews.length;
     this.saved = this.readSavedState(this.technician.id);
@@ -611,11 +612,12 @@ export default {
 
 /* Page layout */
 .technician-detail {
-  max-width: 1100px;
-  margin: 28px auto;
-  padding: 18px;
-  color: var(--primary);
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2rem);
+  color: var(--text);
+  background: var(--surface-alt);
+  font-family: Manrope, Arial, sans-serif;
 }
 
 /* Top row */
@@ -674,10 +676,11 @@ export default {
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 22px;
-  background: var(--card);
+  background: var(--surface);
   padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   align-items: center;
   margin-bottom: 20px;
 }
@@ -731,7 +734,7 @@ export default {
 .social { padding:6px 9px; border-radius:8px; text-decoration:none; border:1px solid rgba(0,0,0,0.06); font-weight:600; }
 
 /* Ratings card */
-.ratings-card { background:var(--card); padding:18px; margin:18px 0; border-radius:var(--radius); box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
+.ratings-card { background:var(--surface); padding:18px; margin:18px 0; border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:var(--shadow-sm); }
 .section-title { margin:0 0 12px 0; font-size:1.05rem; font-weight:800; }
 .ratings-grid { display:flex; flex-direction:column; gap:12px; }
 .rating-row { display:flex; gap:12px; align-items:center; }
@@ -746,11 +749,11 @@ export default {
 .ratings-footer { display:flex; justify-content:space-between; color:var(--muted); margin-top:12px; font-size:0.9rem; }
 
 /* Dashboard Chart */
-.dashboard-card { background:var(--card); padding:18px; border-radius:var(--radius); margin-bottom:18px; box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
+.dashboard-card { background:var(--surface); padding:18px; border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:18px; box-shadow:var(--shadow-sm); }
 .chart-wrap { height:180px; position:relative; }
 
 /* Projects area */
-.projects-card { background:var(--card); padding:18px; border-radius:var(--radius); margin-bottom:18px; box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
+.projects-card { background:var(--surface); padding:18px; border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:18px; box-shadow:var(--shadow-sm); }
 .tabs { display:flex; gap:8px; margin-bottom:12px; }
 .tab { background:transparent; border:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; color:var(--muted); }
 .tab.active { background:rgba(0,0,0,0.04); color:var(--primary); }
@@ -762,14 +765,14 @@ export default {
 .completed-list li { padding:8px 0; border-bottom:1px dashed rgba(0,0,0,0.03); color:var(--muted); }
 
 /* Partner card */
-.partner-card { background:var(--card); padding:16px; border-radius:var(--radius); box-shadow: 0 6px 20px rgba(16,24,40,0.04); margin:18px 0; }
+.partner-card { background:var(--surface); padding:16px; border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:var(--shadow-sm); margin:18px 0; }
 .partner-stats { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
 .partner-row { display:flex; justify-content:space-between; color:var(--muted); }
 .partner-actions { display:flex; gap:8px; align-items:center; }
 .partner-badge { background: rgba(96,165,250,0.12); padding:8px 12px; border-radius:999px; color:#075985; font-weight:700; }
 
 /* Reviews */
-.reviews-card { background:var(--card); padding:18px; border-radius:var(--radius); margin-bottom:18px; box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
+.reviews-card { background:var(--surface); padding:18px; border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:18px; box-shadow:var(--shadow-sm); }
 .review-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; }
 .review-item { border-left:4px solid rgba(0,0,0,0.04); padding:12px; background:#fff; border-radius:8px; }
 .rev-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
