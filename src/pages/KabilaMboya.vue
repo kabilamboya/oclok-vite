@@ -1,478 +1,94 @@
 <template>
-  <main class="kabila-page">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <RouterLink to="/technicians" class="back-link">Back to Technicians</RouterLink>
-    </div>
-
-    <!-- Hero Section -->
-    <section id="about" class="hero-card">
-      <img :src="profileImage" alt="Kabila Mboya" class="profile-image" />
-      <div>
-        <h1>Kabila Mboya</h1>
-        <p class="role">QA Lead | Automation Engineer | Building Reliable Software Systems</p>
-        <p>
-          Leading testing initiatives, building automation frameworks, and ensuring reliable, scalable
-          software delivery across frontend and backend systems for O!clok operations.
-        </p>
+  <main class="kabila-page" :class="{ 'is-dark': isDarkMode }">
+    <header class="site-header">
+      <RouterLink to="/technicians" class="back-link">&larr; Technicians</RouterLink>
+      <div class="header-actions">
+        <a href="https://linkedin.com/in/kabilamboya" target="_blank" rel="noopener noreferrer" class="header-link">LinkedIn</a>
+        <button class="theme-toggle" type="button" :aria-label="isDarkMode ? 'Use light mode' : 'Use dark mode'" @click="toggleTheme">{{ isDarkMode ? 'Light' : 'Dark' }}</button>
       </div>
-    </section>
+    </header>
 
-    <!-- Quick Nav -->
-    <nav class="quick-nav">
-      <a v-for="item in navItems" :key="item.id" :href="`#${item.id}`">{{ item.label }}</a>
-    </nav>
-
-    <!-- Skills Section -->
-    <section id="skills" class="card">
-      <h2>Core Competencies & QA Focus</h2>
-      <div class="skill-list">
-        <div v-for="skill in skills" :key="skill.name" class="skill-item">
-          <div class="skill-head">
-            <span>{{ skill.name }}</span>
-            <span>{{ skill.level }}%</span>
-          </div>
-          <div class="meter">
-            <div class="meter-fill" :style="{ width: `${skill.level}%` }"></div>
-          </div>
-          <p v-if="skill.qaNotes" class="skill-note">{{ skill.qaNotes }}</p>
+    <section id="about" class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow">Software quality, by design</p>
+        <h1>Kabila<br /><span>Mboya</span></h1>
+        <p class="role">QA Automation Engineer <b>&bull;</b> QA Lead <b>&bull;</b> Software Quality Advocate</p>
+        <p class="hero-intro">I build reliable software by combining strategic quality assurance, test automation, and engineering best practices. My focus is helping teams ship faster with confidence.</p>
+        <div class="hero-actions">
+          <button class="button button-primary" type="button" @click="downloadCv">Download CV <span>&darr;</span></button>
+          <a class="button button-outline" href="mailto:kabilamboya@gmail.com">Contact Me <span>&rarr;</span></a>
+          <a class="text-link" href="#projects">View Projects &rarr;</a>
         </div>
       </div>
+      <div class="hero-visual"><div class="image-frame"><img :src="profileImage" alt="Portrait of Kabila Mboya" class="profile-image" /></div><div class="availability"><span></span> Open to meaningful opportunities</div></div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="card">
-      <h2>Key Projects & Automation Impact</h2>
-      <div class="project-columns">
-        <div>
-          <h3>Completed</h3>
-          <article v-for="project in completedProjects" :key="project.title" class="project-card">
-            <h4>{{ project.title }}</h4>
-            <p>{{ project.description }}</p>
-            <ul>
-              <li v-for="item in project.qaHighlights" :key="item">{{ item }}</li>
-            </ul>
-            <small>{{ project.time }}</small>
-          </article>
-        </div>
-        <div>
-          <h3>Ongoing</h3>
-          <article v-for="project in ongoingProjects" :key="project.title" class="project-card">
-            <h4>{{ project.title }}</h4>
-            <p>{{ project.description }}</p>
-            <ul>
-              <li v-for="item in project.qaHighlights" :key="item">{{ item }}</li>
-            </ul>
-            <small>{{ project.time }}</small>
-          </article>
-        </div>
-      </div>
-    </section>
+    <section class="stats section-shell" aria-label="Professional highlights"><div v-for="stat in stats" :key="stat.label" class="stat"><strong>{{ stat.value }}</strong><span>{{ stat.label }}</span></div></section>
+    <nav class="quick-nav" aria-label="Page sections"><a v-for="item in navItems" :key="item.id" :href="`#${item.id}`">{{ item.label }}</a></nav>
 
-    <!-- Certifications -->
-    <section id="certifications" class="card">
-      <h2>Certifications</h2>
-      <ul class="cert-list">
-        <li v-for="cert in certifications" :key="cert.title">
-          <h4>{{ cert.title }}</h4>
-          <p>{{ cert.description }}</p>
-        </li>
-      </ul>
-    </section>
+    <section id="summary" class="content-section section-shell summary-grid"><div><p class="section-kicker">01 / Perspective</p><h2>Quality is an<br /><em>engineering discipline.</em></h2></div><div class="summary-copy"><p>Rather than simply finding bugs, I help engineering teams prevent them.</p><p>My experience spans manual testing, API validation, automation framework development, regression strategy, and QA leadership. I enjoy designing maintainable automation solutions, improving development workflows, and mentoring teams to deliver reliable software at scale.</p><p class="pull-quote">Quality is not a testing phase. It is embedded throughout the software development lifecycle.</p></div></section>
 
-    <!-- Blogs Section -->
-    <section id="blogs" class="card">
-      <h2>Insights & Technical Writing</h2>
-      <div class="blog-carousel">
-        <img :src="currentBlog.image" :alt="currentBlog.title" class="blog-image" />
-        <div class="blog-content">
-          <h3>{{ currentBlog.title }}</h3>
-          <p>{{ currentBlog.description }}</p>
-          <ul>
-            <li v-for="point in currentBlog.qaTakeaways" :key="point">{{ point }}</li>
-          </ul>
-          <div class="blog-actions">
-            <button @click="prevBlog">Prev</button>
-            <button @click="nextBlog">Next</button>
-          </div>
-        </div>
-      </div>
-    </section>
+    <section id="experience" class="content-section section-shell"><div class="section-heading"><div><p class="section-kicker">02 / Experience</p><h2>How I create confidence</h2></div><span class="section-number">02</span></div><div class="timeline"><article v-for="role in experience" :key="role.title" class="timeline-item"><div class="timeline-marker"></div><div><p class="timeline-period">{{ role.period }}</p><h3>{{ role.title }}</h3><ul><li v-for="item in role.points" :key="item">{{ item }}</li></ul></div></article></div></section>
 
-    <!-- Chatbot -->
-    <section id="chat" class="chat-anchor"></section>
-    <div class="chatbot-container">
-      <div v-if="isChatOpen" class="chat-window">
-        <h4>Chat with Kabila</h4>
-        <p>Ask about testing, automation, or O!clok project workflows.</p>
-        <button class="chat-close" @click="isChatOpen = false">Close</button>
-      </div>
-      <button class="chat-toggle" @click="isChatOpen = !isChatOpen">Chat</button>
-    </div>
+    <section id="skills" class="content-section section-shell skills-section"><div class="section-heading"><div><p class="section-kicker">03 / Toolkit</p><h2>Tools I use to ship well</h2></div><span class="section-number">03</span></div><div class="skill-groups"><div v-for="group in skillGroups" :key="group.title" class="skill-group"><h3>{{ group.title }}</h3><div class="chip-list"><span v-for="skill in group.items" :key="skill" class="chip">{{ skill }}</span></div></div></div></section>
 
-    <!-- Footer -->
-    <footer class="page-footer">
-      <p>Kisumu, Kenya | kabilamboya@gmail.com</p>
-    </footer>
+    <section id="projects" class="content-section section-shell"><div class="section-heading"><div><p class="section-kicker">04 / Selected work</p><h2>Evidence over adjectives</h2></div><span class="section-number">04</span></div><div class="project-grid"><article v-for="project in projects" :key="project.title" class="project-card"><div class="project-topline"><span>{{ project.type }}</span><span>{{ project.index }}</span></div><h3>{{ project.title }}</h3><p>{{ project.description }}</p><ul><li v-for="highlight in project.highlights" :key="highlight">{{ highlight }}</li></ul><a :href="project.link" target="_blank" rel="noopener noreferrer" class="text-link">Explore project &rarr;</a></article></div></section>
+
+    <section id="writing" class="content-section section-shell writing-section"><div class="section-heading"><div><p class="section-kicker">05 / Technical writing</p><h2>Ideas from the field</h2></div><a href="https://linkedin.com/in/kabilamboya" target="_blank" rel="noopener noreferrer" class="text-link">All on LinkedIn &rarr;</a></div><p class="section-lede">I regularly write about test automation, software quality, AI in QA, engineering leadership, product thinking, and testing best practices.</p><div class="article-grid"><a v-for="post in posts" :key="post.id" :href="post.url" target="_blank" rel="noopener noreferrer" class="article-card"><img :src="post.image" :alt="post.title" /><div><p>{{ formatDate(post.date) }}</p><h3>{{ post.title }}</h3><span>Read article &rarr;</span></div></a><p v-if="posts.length === 0" class="empty-state">Latest articles will appear here soon.</p></div></section>
+
+    <section id="certifications" class="content-section section-shell certifications"><div class="section-heading"><div><p class="section-kicker">06 / Credentials</p><h2>Certifications</h2></div><span class="section-number">06</span></div><div class="cert-placeholder"><p>Credentials will be listed here as they are verified.</p><span>Provider &nbsp; / &nbsp; Year &nbsp; / &nbsp; Credential link</span></div></section>
+    <section id="contact" class="contact-section section-shell"><div><p class="section-kicker">Let&apos;s connect</p><h2>Build quality<br /><em>into the work.</em></h2></div><div><p>Interested in improving software quality, automation strategy, or engineering excellence? I&apos;d be happy to discuss opportunities, collaborations, or technical challenges.</p><div class="contact-links"><a href="mailto:kabilamboya@gmail.com">Email <span>kabilamboya@gmail.com</span></a><a href="tel:+254732379292">Phone <span>+254 732 379 292</span></a><a href="https://linkedin.com/in/kabilamboya" target="_blank" rel="noopener noreferrer">LinkedIn <span>Connect on LinkedIn</span></a><a href="https://wa.me/254732379292" target="_blank" rel="noopener noreferrer">WhatsApp <span>Start a conversation</span></a></div><button class="button button-light" type="button" @click="downloadCv">Download CV <span>&darr;</span></button></div></section>
+    <div class="chatbot-container"><div v-if="isChatOpen" class="chat-window"><h4>Chat with Kabila</h4><p>Ask about testing, automation, or product quality.</p><button class="chat-close" type="button" @click="isChatOpen = false">Close</button></div><button class="chat-toggle" type="button" aria-label="Open chat" @click="isChatOpen = !isChatOpen">Chat</button></div>
+    <footer class="page-footer section-shell"><span>Kabila Mboya / Kisumu, Kenya</span><a href="#about">Back to top &uarr;</a></footer>
   </main>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import profileImage from '../assets/images/Mboya.JPG';
-import blogImage1 from '../assets/images/BANNER001.jpg';
-import blogImage2 from '../assets/images/DRONE.jpg';
-import blogImage3 from '../assets/images/ROBOto.jpg';
 
-const navItems = [
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'certifications', label: 'Certifications' },
-  { id: 'blogs', label: 'Blogs' },
-  { id: 'chat', label: 'Chat' },
-];
-
-const skills = [
-  { name: 'Typing', level: 90, qaNotes: 'Fast and accurate test documentation' },
-  { name: 'CSS', level: 85, qaNotes: 'Pixel-perfect layouts & responsive verification' },
-  { name: 'React', level: 75, qaNotes: 'Component testing & state validation' },
-  { name: 'JavaScript', level: 80, qaNotes: 'Unit tests, data validation & automation scripts' },
-  { name: 'Playwright', level: 90, qaNotes: 'End-to-end browser testing automation' },
-  { name: 'Packet Tracer', level: 85, qaNotes: 'Network simulation & troubleshooting validation' },
-  { name: 'Illustrator', level: 75, qaNotes: 'Design QA for assets & branding accuracy' },
-  { name: 'Photoshop', level: 80, qaNotes: 'Visual validation for marketing & UI content' },
-];
-
-const completedProjects = [
-  {
-    title: 'Cyber Branding Frontend',
-    description: 'Built campaign-ready UI flows for O!clok cyber services with responsive page architecture.',
-    qaHighlights: [
-      'End-to-end automated UI tests with Playwright',
-      'Validation logic for forms & APIs',
-      'Regression checks for responsive layouts',
-    ],
-    time: '3 weeks',
-  },
-  {
-    title: 'Doctor Profile Dashboard',
-    description: 'Implemented profile metrics, projects chart, and communication actions for technician pages.',
-    qaHighlights: [
-      'Test cases for metric calculations',
-      'Cross-browser functional checks',
-      'CI/CD integration for automated deployment and testing',
-    ],
-    time: '2 weeks',
-  },
-];
-
-const ongoingProjects = [
-  {
-    title: 'Store Conversion Upgrade',
-    description: 'Improving product listing relevance, cart behavior, and fulfillment handoff visibility.',
-    qaHighlights: [
-      'Automated validation of cart & checkout workflows',
-      'Real-time metrics for product accuracy',
-    ],
-    time: 'In progress',
-  },
-  {
-    title: 'Automation Assistant Integrations',
-    description: 'Extending chatbot and WhatsApp-based service workflows for customer operations.',
-    qaHighlights: [
-      'End-to-end workflow automation tests',
-      'API validation & error handling strategies',
-    ],
-    time: 'Ongoing',
-  },
-];
-
-const certifications = [
-  {
-    title: 'Frontend Engineering Certificate',
-    description: 'Advanced UI architecture, performance optimization, and maintainable component systems.',
-  },
-  {
-    title: 'Network and Systems Fundamentals',
-    description: 'Structured networking, troubleshooting, and secure infrastructure basics.',
-  },
-  {
-    title: 'Digital Media Production',
-    description: 'Content strategy, visual systems, and multimedia campaign execution.',
-  },
-];
-
-const blogs = [
-  {
-    title: 'Building Practical Service Dashboards',
-    description: 'Structuring technician-facing interfaces for speed, trust, and accountability.',
-    qaTakeaways: [
-      'UI/UX validation scenarios',
-      'Test coverage for workflow accuracy',
-      'Automation strategy for real-time metrics',
-    ],
-    image: blogImage1,
-  },
-  {
-    title: 'Automation for Local Service Businesses',
-    description: 'Using bots and integrations to reduce response time and increase reliability.',
-    qaTakeaways: [
-      'End-to-end workflow testing',
-      'Validation of API & bot responses',
-      'Error handling & failover strategies',
-    ],
-    image: blogImage2,
-  },
-  {
-    title: 'Human-Centered Technical Design',
-    description: 'Balancing technical depth with usability in customer-facing products.',
-    qaTakeaways: [
-      'Usability testing insights',
-      'Accessibility compliance checks',
-      'Reliable interaction patterns',
-    ],
-    image: blogImage3,
-  },
-];
-
-const activeBlog = ref(0);
-const isChatOpen = ref(false);
-const currentBlog = computed(() => blogs[activeBlog.value]);
-
-const nextBlog = () => {
-  activeBlog.value = (activeBlog.value + 1) % blogs.length;
-};
-
-const prevBlog = () => {
-  activeBlog.value = (activeBlog.value - 1 + blogs.length) % blogs.length;
-};
+const navItems = [{ id: 'summary', label: 'Perspective' }, { id: 'experience', label: 'Experience' }, { id: 'skills', label: 'Toolkit' }, { id: 'projects', label: 'Work' }, { id: 'writing', label: 'Writing' }, { id: 'contact', label: 'Contact' }];
+const stats = [{ value: '3+', label: 'Years in software quality' }, { value: 'UI + API', label: 'Automation coverage' }, { value: 'QA Lead', label: 'Agile team leadership' }, { value: 'Kenya', label: 'Based in Kisumu' }];
+const experience = [{ title: 'QA Lead', period: 'Current role', points: ['Lead testing activities across multiple product modules.', 'Coordinate release quality with developers and product managers.', 'Define QA strategies and regression plans.', 'Mentor QA engineers and improve delivery confidence.'] }, { title: 'QA Automation Engineer', period: 'Previous experience', points: ['Built Playwright automation suites for UI and API workflows.', 'Reduced repetitive regression testing with reusable utilities.', 'Performed exploratory and risk-based testing across product surfaces.'] }];
+const skillGroups = [{ title: 'Automation & delivery', items: ['Playwright', 'TypeScript', 'JavaScript', 'Node.js', 'API Testing', 'REST APIs', 'Swagger', 'Postman', 'Azure DevOps', 'Git', 'CI/CD'] }, { title: 'Testing practice', items: ['Manual Testing', 'Regression', 'Smoke', 'Sanity', 'Integration', 'System', 'Cross-browser', 'Accessibility', 'Performance Awareness'] }, { title: 'Development', items: ['Vue', 'React', 'HTML', 'CSS', 'SQL', 'Supabase'] }];
+const projects = [{ index: '01', type: 'Automation framework', title: 'CRM Test Automation Framework', description: 'Reusable Playwright utilities for complex business workflows, reducing maintenance effort while improving execution stability.', highlights: ['Reusable page objects', 'API integration', 'Stable selectors', 'CI execution', 'Regression automation'], link: 'https://github.com/' }, { index: '02', type: 'Product quality', title: 'QA Leadership', description: 'Led sprint testing activities by coordinating manual and automation efforts, prioritizing release quality, and improving communication between engineering teams.', highlights: ['Sprint test planning', 'Risk-based prioritization', 'Release readiness', 'Team mentoring'], link: '#contact' }, { index: '03', type: 'Product engineering', title: 'Portfolio & Business Platforms', description: 'Designed and built platforms supporting branding, e-commerce, and business operations while applying quality engineering principles throughout development.', highlights: ['Responsive product flows', 'Quality-led delivery', 'Operational workflows'], link: '/' }];
+const posts = ref([]); const isDarkMode = ref(false); const isChatOpen = ref(false);
+onMounted(async () => {
+  document.title = 'Kabila Mboya | QA Automation Engineer';
+  const description = 'Kabila Mboya is a QA Automation Engineer and QA Lead specializing in Playwright, TypeScript, API testing, and software quality.';
+  let metaDescription = document.querySelector('meta[name="description"]');
+  if (!metaDescription) {
+    metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    document.head.appendChild(metaDescription);
+  }
+  metaDescription.content = description;
+  isDarkMode.value = localStorage.getItem('kabila-theme') === 'dark';
+  try { const response = await fetch('/linkedin-posts.json'); if (response.ok) posts.value = await response.json(); } catch (error) { posts.value = []; }
+});
+const toggleTheme = () => { isDarkMode.value = !isDarkMode.value; localStorage.setItem('kabila-theme', isDarkMode.value ? 'dark' : 'light'); };
+const downloadCv = () => window.print();
+const formatDate = (date) => new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric' }).format(new Date(date));
 </script>
 
 <style scoped>
-.kabila-page {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  display: grid;
-  gap: 1rem;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.back-link {
-  text-decoration: none;
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  color: #111827;
-  font-weight: 600;
-}
-
-.hero-card {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 1rem;
-  background: #111827;
-  color: #f9fafb;
-  border-radius: 16px;
-  padding: 1rem;
-}
-
-.profile-image {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #f59e0b;
-}
-
-.role {
-  color: #fbbf24;
-  font-weight: 700;
-}
-
-.quick-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.quick-nav a {
-  text-decoration: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  color: #111827;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 1rem;
-}
-
-.skill-list {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.skill-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.92rem;
-  font-weight: 600;
-}
-
-.meter {
-  width: 100%;
-  height: 10px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.meter-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #f59e0b, #f97316);
-}
-
-.project-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.project-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 0.75rem;
-  margin-bottom: 0.7rem;
-  background: #f9fafb;
-}
-
-.project-card h4 {
-  margin: 0 0 0.4rem;
-}
-
-.project-card p {
-  margin: 0 0 0.5rem;
-  color: #374151;
-}
-
-.cert-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.65rem;
-}
-
-.cert-list li {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 0.75rem;
-}
-
-.blog-carousel {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 1rem;
-  align-items: center;
-}
-
-.blog-image {
-  width: 100%;
-  height: 210px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.blog-content h3 {
-  margin-top: 0;
-}
-
-.blog-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.blog-actions button {
-  border: 1px solid #f59e0b;
-  background: transparent;
-  color: #b45309;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.chatbot-container {
-  position: fixed;
-  right: clamp(1rem, 2.5vw, 1.25rem);
-  bottom: clamp(1rem, 2.5vh, 1.25rem);
-  z-index: 1000; /* defer to global footer back-to-top */
-}
-
-.chat-window {
-  width: min(22rem, 92vw);
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--surface) 80%, transparent);
-  background: var(--surface-dark);
-  color: var(--text-dark);
-  padding: 0.8rem;
-  margin-bottom: 0.55rem;
-}
-
-.chat-window h4 {
-  margin: 0 0 0.4rem;
-  color: var(--color-primary);
-}
-
-.chat-close,
-.chat-toggle {
-  border: none;
-  border-radius: 999px;
-  padding: 0.45rem 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.chat-close {
-  background: color-mix(in srgb, var(--surface) 70%, black);
-  color: var(--text);
-}
-
-.chat-toggle {
-  background: var(--color-primary);
-  color: var(--text-dark);
-}
-
-.page-footer {
-  text-align: center;
-  color: #4b5563;
-  padding: 1rem 0 2.2rem;
-}
-
-@media (max-width: 860px) {
-  .hero-card {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .profile-image {
-    margin: 0 auto;
-  }
-
-  .project-columns,
-  .blog-carousel {
-    grid-template-columns: 1fr;
-  }
-}
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+.kabila-page { --ink: #17211e; --muted: #62716b; --paper: #f5f6f0; --card: #fffefa; --line: #d9ded6; --lime: #c8f269; --teal: #0d665c; min-height: 100vh; background: var(--paper); color: var(--ink); font-family: 'Manrope', sans-serif; padding: 1.5rem clamp(1.25rem, 5vw, 5.5rem) 0; transition: background .3s, color .3s; }
+.kabila-page.is-dark { --ink: #f2f5eb; --muted: #a9b5aa; --paper: #17221f; --card: #21302b; --line: #3b4a43; --teal: #91d8b2; }
+.site-header, .section-shell, .quick-nav { max-width: 1180px; margin-inline: auto; } .site-header { display:flex; justify-content:space-between; align-items:center; padding: .35rem 0 3rem; }
+.back-link, .header-link, .text-link { color:inherit; text-decoration:none; font-weight:700; } .header-actions { display:flex; gap:1.25rem; align-items:center; } .theme-toggle { background:none; border:0; color:inherit; font:inherit; cursor:pointer; font-weight:700; border-bottom:1px solid currentColor; padding:.2rem 0; }
+.hero { display:grid; grid-template-columns: 1.15fr .85fr; gap:5rem; align-items:center; padding-bottom:5rem; } .eyebrow, .section-kicker, .timeline-period, .project-topline, .article-card p { font:500 .72rem 'DM Mono', monospace; text-transform:uppercase; letter-spacing:.08em; color:var(--teal); } h1, h2, h3, p { margin-top:0; } h1 { font-size:clamp(4rem, 10vw, 8.7rem); line-height:.84; letter-spacing:-.07em; margin:1rem 0 1.8rem; } h1 span, h2 em { color:var(--teal); font-style:normal; } .role { font-size:clamp(1rem, 2vw, 1.28rem); font-weight:700; max-width:34rem; } .role b { color:var(--teal); margin:0 .25rem; } .hero-intro { color:var(--muted); font-size:1.05rem; line-height:1.75; max-width:38rem; }
+.hero-actions { display:flex; flex-wrap:wrap; gap:1rem; align-items:center; margin-top:2rem; } .button { display:inline-flex; align-items:center; gap:.85rem; border:1px solid transparent; padding:.85rem 1.1rem; font:700 .85rem 'Manrope'; text-decoration:none; cursor:pointer; } .button span { font-size:1.1rem; } .button-primary { background:var(--ink); color:var(--paper); } .button-outline { border-color:var(--ink); color:var(--ink); } .button-light { background:var(--lime); color:#17211e; margin-top:1.5rem; } .text-link { font-size:.85rem; border-bottom:1px solid currentColor; padding-bottom:.18rem; }
+.hero-visual { position:relative; } .image-frame { background:var(--lime); padding:1.2rem 1.2rem 0; transform:rotate(3deg); max-width:24rem; margin-left:auto; } .profile-image { display:block; width:100%; aspect-ratio: .82; object-fit:cover; object-position:center top; filter:grayscale(100%); } .availability { display:flex; gap:.55rem; align-items:center; background:var(--card); box-shadow:0 10px 25px rgba(23,33,30,.12); padding:.9rem 1rem; font-size:.75rem; font-weight:700; position:absolute; left:0; bottom:2rem; } .availability span { width:.5rem; height:.5rem; background:#65b878; border-radius:50%; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); border-block:1px solid var(--line); padding-block:1.6rem; } .stat { border-left:1px solid var(--line); padding-left:1.4rem; } .stat:first-child { border-left:0; padding-left:0; } .stat strong { display:block; font-size:1.35rem; margin-bottom:.35rem; } .stat span { color:var(--muted); font-size:.75rem; } .quick-nav { display:flex; gap:1.5rem; padding-block:1.4rem 4rem; overflow:auto; } .quick-nav a { color:var(--muted); text-decoration:none; white-space:nowrap; font-size:.75rem; font-weight:700; } .quick-nav a:hover { color:var(--teal); }
+.content-section { padding-block:4.5rem; border-top:1px solid var(--line); } .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; } h2 { font-size:clamp(2rem, 4vw, 3.8rem); line-height:1.02; letter-spacing:-.055em; margin:1rem 0; } .summary-copy { color:var(--muted); font-size:1rem; line-height:1.8; max-width:34rem; } .summary-copy > p:first-child { color:var(--ink); font-size:1.35rem; line-height:1.4; font-weight:700; } .pull-quote { border-left:3px solid var(--lime); padding-left:1rem; color:var(--ink); font-weight:700; }
+.section-heading { display:flex; justify-content:space-between; align-items:end; margin-bottom:2.5rem; } .section-number { color:var(--muted); font:500 .8rem 'DM Mono'; } .timeline { max-width:58rem; margin-left:18%; } .timeline-item { display:grid; grid-template-columns:1.3rem 1fr; gap:1.4rem; border-top:1px solid var(--line); padding:2rem 0; } .timeline-marker { width:.65rem; height:.65rem; background:var(--lime); margin-top:.35rem; } .timeline-period { margin-bottom:.7rem; } .timeline-item h3 { font-size:1.6rem; margin-bottom:1rem; } .timeline-item ul, .project-card ul { padding-left:1.1rem; color:var(--muted); line-height:1.8; }
+.skill-groups { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; } .skill-group { border-top:2px solid var(--ink); padding-top:1rem; } .skill-group h3 { font-size:1rem; } .chip-list { display:flex; flex-wrap:wrap; gap:.5rem; } .chip { border:1px solid var(--line); padding:.5rem .7rem; color:var(--muted); font-size:.75rem; background:var(--card); }
+.project-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; } .project-card { background:var(--card); border:1px solid var(--line); padding:1.5rem; min-height:23rem; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; } .project-card:hover, .article-card:hover { transform:translateY(-5px); box-shadow:0 12px 28px rgba(23,33,30,.1); } .project-topline { display:flex; justify-content:space-between; margin-bottom:3rem; } .project-card h3 { font-size:1.35rem; } .project-card p { color:var(--muted); line-height:1.65; } .project-card ul { margin-bottom:1.5rem; } .project-card .text-link { margin-top:auto; align-self:flex-start; }
+.section-lede { color:var(--muted); max-width:42rem; line-height:1.7; } .article-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; } .article-card { color:inherit; text-decoration:none; border:1px solid var(--line); background:var(--card); transition:transform .25s, box-shadow .25s; } .article-card img { width:100%; height:10rem; object-fit:cover; filter:grayscale(100%); } .article-card div { padding:1.1rem; } .article-card p { margin-bottom:1rem; } .article-card h3 { font-size:1rem; line-height:1.35; } .article-card span { color:var(--teal); font-size:.75rem; font-weight:700; } .cert-placeholder { border:1px dashed var(--line); padding:2rem; color:var(--muted); } .cert-placeholder span { font:500 .72rem 'DM Mono'; }
+.contact-section { display:grid; grid-template-columns:1fr 1fr; gap:5rem; background:var(--teal); color:#f2f5eb; padding-block:5rem; margin-top:4rem; } .contact-section .section-kicker { color:var(--lime); } .contact-section h2 em { color:var(--lime); } .contact-section p { line-height:1.7; max-width:34rem; } .contact-links { display:grid; border-top:1px solid rgba(255,255,255,.3); } .contact-links a { display:flex; justify-content:space-between; gap:1rem; border-bottom:1px solid rgba(255,255,255,.3); padding:.8rem 0; color:inherit; text-decoration:none; font-weight:700; font-size:.85rem; } .contact-links span { font-weight:400; opacity:.75; text-align:right; } .page-footer { display:flex; justify-content:space-between; padding-block:1.5rem; color:var(--muted); font:500 .7rem 'DM Mono'; } .page-footer a { color:inherit; text-decoration:none; }
+.chatbot-container { position:fixed; right:1.25rem; bottom:1.25rem; z-index:10; } .chat-window { width:min(20rem, calc(100vw - 2.5rem)); background:var(--card); border:1px solid var(--line); padding:1rem; margin-bottom:.6rem; box-shadow:0 10px 25px rgba(0,0,0,.15); } .chat-window h4 { margin-bottom:.5rem; } .chat-window p { color:var(--muted); font-size:.8rem; } .chat-toggle, .chat-close { border:0; background:var(--lime); color:#17211e; padding:.7rem 1rem; font:700 .75rem 'Manrope'; cursor:pointer; } .chat-close { background:var(--ink); color:var(--paper); }
+@media (max-width: 800px) { .hero, .summary-grid, .contact-section { grid-template-columns:1fr; gap:2.5rem; } .hero { padding-bottom:3rem; } .hero-visual { max-width:24rem; margin:auto; width:100%; } .stats { grid-template-columns:repeat(2,1fr); gap:1.5rem 0; } .stat:nth-child(3) { border-left:0; padding-left:0; } .timeline { margin-left:0; } .skill-groups, .project-grid, .article-grid { grid-template-columns:1fr; } .project-card { min-height:auto; } .content-section { padding-block:3.5rem; } }
+@media (max-width: 500px) { .kabila-page { padding-inline:1rem; } .site-header { padding-bottom:2rem; } .header-link { display:none; } h1 { font-size:4.5rem; } .hero-actions { align-items:flex-start; flex-direction:column; } .contact-section { margin-inline:-1rem; padding-inline:1rem; } .page-footer { gap:1rem; flex-direction:column; } }
+@media print { .kabila-page { padding:0; } .site-header, .quick-nav, .chatbot-container, .hero-actions, .contact-section, .page-footer { display:none; } .content-section { break-inside:avoid; padding-block:1.5rem; } .hero { padding-bottom:2rem; } }
 </style>
