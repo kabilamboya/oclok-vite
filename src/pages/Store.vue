@@ -5,6 +5,10 @@
       <p class="eyebrow">O!clok marketplace</p>
       <h1>Learn, build, and wear your ideas.</h1>
       <p>Shop practical learning content, stationery, trusted tutors, smart electronics, and O!clok branded essentials.</p>
+      <router-link to="/account" class="account-cta">
+        <span>Create Account</span>
+        <small>Join O!clok</small>
+      </router-link>
     </header>
 
     <nav class="category-chips" aria-label="Shop by category">
@@ -52,6 +56,8 @@
         <p>No products match your search.</p>
       </div>
 
+      <QuickOrderForm title="Need help with an order?" subtitle="Tell us what you want and we will follow up." page="store" />
+
       <CardList
         v-if="!loading && filteredProducts.length"
         :card-items="paginatedProducts"
@@ -96,13 +102,14 @@
 import CardList from "../components/CardList.vue";
 import CartModal from "../components/CartModal.vue";
 import PaginationControls from "../components/PaginationControls.vue";
+import QuickOrderForm from "../components/QuickOrderForm.vue";
 import productsData from "../data/products.json";
 import { addProductToCart, persistCart, readCart } from "../services/cart.service";
 import { computed, ref, watch } from "vue";
 
 export default {
   name: "ProductsPage",
-  components: { CardList, PaginationControls, CartModal },
+  components: { CardList, PaginationControls, CartModal, QuickOrderForm },
 
   setup() {
     const products = ref([]);

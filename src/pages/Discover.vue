@@ -7,6 +7,7 @@ import PlaceCard from "../components/PlaceCard.vue";
 import {
   createDeliboisOrder,
 } from "../services/delibois.service";
+import { getRegisteredUser } from "../services/auth.service";
 
 const search = ref("");
 const activeCategory = ref("All");
@@ -48,6 +49,7 @@ const createDefaultOrderForm = () => ({
   preferredTime: "",
   notes: "",
   urgent: false,
+  accountType: "novice customer",
 });
 
 const orderForm = ref(createDefaultOrderForm());
@@ -226,6 +228,18 @@ function sanitize(value) {
   return String(value || "").trim();
 }
 
+function applyStoredAccountProfile() {
+  const user = getRegisteredUser();
+  if (!user) return;
+  orderForm.value.customerName = user.name || orderForm.value.customerName;
+  orderForm.value.email = user.email || orderForm.value.email;
+  orderForm.value.accountType = user.account_type || user.accountType || orderForm.value.accountType;
+  if (orderForm.value.sameAsCustomer) {
+    orderForm.value.recipientName = user.name || orderForm.value.recipientName;
+    orderForm.value.recipientPhone = orderForm.value.phone || orderForm.value.recipientPhone;
+  }
+}
+
 function validatePhone(value) {
   const clean = sanitize(value).replace(/[\s\-()]/g, "");
   return /^(?:\+254|254|0)?7\d{8}$/.test(clean);
@@ -348,6 +362,10 @@ function proceedToItemsTab() {
   }
 }
 
+if (typeof window !== 'undefined') {
+  applyStoredAccountProfile();
+}
+
 function goToPersonalDetails() {
   orderTab.value = "personal";
   nextTick(scrollToOrderTabs);
@@ -368,6 +386,7 @@ async function submitOrder() {
   const snapshot = {
     ...orderForm.value,
     deliveryCost: currentDeliveryCost.value,
+    customerRole: orderForm.value.accountType || "novice customer",
     itemDetails: {
       title: orderItemDetails.value.title,
       description: orderItemDetails.value.description,

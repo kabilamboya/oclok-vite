@@ -22,14 +22,18 @@
 
       <section class="hero" aria-hidden="false">
         <div class="hero-text">
-          <h1>Our Certified <span class="hero-accent-primary">O!clok</span> <span class="hero-accent-secondary">Doctors</span></h1>
+          <h1>Our Certified <span class="hero-accent-primary">O!clok</span> <span class="hero-accent-secondary">Skills</span></h1>
           <p>Available remotely at your convenience</p>
+          <router-link to="/account" class="account-cta">
+            <span>Create Account</span>
+            <small>Join O!clok</small>
+          </router-link>
         </div>
       </section>
 
     <div class="cards">
       <CardList
-        :card-items="paginatedTechnicians"
+        :card-items="paginatedSkills"
         type="technician"
         :clickable="true"
         primary-label="Book"
@@ -74,19 +78,43 @@
 
     setup() {
       const technicians = ref([]);
+      const deliboiProfiles = ref([
+        {
+          id: "deliboi-1",
+          name: "Deliboi Express",
+          specialty: "Local delivery & errands",
+          location: "Kisumu",
+          bio: "Fast pickup, doorstep delivery, and same-day support for homes and businesses.",
+          kind: "deliboi",
+          rating: 4,
+          available: true,
+        },
+        {
+          id: "deliboi-2",
+          name: "Oclok Hand Carry",
+          specialty: "Parcel and document delivery",
+          location: "Kisumu CBD",
+          bio: "Reliable courier support for parcels, documents, and important errands.",
+          kind: "deliboi",
+          rating: 4,
+          available: true,
+        },
+      ]);
       const searchQuery = ref("");
       const selectedSpecialty = ref("");
       const bookings = ref([]);
       const currentPage = ref(1);
       const itemsPerPage = 8;
 
+      const allSkills = computed(() => [...technicians.value, ...deliboiProfiles.value]);
+
       const specialties = computed(() => {
-        return [...new Set(technicians.value.map((t) => t.specialty).filter(Boolean))];
+        return [...new Set(allSkills.value.map((t) => t.specialty).filter(Boolean))];
       });
 
-      const filteredTechnicians = computed(() => {
+      const filteredSkills = computed(() => {
         const query = searchQuery.value.trim().toLowerCase();
-        return technicians.value.filter((t) => {
+        return allSkills.value.filter((t) => {
           const name = (t.name || "").toLowerCase();
           const specialtyText = (t.specialty || "").toLowerCase();
           const searchMatches = !query || name.includes(query) || specialtyText.includes(query);
@@ -98,12 +126,12 @@
       });
 
       const totalPages = computed(() => {
-        return Math.max(1, Math.ceil(filteredTechnicians.value.length / itemsPerPage));
+        return Math.max(1, Math.ceil(filteredSkills.value.length / itemsPerPage));
       });
 
-      const paginatedTechnicians = computed(() => {
+      const paginatedSkills = computed(() => {
         const start = (currentPage.value - 1) * itemsPerPage;
-        return filteredTechnicians.value.slice(start, start + itemsPerPage);
+        return filteredSkills.value.slice(start, start + itemsPerPage);
       });
 
       watch(searchQuery, () => {
@@ -131,6 +159,10 @@
       };
 
       const goToTech = (tech) => {
+        if (tech.kind === "deliboi") {
+          window.location.href = "/discover";
+          return;
+        }
         const routeKey = tech.slug || createSlug(tech.name) || String(tech.id);
         window.location.href = `/technicians/${routeKey}`;
       };
@@ -177,9 +209,9 @@
         currentPage,
         itemsPerPage,
         specialties,
-        filteredTechnicians,
+        filteredSkills,
         totalPages,
-        paginatedTechnicians,
+        paginatedSkills,
         createSlug,
         goToTech,
         bookTechnician,

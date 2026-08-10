@@ -244,6 +244,69 @@
 }
 
 /* ===========================
+   BUTTONS
+=========================== */
+
+.account-cta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 18px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #ff6b00 0%, #ffb36b 100%);
+  color: #111827;
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.account-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.3s ease;
+  z-index: 0;
+}
+
+.account-cta span, .account-cta small {
+  position: relative;
+  z-index: 1;
+}
+
+.account-cta small {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.9;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.account-cta:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(255, 107, 0, 0.4);
+}
+
+.account-cta:hover::before {
+  left: 100%;
+}
+
+.account-cta:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ===========================
    RESPONSIVE
 =========================== */
 

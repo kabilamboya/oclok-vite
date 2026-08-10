@@ -26,6 +26,8 @@
       </div>
     </header>
 
+    <QuickOrderForm title="Need a delivery or support request?" subtitle="Start a request from the cyber hub and we will follow up." page="cyber" />
+
     <section class="cta-grid">
       <article class="cta-card">
         <div>
@@ -62,7 +64,9 @@
   </section>
 </template>
 
-<script setup></script>
+<script setup>
+import QuickOrderForm from '../../components/QuickOrderForm.vue';
+</script>
 
 <style scoped>
 .cyber-home {

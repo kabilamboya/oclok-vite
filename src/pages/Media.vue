@@ -8,6 +8,10 @@
         <a :href="featuredVideo?.youtubeLink" target="_blank" rel="noopener noreferrer" class="watch-button">Watch Featured Video</a>
         <a href="https://www.youtube.com/@kenyayouthchannel" target="_blank" rel="noopener noreferrer" class="secondary-link">Visit Channel</a>
       </div>
+      <router-link to="/account" class="account-cta">
+        <span>Create Account</span>
+        <small>Join O!clok</small>
+      </router-link>
     </div>
   </section>
 
@@ -45,6 +49,8 @@
         </a>
       </section>
     </header>
+
+    <QuickOrderForm title="Need media support?" subtitle="Share your goal and we will help shape the next step." page="media" />
 
     <!-- Videos Section with Tabs -->
     <section class="videos-section">
@@ -159,6 +165,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import mediaService from '../services/media.service';
+import QuickOrderForm from '../components/QuickOrderForm.vue';
 
 // State
 const selectedVideoTab = ref('recorded');

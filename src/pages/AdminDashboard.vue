@@ -33,7 +33,7 @@
 
         <section class="metric-grid"><article v-for="metric in metrics" :key="metric.label" class="metric-card"><div class="metric-heading"><span>{{ metric.label }}</span><b :class="metric.tone">{{ metric.icon }}</b></div><strong>{{ metric.value }}</strong><small>{{ metric.note }}</small></article></section>
 
-        <section class="lower-grid"><article class="dashboard-card shop-performance"><div class="card-heading"><div><p>Shop performance</p><h2>Contribution by channel</h2></div><span>{{ selectedPeriod }}</span></div><div v-for="shop in shopPerformance" :key="shop.name" class="shop-row"><div><strong>{{ shop.name }}</strong><small>{{ shop.orders }} transactions</small></div><b>{{ shop.share }}%</b><div class="progress"><span :style="{ width: `${shop.share}%` }"></span></div></div></article><article class="dashboard-card"><div class="card-heading"><div><p>Revenue by category</p><h2>Category activity</h2></div><select aria-label="Filter categories"><option>All Categories</option><option>Smart Home</option><option>Services</option></select></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Revenue</th><th>Txns</th><th>Share</th></tr></thead><tbody><tr v-for="category in categories" :key="category.name"><td>{{ category.name }}</td><td>{{ category.revenue }}</td><td>{{ category.transactions }}</td><td>{{ category.share }}</td></tr></tbody></table></div></article></section>
+        <section class="lower-grid"><article class="dashboard-card"><div class="card-heading"><div><p>Live requests</p><h2>Orders and support requests</h2></div><span>{{ orders.length }} tracked</span></div><div v-if="recentOrders.length" class="request-list"><div v-for="order in recentOrders" :key="order.id" class="request-item"><div><strong>{{ order.customerName || order.name || order.recipientName || 'Unnamed request' }}</strong><small>{{ order.orderType || order.order_type || order.requestType || 'Request' }} • {{ order.sourcePage || 'website' }}</small></div><b>{{ order.phone || order.recipientPhone || 'No phone' }}</b></div></div><p v-else class="empty-users">No requests have been submitted yet.</p></article><article class="dashboard-card shop-performance"><div class="card-heading"><div><p>Shop performance</p><h2>Contribution by channel</h2></div><span>{{ selectedPeriod }}</span></div><div v-for="shop in shopPerformance" :key="shop.name" class="shop-row"><div><strong>{{ shop.name }}</strong><small>{{ shop.orders }} transactions</small></div><b>{{ shop.share }}%</b><div class="progress"><span :style="{ width: `${shop.share}%` }"></span></div></div></article></section>
 
         <section class="lower-grid"><article class="dashboard-card activity-card"><div class="card-heading"><div><p>Recent activity</p><h2>What needs attention</h2></div><button class="link-button" type="button" @click="showNotice('All activity view is coming next.')">View all</button></div><ul><li v-for="activity in activities" :key="activity.title"><span class="activity-icon">{{ activity.icon }}</span><div><strong>{{ activity.title }}</strong><small>{{ activity.meta }}</small></div><b>{{ activity.value }}</b></li></ul></article><article class="dashboard-card quick-actions"><div class="card-heading"><div><p>Quick actions</p><h2>Keep work moving</h2></div></div><button type="button" @click="showNotice('New record workflow selected.')">+ Add record <span>→</span></button><button type="button" @click="showNotice('Report export is ready for connection.')">↓ Export report <span>→</span></button><button type="button" @click="showNotice('Team access workflow selected.')">♙ Manage team <span>→</span></button></article></section>
       </div>
@@ -49,11 +49,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import products from '../data/products.json';
 import technicians from '../data/technicians.json';
 import { readStore, writeStore } from '../lib/localStore';
 import { saveProfileOverride } from '../services/userProfiles.service';
+import { getRegisteredUser } from '../services/auth.service';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
 const sidebarCollapsed = ref(false);
 const activeSection = ref('dashboard');
@@ -69,6 +71,18 @@ const periods = ['YTD', 'This Month', 'This Week', 'All Time'];
 const productCount = products.length;
 const technicianCount = technicians.length;
 const unreadMessages = 3;
+const normalizeRole = (value) => {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (normalized.includes('deliboi')) return 'Deliboi';
+  if (normalized.includes('technician')) return 'Technician';
+  return 'Novice Customer';
+};
+const normalizeStatus = (value) => {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (['active', 'approved', 'verified'].includes(normalized)) return 'active';
+  if (['pending', 'review'].includes(normalized)) return 'pending';
+  return 'suspended';
+};
 const defaultUsers = technicians.map((technician) => ({
   id: technician.id,
   name: technician.name,
@@ -88,12 +102,16 @@ const users = ref((Array.isArray(storedUsers) ? storedUsers : defaultUsers).map(
   const source = technicians.find((technician) => technician.id === user.id) || {};
   return {
     ...user,
+    role: normalizeRole(user.role || user.accountType || user.account_type),
     specialty: user.specialty || source.specialty || 'Technician',
     bio: user.bio || source.bio || '',
     phone: user.phone || source.contact?.phone || '',
+    status: normalizeStatus(user.status),
     canEditDetails: user.canEditDetails !== false,
+    initial: user.initial || (user.name || 'U').charAt(0).toUpperCase(),
   };
 }));
+const orders = ref(readStore('oclok_delibois_orders', []));
 const activeUserCount = computed(() => users.value.filter((user) => user.status === 'active').length);
 const pendingUserCount = computed(() => users.value.filter((user) => user.status === 'pending').length);
 const filteredUsers = computed(() => users.value.filter((user) => {
@@ -102,14 +120,13 @@ const filteredUsers = computed(() => users.value.filter((user) => {
   const matchesStatus = userStatusFilter.value === 'all' || user.status === userStatusFilter.value;
   return matchesSearch && matchesStatus;
 }));
+const recentOrders = computed(() => orders.value.slice(0, 5));
 const metrics = computed(() => [
-  { label: 'Revenue collected', value: 'KES 248K', note: 'KES paid to date', icon: '$', tone: 'green' },
-  { label: 'Total invoiced', value: 'KES 412K', note: `${productCount} product lines tracked`, icon: '▣', tone: 'blue' },
-  { label: 'Outstanding credit', value: 'KES 64K', note: 'Balances requiring review', icon: '!', tone: 'red' },
-  { label: 'Operating costs', value: 'KES 88K', note: 'Direct + overhead', icon: '□', tone: 'orange' },
-  { label: 'Operating profit', value: 'KES 160K', note: 'After all overheads', icon: '◉', tone: 'neutral' },
-  { label: 'Transactions', value: '1,284', note: 'Total sales count', icon: '⌁', tone: 'purple' },
-  { label: 'Technicians', value: technicianCount, note: 'Profiles in network', icon: '♙', tone: 'teal' },
+  { label: 'Registered users', value: users.value.length, note: 'Profiles in the admin view', icon: '♙', tone: 'green' },
+  { label: 'Live requests', value: orders.value.length, note: 'Orders and support requests', icon: '▣', tone: 'blue' },
+  { label: 'Pending review', value: pendingUserCount.value, note: 'Accounts needing attention', icon: '!', tone: 'red' },
+  { label: 'Active accounts', value: activeUserCount.value, note: 'Ready for service access', icon: '◉', tone: 'neutral' },
+  { label: 'Technician profiles', value: technicianCount, note: 'Profiles in network', icon: '♙', tone: 'teal' },
   { label: 'Active products', value: productCount, note: 'Current catalogue', icon: '▱', tone: 'yellow' },
 ]);
 const shopPerformance = [
@@ -128,6 +145,47 @@ const activities = [
   { icon: '!', title: 'Invoice requires follow-up', meta: 'Oclok Cyber / Yesterday', value: 'KES 18K' },
 ];
 const summaryText = computed(() => selectedShop.value === 'All Shops' ? 'Loading business performance summary...' : `${selectedShop.value} performance is ready for review.`);
+const syncFromSupabase = async () => {
+  if (!isSupabaseConfigured || !supabase) return;
+  try {
+    const [usersResponse, ordersResponse] = await Promise.all([
+      supabase.from('users').select('*').order('created_at', { ascending: false }),
+      supabase.from('delibois_orders').select('*').order('created_at', { ascending: false }),
+    ]);
+
+    if (!usersResponse.error && Array.isArray(usersResponse.data)) {
+      const nextUsers = usersResponse.data.map((entry) => ({
+        id: entry.id,
+        name: entry.name || 'Unnamed user',
+        email: entry.email || 'No email provided',
+        role: normalizeRole(entry.account_type || entry.accountType || 'novice customer'),
+        specialty: entry.specialty || 'Account',
+        bio: entry.bio || '',
+        phone: entry.phone || '',
+        location: entry.location || 'Location not provided',
+        status: normalizeStatus(entry.status || 'active'),
+        canEditDetails: true,
+        lastActivity: 'Synced from Supabase',
+        initial: (entry.name || 'U').charAt(0).toUpperCase(),
+      }));
+      const mergedUsers = [...nextUsers, ...users.value.filter((currentUser) => !nextUsers.some((candidate) => candidate.email === currentUser.email))];
+      users.value = mergedUsers;
+      writeStore('oclok_admin_users', users.value);
+    }
+
+    if (!ordersResponse.error && Array.isArray(ordersResponse.data)) {
+      const nextOrders = ordersResponse.data.map((entry) => ({
+        ...entry,
+        customerName: entry.customer_name || entry.customerName || entry.name || 'Unnamed request',
+        orderType: entry.order_type || entry.orderType || 'Request',
+      }));
+      orders.value = nextOrders;
+      writeStore('oclok_delibois_orders', nextOrders);
+    }
+  } catch (error) {
+    console.error('Unable to sync admin dashboard data:', error);
+  }
+};
 const toggleEditPermission = (user) => {
   user.canEditDetails = !user.canEditDetails;
   writeStore('oclok_admin_users', users.value);
@@ -171,6 +229,33 @@ const toggleUserStatus = (user) => {
   showNotice(`${user.name} is now ${user.status}.`);
 };
 const showNotice = (message) => { notice.value = message; window.clearTimeout(showNotice.timer); showNotice.timer = window.setTimeout(() => { notice.value = ''; }, 2800); };
+
+onMounted(() => {
+  const registeredUser = getRegisteredUser();
+  if (registeredUser && !users.value.some((user) => user.email === registeredUser.email || user.name === registeredUser.name)) {
+    users.value.unshift({
+      id: `account-${Date.now()}`,
+      name: registeredUser.name,
+      email: registeredUser.email,
+      role: normalizeRole(registeredUser.account_type || registeredUser.accountType),
+      specialty: 'Registered account',
+      bio: 'Signed up through the new account flow.',
+      phone: registeredUser.phone || '',
+      location: 'Location pending',
+      status: 'active',
+      canEditDetails: false,
+      lastActivity: 'Just registered',
+      initial: (registeredUser.name || 'U').charAt(0).toUpperCase(),
+    });
+    writeStore('oclok_admin_users', users.value);
+  }
+
+  if (Array.isArray(readStore('oclok_delibois_orders', []))) {
+    orders.value = readStore('oclok_delibois_orders', []);
+  }
+
+  syncFromSupabase();
+});
 </script>
 
 <style scoped>
@@ -184,5 +269,10 @@ const showNotice = (message) => { notice.value = message; window.clearTimeout(sh
 .primary-action { border:0; border-radius:7px; background:var(--red); color:#fff; padding:.7rem 1rem; font:700 .75rem 'Manrope'; cursor:pointer; }.user-summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin-top:1rem; }.user-summary { display:flex; flex-direction:column; gap:.35rem; padding:1rem 1.15rem; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.user-summary span,.user-summary small { color:var(--muted); font-size:.7rem; }.user-summary strong { font-size:1.5rem; }.users-card { margin-top:1rem; }.users-heading { align-items:center; }.user-filters { display:flex; gap:.5rem; }.user-filters input,.user-filters select { border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); padding:.6rem .7rem; font:500 .72rem 'Manrope'; }.users-table-wrap { overflow-x:auto; }.users-table { min-width:760px; }.user-cell { display:flex; align-items:center; gap:.65rem; }.user-initial { width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:#ffe1e1; color:var(--red); font-weight:800; }.user-cell strong,.user-cell small { display:block; }.user-cell strong { color:var(--ink); font-size:.75rem; }.user-cell small { margin-top:.2rem; color:var(--muted); font-size:.65rem; }.role-badge,.status-badge { display:inline-block; padding:.32rem .55rem; border-radius:999px; font-size:.65rem; }.role-badge { background:#edf4f1; color:#427167; }.status-badge { text-transform:capitalize; }.status-badge.active { background:#d9f7e7; color:#1d9e5e; }.status-badge.pending { background:#fff0d5; color:#bd7b00; }.status-badge.suspended { background:#ffe1e1; color:var(--red); }.table-action { border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--red); padding:.4rem .55rem; font-size:.65rem; cursor:pointer; }.empty-users { padding:2rem; text-align:center; color:var(--muted); }
 .brief-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:1rem; margin-top:1rem; }.brief-card { padding:1.15rem 1.4rem; border-left:3px solid var(--red); }.brief-card h2 { margin:.7rem 0 .4rem; font-size:.95rem; font-weight:600; }.brief-card span { color:var(--muted); font-size:.78rem; }.metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-top:1rem; }.metric-card { padding:1rem; min-height:105px; border-top:3px solid var(--red); }.metric-heading { display:flex; justify-content:space-between; gap:.5rem; color:var(--muted); font:500 .62rem 'DM Mono'; text-transform:uppercase; }.metric-heading b { width:25px; height:25px; display:grid; place-items:center; border-radius:7px; font:700 .85rem Arial; }.metric-heading .green { background:#d9f7e7; color:#1d9e5e; }.metric-heading .blue { background:#e0f0ff; color:#2587cb; }.metric-heading .red { background:#ffe1e1; color:var(--red); }.metric-heading .orange { background:#fff0d5; color:#e99716; }.metric-heading .purple { background:#f0e2f8; color:#a756c4; }.metric-heading .teal { background:#dbf6f1; color:#168f80; }.metric-heading .yellow { background:#fff4d2; color:#d99c00; }.metric-heading .neutral { background:#f0f1ef; color:#68726d; }.metric-card>strong { display:block; margin:1rem 0 .6rem; font-size:1.05rem; }.metric-card small { color:var(--muted); font-size:.65rem; }.lower-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:1rem; margin-top:1rem; }.dashboard-card { padding:1.15rem 1.25rem; }.card-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; margin-bottom:1.2rem; }.card-heading h2 { margin:.45rem 0 0; font-size:1rem; }.card-heading>span { color:var(--muted); font:500 .65rem 'DM Mono'; }.shop-row { display:grid; grid-template-columns:1fr auto; gap:.2rem .75rem; margin-bottom:1.15rem; }.shop-row strong { display:block; font-size:.8rem; }.shop-row small { color:var(--muted); font-size:.65rem; }.shop-row>b { grid-column:2; grid-row:1 / span 2; align-self:center; font-size:.8rem; }.progress { grid-column:1 / span 2; height:7px; margin-top:.3rem; background:#e9ebe8; border-radius:99px; overflow:hidden; }.progress span { display:block; height:100%; background:var(--red); border-radius:99px; }.table-wrap { overflow:auto; } table { width:100%; border-collapse:collapse; font-size:.7rem; } th { background:#f2f3ef; color:#68716c; font:500 .62rem 'DM Mono'; text-transform:uppercase; text-align:left; padding:.7rem; } td { padding:.75rem; border-bottom:1px solid var(--line); color:var(--muted); } td:first-child { color:var(--ink); font-weight:600; }.activity-card ul { list-style:none; padding:0; margin:0; }.activity-card li { display:flex; align-items:center; gap:.7rem; padding:.75rem 0; border-bottom:1px solid var(--line); }.activity-icon { width:28px; height:28px; display:grid; place-items:center; border-radius:7px; background:#ffe8e8; color:var(--red); }.activity-card li div { min-width:0; flex:1; }.activity-card li strong,.activity-card li small { display:block; }.activity-card li strong { font-size:.75rem; }.activity-card li small { color:var(--muted); font-size:.65rem; margin-top:.2rem; }.activity-card li>b { font-size:.7rem; color:var(--red); }.link-button { border:0; background:none; color:var(--red); cursor:pointer; font-size:.7rem; font-weight:700; }.quick-actions button { width:100%; display:flex; justify-content:space-between; margin-bottom:.55rem; padding:.75rem .8rem; border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); font-size:.75rem; cursor:pointer; }.quick-actions button span { color:var(--red); }.toast { position:fixed; right:1.5rem; bottom:1.5rem; z-index:5; background:var(--ink); color:#fff; padding:.8rem 1rem; border-radius:7px; font-size:.75rem; box-shadow:0 8px 20px rgba(0,0,0,.2); }
 @media (max-width:900px) { .metric-grid { grid-template-columns:repeat(3,1fr); }.intro-panel { align-items:flex-start; flex-direction:column; }.filters { width:100%; }.filters select { margin-left:auto; }.brief-grid,.lower-grid { grid-template-columns:1fr; } }
+.request-list { display:grid; gap:.7rem; }
+.request-item { display:flex; align-items:center; justify-content:space-between; gap:.7rem; padding:.75rem .8rem; border:1px solid var(--line); border-radius:10px; background:#fbfcfa; }
+.request-item strong { display:block; font-size:.78rem; }
+.request-item small { display:block; color:var(--muted); margin-top:.2rem; font-size:.62rem; }
+.request-item b { font-size:.7rem; color:var(--red); }
 @media (max-width:650px) { .admin-sidebar { width:76px; flex-basis:76px; }.admin-sidebar .brand-block { padding-inline:1.25rem; }.admin-sidebar .collapse-button { display:none; }.admin-sidebar .nav-label,.admin-sidebar .nav-item b,.admin-sidebar .nav-item i,.admin-sidebar .admin-profile { display:none; }.admin-nav { padding-inline:.8rem; }.nav-item { justify-content:center; }.topbar { justify-content:flex-start; padding-left:1rem; gap:.75rem; }.mobile-menu { display:block; border:1px solid var(--line); background:#fff; border-radius:7px; padding:.4rem .55rem; }.top-actions { right:.8rem; gap:.35rem; }.status-pill,.icon-button { display:none; }.signout { padding:.45rem .55rem; }.dashboard-body { padding:.9rem; }.metric-grid { grid-template-columns:repeat(2,1fr); }.metric-card { min-height:95px; }.brief-grid { margin-top:.75rem; }.intro-panel { padding:1rem; }.filters button { padding:.5rem .65rem; }.filters select { width:100%; margin-left:0; }.toast { right:.8rem; bottom:.8rem; left:.8rem; text-align:center; } }
 </style>

@@ -62,7 +62,7 @@
       <div class="section-shell why-grid">
         <div class="why-intro">
           <p class="eyebrow">Why O!clok</p>
-          <h2>Built around convenience, trust, and measurable value.</h2>
+          <h2>Built around convenience, essence , and measurable value.</h2>
           <img src="/images/deliDrone.jpeg" alt="Drone delivery illustration" class="why-image" />
         </div>
         <div class="why-list">
@@ -94,8 +94,9 @@
     <section class="contact-cta">
       <div class="section-shell contact-card">
         <h2>Ready to launch something smarter?</h2>
-        <p>Let’s create a delivery, media, or digital experience that fits your goals.</p>
+        <p>Create account and together let’s create a worthwhile digital experience that fits your life goals.</p>
         <div class="contact-actions">
+          <a href="#create-account" class="create-account-btn">Create Account</a>
           <a href="mailto:cambridgemediam@gmail.com" class="primary-btn">Email Us</a>
           <a href="tel:+254732379292" class="secondary-btn">Call Now</a>
         </div>
@@ -117,7 +118,7 @@ const trustedStats = [
 ]
 const whyPoints = [
   {
-    title: 'Fast delivery',
+    title: 'We Bet On Convenience',
     description: 'We move orders and information quickly so your customers stay informed.'
   },
   {
@@ -125,34 +126,34 @@ const whyPoints = [
     description: 'Every service is designed to feel clear, personal, and dependable.'
   },
   {
-    title: 'Growth-ready technology',
+    title: 'Value & Essence',
     description: 'We combine practical tools, media, and infrastructure for long-term momentum.'
   }
 ]
 const testimonials = [
   {
-    name: 'Winnie A.',
+    name: 'Janta Prints',
+    role: 'Start Up',
+    quote: 'Their marketimg strategy has been key to our local growth and in staying reliable online.',
+    image: '/images/JANTAsJersey.jpg'
+  },
+  {
+    name: 'Mark Odah',
     role: 'Small Business Owner',
-    quote: 'Their team made our launch feel effortless and professional.',
-    image: '/images/test1.jpeg'
+    quote: 'Their team help me purchase and deliver a delicate eletronic from Kisumu to Nairobi conveniently.',
+    image: '/images/bitcoin.jpg'
   },
   {
-    name: 'Daniel M.',
-    role: 'Creative Director',
-    quote: 'The delivery and digital support helped us respond faster than ever.',
-    image: '/images/test2.jpeg'
-  },
-  {
-    name: 'Albert M.',
-    role: 'Ward Admin',
-    quote: 'Their branding made our communications impactful.',
-    image: '/images/test3.jpeg'
+    name: 'Kevino Drilling',
+    role: 'Drillig & Construction company',
+    quote: 'This is my go-to contact for all technical assistance and consultaion. Which has helped us stay relavant in these diverse tech advancements.',
+    image: '/images/kevinologo.png'
   }
 ]
 // Animated phrases
 const phrases = [
-  'We provide convenient technical services.',
-  'That serve individuals, families, and businesses.',
+  'We provide convenient technical solutions.',
+  'That improve individuals, families, and businesses.',
   'Saving you time through smart digital solutions'
 ]
 const phraseIndex = ref(0)
@@ -1522,6 +1523,9 @@ text-align:center;
   color: var(--text-muted);
   font-size: 0.95rem;
 }
+.section-shell h2{
+  color: var(--primary);
+}
 .contact-card {
   padding: 40px 32px;
   border-radius: 24px;
@@ -1538,6 +1542,7 @@ text-align:center;
   gap: 14px;
   margin-top: 24px;
 }
+.create-account-btn,
 .primary-btn,
 .secondary-btn {
   display: inline-flex;
@@ -1547,6 +1552,11 @@ text-align:center;
   border-radius: 999px;
   text-decoration: none;
   font-weight: 700;
+}
+.create-account-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--text-dark);
 }
 .primary-btn {
   background: var(--color-primary);

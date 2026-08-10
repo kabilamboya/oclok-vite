@@ -1,122 +1,297 @@
 <template>
-  <div class="form-page">
-    <h1>Create Account</h1>
-    <form class="account-form" @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" v-model="form.name" required />
+  <div class="account-page">
+    <section class="account-card">
+      <div class="account-intro">
+        <p class="eyebrow">{{ hasAccount ? 'Your account' : 'Create account' }}</p>
+        <h1>{{ hasAccount ? `Welcome back, ${currentUser?.name || 'friend'}.` : 'Create your O!clok account' }}</h1>
+        <p>
+          {{ hasAccount
+            ? 'Your details are saved for faster bookings, purchases, and updates across the site.'
+            : 'Sign up once and unlock faster shopping, tailored service requests, and account access across the site.'
+          }}
+        </p>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" v-model="form.email" required />
+      <div v-if="feedback" class="feedback-banner">{{ feedback }}</div>
+
+      <div v-if="hasAccount" class="account-summary">
+        <div class="summary-card">
+          <h2>Account details</h2>
+          <p><strong>Name:</strong> {{ currentUser.name }}</p>
+          <p><strong>Email:</strong> {{ currentUser.email }}</p>
+          <p><strong>Registered:</strong> {{ formatDate(currentUser.registeredAt) }}</p>
+        </div>
+
+        <div class="account-actions">
+          <router-link to="/products" class="primary-btn">Continue shopping</router-link>
+          <button type="button" class="secondary-btn" @click="handleLogout">Sign out</button>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="form.password" required />
-      </div>
+      <form v-else class="account-form" @submit.prevent="handleSubmit">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" v-model="form.name" required />
+        </div>
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" v-model="form.confirmPassword" required />
-      </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" v-model="form.email" required />
+        </div>
 
-      <button type="submit" class="submit-btn">Create Account</button>
-    </form>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="form.password" required />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" v-model="form.confirmPassword" required />
+        </div>
+
+        <div class="form-group">
+          <label for="accountType">Register as</label>
+          <select id="accountType" v-model="form.accountType" required>
+            <option value="novice customer">Novice Customer</option>
+            <option value="technician">Technician</option>
+            <option value="deliboi">Deliboi</option>
+          </select>
+        </div>
+
+        <button type="submit" class="primary-btn" :disabled="isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create Account' }}
+        </button>
+      </form>
+
+      <div class="account-benefits">
+        <h3>{{ hasAccount ? 'What you can do next' : 'Why create an account?' }}</h3>
+        <ul>
+          <li>Save your details for faster checkout and bookings.</li>
+          <li>Receive tailored product and technician recommendations.</li>
+          <li>Keep your account linked across store, media, and services.</li>
+        </ul>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
-import { registerUser } from "../services/auth.service";
+import { registerUser, getRegisteredUser, clearRegisteredUser } from "../services/auth.service";
+
+const emptyForm = () => ({
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  accountType: "novice customer",
+});
 
 export default {
   name: "CreateAccount",
   data() {
     return {
-      form: {
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-      }
+      form: emptyForm(),
+      currentUser: null,
+      feedback: "",
+      isSubmitting: false,
     };
   },
+  computed: {
+    hasAccount() {
+      return Boolean(this.currentUser);
+    },
+  },
+  mounted() {
+    this.currentUser = getRegisteredUser();
+  },
   methods: {
-    handleSubmit() {
+    formatDate(value) {
+      if (!value) return "Not available";
+      try {
+        return new Date(value).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      } catch (_error) {
+        return value;
+      }
+    },
+    async handleSubmit() {
       if (this.form.password !== this.form.confirmPassword) {
-        alert("Passwords do not match!");
+        this.feedback = "Passwords do not match.";
         return;
       }
-      registerUser(this.form);
-      alert(`Account created for ${this.form.name} (${this.form.email})`);
-      this.$router.push("/products"); // redirect after creation
-    }
-  }
+
+      this.isSubmitting = true;
+      const user = await registerUser(this.form);
+
+      if (!user) {
+        this.feedback = "Please complete your name and email.";
+        this.isSubmitting = false;
+        return;
+      }
+
+      this.currentUser = user;
+      this.feedback = `Account created for ${user.name} as a ${user.account_type || this.form.accountType}.`;
+      this.form = emptyForm();
+      this.isSubmitting = false;
+    },
+    handleLogout() {
+      clearRegisteredUser();
+      this.currentUser = null;
+      this.feedback = "You have signed out.";
+    },
+  },
 };
 </script>
 
 <style scoped>
-.form-page {
-  max-width: 500px;
-  margin: 50px auto;
-  background: var(--surface);
-  padding: 30px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+.account-page {
+  min-height: 100vh;
+  padding: 40px 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
 }
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--text);
+
+.account-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
 }
-.account-form .form-group {
-  margin-bottom: 15px;
+
+.account-intro h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: #111827;
 }
-label {
-  display: block;
-  margin-bottom: 5px;
+
+.account-intro p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #f97316;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.feedback-banner {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf3;
+  color: #166534;
   font-weight: 600;
 }
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+
+.account-summary,
+.account-form,
+.account-benefits {
+  margin-top: 24px;
 }
-.submit-btn {
-  width: 100%;
-  background: var(--color-primary);
-  color: var(--text-dark);
+
+.summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px;
+  background: #f8fafc;
+}
+
+.summary-card h2,
+.account-benefits h3 {
+  margin: 0 0 12px;
+  color: #111827;
+}
+
+.summary-card p {
+  margin: 6px 0;
+  color: #334155;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primary-btn,
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
-.submit-btn:hover {
-  background: var(--color-primary-hover);
+
+.primary-btn {
+  background: #111827;
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.account-form {
+  display: grid;
+  gap: 14px;
+}
+
+.form-group {
+  display: grid;
+  gap: 6px;
+}
+
+label {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font: inherit;
+  background: #fff;
+}
+
+
+.account-benefits ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  line-height: 1.8;
 }
 
 @media (max-width: 768px) {
-  .form-page {
-    margin: 24px auto;
-    padding: 20px;
-  }
-
-  h1 {
-    font-size: 1.6rem;
+  .account-card {
+    padding: 24px;
   }
 }
 
 @media (max-width: 480px) {
-  .form-page {
-    margin: 16px auto;
-    padding: 16px;
+  .account-page {
+    padding: 20px 12px;
   }
 
-  input {
-    padding: 9px;
+  .account-card {
+    padding: 20px;
   }
 }
 </style>
