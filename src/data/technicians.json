@@ -1,37 +1,58 @@
 ﻿[
   {
-    "id": 1,
-    "slug": "kabila-mboya",
-    "name": "Laurent Mboya",
-    "specialty": "Telecommunication Systems",
-    "image": "/images/Mboya.JPG",
-    "experience": 5,
-    "color": "blue",
-    "bio": "Laurent is a professional Technical Support Assistant with over 5 years of experience in start-up environments.",
-    "contact": {
-      "phone": "+254 732 379 292",
-      "email": "kabilamboya@gmail.com"    },
-    "location": "Kisumu, Kenya",
-    "projects": {
-      "continuing": [
-        "Hospital wiring upgrade",
-        "Office smart lighting system"
-      ],
-      "review": [
-        "University power grid assessment"
-      ],
-      "completed": [
-        "Residential solar installation",
-        "Mall electrical maintenance"
-      ]
-    },
-    "socials": {
-      "linkedin": "https://linkedin.com/in/kabilamboya",
-      "facebook": "https://facebook.com/kabilamboya",
-      "x": "https://x.com/kabilamboya",
-      "tiktok": "https://tiktok.com/@kenyayouthchannel"
-    }
+  "id": 1,
+  "slug": "kabila-mboya",
+  "name": "Laurent Mboya",
+  "specialty": "QA Automation Engineering",
+  "image": "/images/Mboya.JPG",
+  "experience": 5,
+  "qaExperience": "Software QA & Test Automation",
+  "color": "teal",
+  "bio": "QA Automation Engineer and Testing POD Lead with hands-on experience in web application testing, Playwright automation, API validation, defect investigation, regression testing, and Agile software delivery. My technical background in telecommunications and systems support complements my approach to troubleshooting complex software problems.",
+  "contact": {
+    "phone": "+254 732 379 292",
+    "email": "kabilamboya@gmail.com"
   },
+  "location": "Kisumu, Kenya",
+  "projects": {
+    "continuing": [
+      "CRM UI & API Test Automation",
+      "QA Automation Framework Improvement"
+    ],
+    "review": [
+      "CRM Workflow & Integration Testing",
+      "Test Reliability and Flaky Test Investigation"
+    ],
+    "completed": [
+      "O!clok Digital Platform",
+      "Business Web Application Development"
+    ]
+  },
+  "capabilities": [
+    "Playwright",
+    "TypeScript",
+    "JavaScript",
+    "Node.js",
+    "UI Testing",
+    "API Testing",
+    "REST APIs",
+    "Swagger",
+    "Manual Testing",
+    "Regression Testing",
+    "Smoke Testing",
+    "Sanity Testing",
+    "Defect Investigation",
+    "Git",
+    "Azure DevOps",
+    "Agile Testing"
+  ],
+  "socials": {
+    "linkedin": "https://linkedin.com/in/kabilamboya",
+    "facebook": "https://facebook.com/kabilamboya",
+    "x": "https://x.com/kabilamboya",
+    "tiktok": "https://tiktok.com/@kenyayouthchannel"
+  }
+},
     {
       "id": 2,
       "slug": "hellen",
@@ -66,6 +87,50 @@
         "tiktok": "https://tiktok.com/@hellen"
       }
     },
+    
+    {
+      "id": 100,
+      "slug": "kabila-mboya",
+      "name": "Laurent Mboya",
+      "specialty": "HVAC & Refrigeration",
+      "image": "/images/dokta.jpg",
+      "experience": 5,
+      "color": "green",
+      "location":"Kisumu, Kenya",
+      "status": "active"
+    },
+    {
+  "name": "Kabila Mboya",
+  "specialty": "QA Automation Engineer",
+  "experience": 3,
+
+  "bio": "...",
+
+  "skills": [
+    "Playwright",
+    "TypeScript",
+    "JavaScript",
+    "Node.js",
+    "API Testing",
+    "REST APIs",
+    "Swagger",
+    "Git",
+    "Azure DevOps"
+  ],
+
+  "experienceDetails": [
+    {
+      "title": "QA Lead",
+      "company": "Company Name",
+      "period": "2025 - Present",
+      "responsibilities": [
+        "Led testing activities across product modules.",
+        "Coordinated manual and automated testing.",
+        "Worked with developers and product managers on release quality."
+      ]
+    }
+  ]
+},
     {
       "id": 3,
       "slug": "grace-njeri",
