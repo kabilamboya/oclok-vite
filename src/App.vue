@@ -101,3 +101,41 @@ export default {
   }
 };
 </script>
+
+<style>
+@media print {
+  nav,
+  header,
+  footer,
+  .nav-bar,
+  .site-header,
+  .page-footer,
+  .chatbot-container,
+  .floating-chatbot,
+  .cart-modal,
+  .quick-nav,
+  .hero-actions,
+  .text-link,
+  .cv-action,
+  .back-link,
+  .header-link,
+  .theme-toggle,
+  .header-actions {
+    display: none !important;
+  }
+
+  body,
+  #app,
+  main,
+  .technician-page,
+  .kabila-page,
+  .dashboard-wrapper {
+    background: #fff !important;
+    color: #111 !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+</style>
