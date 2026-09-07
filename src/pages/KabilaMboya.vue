@@ -48,9 +48,10 @@
         </p>
 
         <p class="hero-intro">
-          I help engineering teams build and release reliable software through
-          structured testing, test automation, API validation, defect
-          investigation, and practical quality engineering.
+          QA Automation Engineer and QA Lead with hands-on experience testing
+          web applications, validating APIs, and improving release confidence in
+          Agile product teams through structured testing, automation, and defect
+          investigation.
         </p>
 
         <div class="hero-actions">
@@ -137,19 +138,22 @@
       <div class="summary-copy">
 
         <p>
-          I am a QA Automation Engineer and QA Lead with hands-on experience
-          testing web applications and business workflows.
+          I am a QA Automation Engineer and QA Lead with hands-on experience in
+          functional testing, regression testing, API validation, defect
+          analysis, and release readiness for web applications and business
+          workflows.
         </p>
 
         <p>
-          My work spans manual testing, UI automation, API validation,
-          regression testing, defect investigation, test data preparation,
-          and collaboration with developers and product teams.
+          My work spans smoke testing, sanity testing, exploratory testing,
+          UI automation, backend/API checks, and the investigation of flaky or
+          failing tests to improve product quality and delivery confidence.
         </p>
 
         <p>
-          I currently work primarily with Playwright, TypeScript, JavaScript,
-          Node.js, REST APIs, Swagger, Git, and Azure DevOps.
+          I work with Playwright, TypeScript, JavaScript, Node.js, REST APIs,
+          Swagger, Git, and Azure DevOps to build reliable testing processes
+          and support Agile software delivery.
         </p>
 
         <p class="pull-quote">
@@ -885,12 +889,12 @@ const experience = [
     title: 'QA / Testing POD Lead',
     period: 'Current',
     description:
-      'Leading testing activities within an Agile product engineering environment.',
+      'Leading quality assurance activities in an Agile product engineering environment with a focus on release readiness, test coverage, and risk-based testing.',
     points: [
-      'Coordinate testing activities, task allocation, progress tracking, and release readiness.',
-      'Work with developers, product managers, and other QA team members to understand requirements and testing risks.',
-      'Plan and prioritize regression, smoke, sanity, and feature-level testing.',
-      'Investigate failed tests and help distinguish application defects from automation or environment issues.',
+      'Coordinate testing activities, task allocation, progress tracking, and release readiness across product modules.',
+      'Work with developers, product managers, and QA team members to translate requirements into test coverage and risk assessment.',
+      'Plan and prioritize regression, smoke, sanity, integration, and feature-level testing.',
+      'Investigate failed tests to distinguish application defects from automation or environment issues.',
       'Mentor team members and improve testing practices, communication, and delivery discipline.',
       'Communicate testing progress, blockers, defects, and release risks to stakeholders.'
     ]
@@ -900,15 +904,15 @@ const experience = [
     title: 'QA Automation Engineer',
     period: 'Software Quality Engineering',
     description:
-      'Hands-on testing of a CRM web application using automation, API validation, and structured manual testing.',
+      'Hands-on quality engineering for a CRM web application using automation, API validation, and structured manual testing to reduce release risk and improve confidence.',
     points: [
-      'Develop and maintain Playwright automation using TypeScript and Node.js.',
+      'Develop and maintain Playwright automation using TypeScript and Node.js for critical user workflows.',
       'Test CRM workflows across Tasks, Contacts, Companies, Pipelines, Events, Call Logs, Email Templates, and related modules.',
-      'Validate UI workflows and backend/API behavior using REST APIs and Swagger.',
-      'Build reusable automation helpers and test data utilities to reduce duplication and maintenance.',
-      'Use stable DOM-based selectors and component-aware strategies for complex UI controls.',
-      'Execute smoke, sanity, regression, integration, and exploratory testing.',
-      'Investigate flaky automation and improve test reliability through better synchronization, assertions, and test setup.'
+      'Validate UI behavior and backend/API functionality using REST APIs and Swagger-based testing.',
+      'Build reusable automation helpers and test data utilities to reduce duplication and improve maintainability.',
+      'Use stable DOM-based selectors and component-aware strategies for reliable automation across complex UI controls.',
+      'Execute smoke, sanity, regression, integration, and exploratory testing to support release decisions.',
+      'Investigate flaky automation and improve test reliability through better synchronization, assertions, and setup strategies.'
     ]
   },
 
@@ -938,42 +942,42 @@ const qaAreas = [
     number: '01',
     title: 'UI Automation',
     description:
-      'Automating important user workflows with Playwright while prioritizing stable selectors, reliable synchronization, and maintainable test structure.'
+      'Automating critical user journeys with Playwright to validate behavior, improve regression coverage, and reduce manual verification effort.'
   },
 
   {
     number: '02',
     title: 'API Testing',
     description:
-      'Validating REST API behavior, preparing test data through APIs, and using backend operations to support reliable end-to-end test scenarios.'
+      'Validating REST API behavior, preparing test data, and using backend checks to support reliable end-to-end and integration testing.'
   },
 
   {
     number: '03',
-    title: 'Manual Testing',
+    title: 'Manual & Exploratory Testing',
     description:
-      'Using exploratory, functional, regression, smoke, sanity, integration, and risk-based testing to identify defects before release.'
+      'Using functional, regression, smoke, sanity, integration, and exploratory testing to detect defects early and support product quality.'
   },
 
   {
     number: '04',
-    title: 'Failure Investigation',
+    title: 'Defect Analysis',
     description:
-      'Analyzing failed and flaky tests to determine whether the root cause is an application defect, test issue, synchronization problem, data problem, or environment condition.'
+      'Investigating failed and flaky tests to determine root cause, distinguish product defects from automation issues, and support corrective action.'
   },
 
   {
     number: '05',
     title: 'Quality Leadership',
     description:
-      'Helping teams prioritize quality risks, coordinate testing activities, communicate blockers, and improve release confidence.'
+      'Helping teams prioritize quality risks, coordinate testing activities, communicate blockers, and support confident release decisions.'
   },
 
   {
     number: '06',
     title: 'Engineering Mindset',
     description:
-      'Treating testing as part of software engineering rather than a final inspection step, with attention to maintainability, automation, and system behavior.'
+      'Treating QA as part of software engineering, with attention to maintainability, automation reliability, and system-level quality.'
   }
 
 ]
@@ -2881,8 +2885,12 @@ h2 {
 
 @media print {
 
-  /* Hide the actual website */
-  .technician-page > *:not(.print-cv) {
+  /* Hide the actual website shell and footer */
+  .kabila-page > *:not(.print-cv) {
+    display: none !important;
+  }
+
+  .page-footer {
     display: none !important;
   }
 
