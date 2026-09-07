@@ -65,3 +65,26 @@ body {
   background: var(--color-primary-hover);
   transform: translateY(-2px);
 }
+
+/* Hide floating UI during print or when printing class is applied */
+@media print {
+  .floating-controls,
+  .floating-action,
+  .bubble-icon,
+  .chatbot-window,
+  .chat-window,
+  .chat-toggle,
+  .back-to-top {
+    display: none !important;
+  }
+}
+
+body.oclok-printing .floating-controls,
+body.oclok-printing .floating-action,
+body.oclok-printing .bubble-icon,
+body.oclok-printing .chatbot-window,
+body.oclok-printing .chat-window,
+body.oclok-printing .chat-toggle,
+body.oclok-printing .back-to-top {
+  display: none !important;
+}

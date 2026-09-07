@@ -804,12 +804,19 @@ const downloadCv = () => {
   const filename = `${name || 'technician'}-cv`;
 
   const previousTitle = document.title;
+  // add a body class to hide floating UI during print
+  document.body.classList.add('oclok-printing');
 
   document.title = filename;
 
   window.print();
 
   document.title = previousTitle;
+
+  // remove the printing class shortly after to restore UI
+  setTimeout(() => {
+    document.body.classList.remove('oclok-printing');
+  }, 200);
 };
 </script>
 
