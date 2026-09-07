@@ -16,7 +16,7 @@
       <!-- Hamburger button (mobile) -->
       <button class="hamburger" @click="toggleMenu" :aria-expanded="isMenuOpen" aria-label="Toggle navigation menu">☰</button>
 
-      <div v-if="isMenuOpen" class="mobile-overlay" @click="closeMenu"></div>
+      <div v-show="isMenuOpen" class="mobile-overlay" @click="closeMenu"></div>
 
       <!-- Navigation Links -->
       <div class="cta-buttons">
@@ -71,13 +71,22 @@ export default {
   mounted() {
     if (typeof window === "undefined") return;
     window.addEventListener("cart:notify", this.handleCartNotify);
+    window.addEventListener("resize", this.handleResize);
+    this.handleResize();
   },
   beforeUnmount() {
     if (typeof window === "undefined") return;
     window.removeEventListener("cart:notify", this.handleCartNotify);
+    window.removeEventListener("resize", this.handleResize);
     if (this.toastTimer) {
       clearTimeout(this.toastTimer);
       this.toastTimer = null;
+    }
+  },
+  watch: {
+    $route() {
+      this.closeMenu();
+      this.closeUserMenu();
     }
   },
   methods: {
@@ -96,8 +105,18 @@ export default {
         this.cartPulse = false;
       }, 2200);
     },
+    handleResize() {
+      if (window.innerWidth > 900) {
+        this.closeMenu();
+      }
+      if (window.innerWidth > 900) {
+        this.isUserMenuOpen = false;
+      }
+    },
     toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen;
+      if (window.innerWidth <= 900) {
+        this.isMenuOpen = !this.isMenuOpen;
+      }
     },
     closeMenu() {
       this.isMenuOpen = false;
@@ -480,6 +499,18 @@ cursor:pointer;
   background:rgba(2, 6, 23, 0.6);
   backdrop-filter:blur(3px);
   z-index:9998;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+
+.nav-links.active + .mobile-overlay,
+.mobile-overlay[style*="display: none"] {
+  opacity: 0;
+}
+
+.nav-links.active ~ .mobile-overlay,
+.nav-links.active + .mobile-overlay {
+  opacity: 1;
 }
 
 .drawer-close{
