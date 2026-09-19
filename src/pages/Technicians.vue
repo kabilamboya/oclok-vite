@@ -24,10 +24,6 @@
         <div class="hero-text">
           <h1>Our Certified <span class="hero-accent-primary">O!clok</span> <span class="hero-accent-secondary">Skills</span></h1>
           <p>Available remotely at your convenience</p>
-          <router-link to="/account" class="account-cta">
-            <span>Create Account</span>
-            <small>Join O!clok</small>
-          </router-link>
         </div>
       </section>
 
@@ -51,6 +47,18 @@
       :total-pages="totalPages"
       @update:current-page="currentPage = $event"
     />
+
+    <section class="account-cta-section">
+      <div class="section-shell contact-card">
+        <h2>Want to become part of our team?</h2>
+        <p>Create account and together let’s solve digital challenges at client's convenience.</p>
+        <div class="contact-actions">
+          <router-link to="/signup" class="create-account-btn">Create Account</router-link>
+          <a href="mailto:cambridgemediam@gmail.com" class="primary-btn">Email Us</a>
+          <a href="tel:+254732379292" class="secondary-btn">Call Now</a>
+        </div>
+      </div>
+    </section>
 
     <div v-if="bookings.length" class="booking-summary">
       <h2>Bookings ({{ bookings.length }})</h2>
@@ -294,7 +302,87 @@
   background: #ddd;
 }
 
+.account-cta-section {
+  margin-top: 2.5rem;
+  padding: 1rem 0 0;
+}
 
+.section-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.contact-card {
+  padding: 40px 32px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(8, 15, 28, 0.98), rgba(24, 213, 194, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 40px rgba(10, 18, 27, 0.25);
+}
+
+.contact-card h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.1;
+  color: var(--text-dark, #fff);
+}
+
+.contact-card p {
+  margin: 0.9rem 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.7;
+  max-width: 680px;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 1.5rem;
+}
+
+.create-account-btn,
+.primary-btn,
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.create-account-btn,
+.primary-btn,
+.secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-dark, #fff);
+}
+
+.create-account-btn {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.primary-btn {
+  background: var(--color-primary, #18d5c2);
+  color: #06131a;
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(24, 213, 194, 0.25);
+}
+
+.secondary-btn {
+  background: transparent;
+}
+
+.create-account-btn:hover,
+.primary-btn:hover,
+.secondary-btn:hover {
+  transform: translateY(-1px);
+}
 
 .booking-summary {
   margin-top: 2rem;
@@ -337,6 +425,21 @@
 
   .cards .cards-container {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .contact-card {
+    padding: 30px 22px;
+  }
+
+  .contact-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-account-btn,
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
   }
 }
 

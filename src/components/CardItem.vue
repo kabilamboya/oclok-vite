@@ -15,6 +15,11 @@
     <div class="card-body">
       <h3 class="card-title">{{ title }}</h3>
       <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
+
+      <div v-if="productBadges.length" class="card-badges" aria-label="Product badges">
+        <span v-for="badge in productBadges" :key="badge" class="card-badge" :class="badgeTone(badge)">{{ badge }}</span>
+      </div>
+
       <p v-if="priceLabel" class="card-price">{{ priceLabel }}</p>
       <p v-if="meta" class="card-meta">📍 {{ meta }}</p>
 
@@ -207,6 +212,10 @@ export default {
     showActions() {
       return Boolean(this.primaryText || this.secondaryText);
     },
+    productBadges() {
+      if (this.type !== "product") return [];
+      return Array.isArray(this.item?.badges) ? this.item.badges.filter(Boolean) : [];
+    },
     accentStyle() {
       return this.item.color
         ? { borderTop: `5px solid ${this.item.color}` }
@@ -214,6 +223,12 @@ export default {
     },
   },
   methods: {
+    badgeTone(badge) {
+      const label = String(badge || "").toLowerCase();
+      if (label.includes("wearable") || label.includes("smart")) return "badge-tech";
+      if (label.includes("fashion") || label.includes("apparel")) return "badge-fashion";
+      return "badge-neutral";
+    },
     normalizeRating(value) {
       if (!Number.isFinite(value)) return 0;
       const bounded = Math.min(5, Math.max(3, value));
@@ -287,6 +302,39 @@ export default {
   font-size: 0.9rem;
   color: #6b7280 !important;
   margin-bottom: 0.5rem;
+}
+
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0.7rem;
+}
+
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.28rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-tech {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.badge-fashion {
+  background: rgba(236, 72, 153, 0.1);
+  color: #be185d;
+}
+
+.badge-neutral {
+  background: rgba(17, 24, 39, 0.06);
+  color: #374151;
 }
 
 .card-price {

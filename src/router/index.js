@@ -7,6 +7,8 @@ const TechnicianDetails = () => import('../pages/TechnicianDetails.vue');
 const Products = () => import('../pages/Store.vue');
 const ProductDetail = () => import('../pages/ProductDetail.vue');
 const AccountPage = () => import('../pages/AccountPage.vue');
+const SignInPage = () => import('../pages/SignInPage.vue');
+const SignUpPage = () => import('../pages/SignUpPage.vue');
 const Cyber = () => import('../pages/Cyber.vue');
 const CyberHome = () => import('../pages/Creator/CyberHome.vue');
 const Writer = () => import('../pages/Creator/Writer.vue');
@@ -17,6 +19,8 @@ const Discover = () => import('../pages/Discover.vue');
 const DiscoverDetails = () => import('../pages/DiscoverDetails.vue');
 const Robots = () => import('../pages/Robots.vue');
 const SearchResults = () => import('../pages/SearchResults.vue');
+const RequestSupport = () => import('../pages/RequestSupport.vue');
+const FAQ = () => import('../pages/FAQ.vue');
 const CheckOut = () => import('../pages/CheckOut.vue');
 const AdminDashboard = () => import('../pages/AdminDashboard.vue');
 const NotFound = () => import('../pages/NotFound.vue');
@@ -30,6 +34,8 @@ const routes = [
   { path: '/technicians/:slug', name: 'DoctorProfile', component: TechnicianDetails, props: true },
   { path: '/products', name: 'Products', component: Products },
   { path: '/products/:id', name: 'ProductDetail', component: ProductDetail, props: true },
+  { path: '/signin', name: 'SignInPage', component: SignInPage },
+  { path: '/signup', name: 'SignUpPage', component: SignUpPage },
   { path: '/account', name: 'AccountPage', component: AccountPage },
   { path: '/admin', name: 'AdminDashboard', component: AdminDashboard },
 
@@ -52,7 +58,9 @@ const routes = [
   { path: '/discover', name: 'Discover', component: Discover },
   { path: '/discover/:slug', name: 'DiscoverDetails', component: DiscoverDetails, props: true },
   { path: '/robots', name: 'Robots', component: Robots },
+  { path: '/faq', name: 'FAQ', component: FAQ },
   { path: '/search', name: 'Search', component: SearchResults },
+  { path: '/support', name: 'RequestSupport', component: RequestSupport },
   { path: '/store/user/checkout', name: 'Checkout', component: CheckOut },
   { path: '/checkout', redirect: { name: 'Checkout' } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }

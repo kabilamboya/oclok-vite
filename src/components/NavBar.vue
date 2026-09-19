@@ -9,7 +9,7 @@
         >
         <div class="brand">
         
-        <span>Technology . Media . E-Commerce </span>
+        <span>Saves You Time</span>
       </div>
       </div>
 
@@ -33,16 +33,8 @@
       </div>
 
       <div class="nav-actions">
-        <div class="user-menu">
-          <button class="user-button" type="button" aria-label="Open user menu" :aria-expanded="isUserMenuOpen" @click="isUserMenuOpen = !isUserMenuOpen">
-            <span class="user-avatar" aria-hidden="true">👤</span>
-            <span class="user-label">Profile</span>
-            <span class="user-chevron">⌄</span>
-          </button>
-          <div v-if="isUserMenuOpen" class="user-dropdown">
-            <router-link :to="{ name: 'AccountPage' }" @click="closeUserMenu">User Profile</router-link>
-            <router-link :to="{ name: 'AdminDashboard' }" @click="closeUserMenu">Admin Dashboard</router-link>
-          </div>
+        <div class="auth-cta-group">
+          <router-link class="cta-link sign-in" :to="{ name: 'SignInPage' }" @click="closeMenu">Get Started</router-link>
         </div>
       </div>
     </div>
@@ -61,7 +53,6 @@ export default {
   data() {
     return {
       isMenuOpen: false,
-      isUserMenuOpen: false,
       showCartToast: false,
       cartToastMessage: "",
       cartPulse: false,
@@ -86,7 +77,6 @@ export default {
   watch: {
     $route() {
       this.closeMenu();
-      this.closeUserMenu();
     }
   },
   methods: {
@@ -109,9 +99,6 @@ export default {
       if (window.innerWidth > 900) {
         this.closeMenu();
       }
-      if (window.innerWidth > 900) {
-        this.isUserMenuOpen = false;
-      }
     },
     toggleMenu() {
       if (window.innerWidth <= 900) {
@@ -120,10 +107,6 @@ export default {
     },
     closeMenu() {
       this.isMenuOpen = false;
-    },
-    closeUserMenu() {
-      this.isUserMenuOpen = false;
-      this.closeMenu();
     },
   }
 };
@@ -189,7 +172,7 @@ transition:.3s;
 }
 
 .brand span{
-    color:var(--text-muted-dark);
+    color:var(--color-primary);
     font-size:.75rem;
     letter-spacing:.08em;
     text-transform:uppercase;
@@ -307,7 +290,45 @@ background:#ff6b1a;
 
 }
 
-/* CART */
+/* AUTH CTA */
+
+.auth-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cta-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.cta-link.sign-in {
+  background: transparent;
+  color: var(--text-dark);
+}
+
+.cta-link.sign-up {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dark);
+}
+
+.cta-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(24, 213, 194, 0.8);
+  box-shadow: 0 0 0 1px rgba(24, 213, 194, 0.25);
+}
 
 .nav-actions{
 

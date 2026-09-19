@@ -6,7 +6,30 @@
       <p v-if="subtitle">{{ subtitle }}</p>
     </div>
 
-    <form class="order-form" @submit.prevent="handleSubmit">
+    <div class="request-list" aria-label="Available delivery and discovery items">
+      <button
+        v-for="item in requestOptions"
+        :key="item.title"
+        type="button"
+        class="request-option"
+        @click="goToDiscover(item)"
+      >
+        <span class="request-icon">{{ item.icon }}</span>
+        <span class="request-copy">
+          <strong>{{ item.title }}</strong>
+          <small>{{ item.caption }}</small>
+        </span>
+      </button>
+    </div>
+
+    <div class="card-actions">
+      <router-link class="primary-action" to="/discover">Explore delivery & discovery</router-link>
+      <button class="secondary-action" type="button" @click="showCustomRequest = !showCustomRequest">
+        {{ showCustomRequest ? "Hide custom request" : "Custom request" }}
+      </button>
+    </div>
+
+    <form v-if="showCustomRequest" class="order-form" @submit.prevent="handleSubmit">
       <div class="form-grid">
         <label>
           <span>Name</span>
@@ -49,13 +72,43 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { createDeliboisOrder } from '../services/delibois.service';
 
 const props = defineProps({
   title: { type: String, default: 'Request support' },
   subtitle: { type: String, default: 'We will follow up with you shortly.' },
   page: { type: String, default: 'website' },
+});
+
+const router = useRouter();
+const showCustomRequest = ref(false);
+
+const requestOptions = computed(() => {
+  const defaults = [
+    { icon: '🚚', title: 'Same-day delivery', caption: 'Parcel pickup, returns and doorstep delivery.' },
+    { icon: '🛍️', title: 'Shopping assistance', caption: 'Grocery and household help for convenient orders.' },
+    { icon: '📦', title: 'Item support', caption: 'Delivery coordination for products and errands.' },
+  ];
+
+  if (props.page === 'media') {
+    return [
+      { icon: '🎬', title: 'Media delivery', caption: 'Downloads, creative files and support for content.' },
+      { icon: '📹', title: 'Studio help', caption: 'Video and design requests with guided support.' },
+      { icon: '🧩', title: 'Content setup', caption: 'Smooth file preparation and technical setup.' },
+    ];
+  }
+
+  if (props.page === 'cyber') {
+    return [
+      { icon: '⚙️', title: 'Cyber support', caption: 'Pickup, device support and technical troubleshooting.' },
+      { icon: '📦', title: 'Delivery handoff', caption: 'Local delivery coordination and order tracking.' },
+      { icon: '🧪', title: 'Task follow-up', caption: 'Support for technical or operational requests.' },
+    ];
+  }
+
+  return defaults;
 });
 
 const form = reactive({
@@ -68,6 +121,11 @@ const form = reactive({
 const submitting = ref(false);
 const feedback = ref('');
 const feedbackType = ref('');
+
+const goToDiscover = (item) => {
+  const target = item?.title?.toLowerCase().includes('delivery') ? '/discover' : '/discover';
+  router.push(target);
+};
 
 const handleSubmit = async () => {
   if (!form.customerName || !form.phone) {
@@ -114,11 +172,12 @@ const handleSubmit = async () => {
 
 <style scoped>
 .order-card {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.13);
-  border-radius: 18px;
-  padding: 1.25rem;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.16);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.9), rgba(15, 23, 42, 0.75));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 1.4rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  margin-top: 20px;
 }
 
 .eyebrow {
@@ -133,7 +192,7 @@ const handleSubmit = async () => {
 .order-card h3 {
   margin: 0 0 0.35rem;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 
 .order-card p {
@@ -142,10 +201,101 @@ const handleSubmit = async () => {
   line-height: 1.5;
 }
 
+.request-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.request-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.request-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 179, 107, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.request-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 179, 107, 0.12);
+  font-size: 1.4rem;
+}
+
+.request-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.request-copy strong {
+  font-size: 0.98rem;
+}
+
+.request-copy small {
+  color: #d1d9f0;
+  font-size: 0.76rem;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+}
+
+.primary-action,
+.secondary-action,
+.submit-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.18s ease;
+}
+
+.primary-action {
+  background: linear-gradient(135deg, #ffb36b 0%, #ff8a3d 100%);
+  color: #111827;
+}
+
+.secondary-action {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.primary-action:hover,
+.secondary-action:hover,
+.submit-btn:hover {
+  filter: brightness(1.05);
+}
+
 .order-form {
   margin-top: 1rem;
   display: grid;
   gap: 0.85rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-grid {
@@ -177,13 +327,9 @@ textarea {
 }
 
 .submit-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 0.8rem 1rem;
+  width: 100%;
   background: linear-gradient(135deg, #ffb36b 0%, #ff8a3d 100%);
   color: #111827;
-  font-weight: 800;
-  cursor: pointer;
 }
 
 .feedback {

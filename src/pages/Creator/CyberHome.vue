@@ -26,7 +26,9 @@
       </div>
     </header>
 
-    <QuickOrderForm title="Need a delivery or support request?" subtitle="Start a request from the cyber hub and we will follow up." page="cyber" />
+    <div class="page-cta-row">
+      <router-link to="/support" class="support-access-btn">Request support</router-link>
+    </div>
 
     <section class="cta-grid">
       <article class="cta-card">
@@ -65,10 +67,33 @@
 </template>
 
 <script setup>
-import QuickOrderForm from '../../components/QuickOrderForm.vue';
 </script>
 
 <style scoped>
+.page-cta-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.support-access-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb36b 0%, #ff8a3d 100%);
+  color: #111827;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 12px 24px rgba(255, 138, 61, 0.22);
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.support-access-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
 .cyber-home {
   display: grid;
   gap: 2rem;

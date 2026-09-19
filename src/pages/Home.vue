@@ -96,7 +96,7 @@
         <h2>Ready to launch something smarter?</h2>
         <p>Create account and together let’s create a worthwhile digital experience that fits your life goals.</p>
         <div class="contact-actions">
-          <a href="#create-account" class="create-account-btn">Create Account</a>
+          <router-link to="/signup" class="create-account-btn">Create Account</router-link>
           <a href="mailto:cambridgemediam@gmail.com" class="primary-btn">Email Us</a>
           <a href="tel:+254732379292" class="secondary-btn">Call Now</a>
         </div>

@@ -1,81 +1,133 @@
 ---
 name: oclok-marketplace
-description: "Manage the O!clok marketplace in this Vue/Vite project. Use when adding or editing educational videos, stationery, tutor services, smart electronics, branded clothing, products, categories, product details, cart behavior, or store UI."
-argument-hint: "Describe the marketplace product, category, or store workflow to update"
+description: "Guide updates to the O!clok Vue/Vite app, including the storefront, technician directory, admin dashboard, creative studio, and other customer-facing features. Use when adding products, editing route data, updating cart/checkout behavior, or changing shared UI patterns."
+argument-hint: "Describe the O!clok feature, page, route, or data source to update"
 ---
 
-# O!clok Marketplace
+# O!clok project guide
 
 ## Purpose
 
-Keep the O!clok store coherent as it grows from a smart-electronics catalog into a marketplace for learning, media, services, stationery, electronics, and branded apparel.
+This repository is a multi-page Vue 3 + Vite front-end for O!clok, not a single product catalog. It combines e-commerce, technician discovery, media, local recommendations, creative studio tools, chatbot support, and an admin dashboard.
 
-## Store Surfaces
+## Current product and feature surfaces
 
-- Store listing: `src/pages/Store.vue`
-- Product detail: `src/pages/ProductDetail.vue`
-- Product catalog: `src/data/products.json`
+- Store listing and product filtering: `src/pages/Store.vue`
+- Product detail page: `src/pages/ProductDetail.vue`
+- Product data: `src/data/products.json`
 - Reusable product cards: `src/components/CardItem.vue` and `src/components/CardList.vue`
-- Cart behavior: `src/services/cart.service.js`
-- Checkout: `src/pages/CheckOut.vue`
-- Product routes: `src/router/index.js`
+- Cart state and persistence: `src/services/cart.service.js`
+- Checkout flow: `src/pages/CheckOut.vue`
+- Route registration: `src/router/index.js`
+- Technician profiles: `src/pages/Technicians.vue`, `src/pages/TechnicianDetails.vue`
+- Admin dashboard: `src/pages/AdminDashboard.vue`
+- Cyber Studio: `src/pages/Cyber.vue` and `src/pages/Creator/*`
+- Shared app shell: `src/App.vue`
+- Static data and SEO assets: `public/`
 
-## Product Categories
+## Active route map
 
-Use clear, customer-facing categories. Current marketplace groups include:
+The current router includes these live sections:
 
-- `Learning Videos` for courses, tutorials, and other digital learning content
-- `Audio` for downloadable podcasts, audio lessons, and audio collections
-- `Stationery` for notebooks, study kits, writing tools, and project supplies
-- `Tutors` for bookable educational or technical sessions
-- Existing smart-electronics categories such as `Smart Home`, `Sounds`, `Accessories`, `Watches`, `Safety`, `Sensors`, and `Security`
-- `Clothing` for hoodies, caps, t-shirts, and branded items
+- `/` — Home
+- `/media` — Media
+- `/technicians` — Technicians
+- `/technicians/kabila-mboya` — Example technician profile
+- `/technicians/hellen` — Example technician profile
+- `/technicians/:slug` — Shared technician profile route
+- `/products` — Store
+- `/products/:id` — Product detail
+- `/signin`, `/signup`, `/account` — auth/account flows
+- `/admin` — admin dashboard
+- `/cyber` with nested pages for writer, mockups, gallery, and prompts
+- `/discover` and `/discover/:slug` — discover listings
+- `/robots` — robots hub
+- `/search` — search results
+- `/checkout` and `/store/user/checkout` — checkout routes
+- `/:pathMatch(.*)*` — not found route
 
-Do not create a new category when an existing category accurately describes the item.
+Use these routes and their naming conventions when adding or redirecting features.
 
-## Product Data Contract
+## Product data conventions
 
-Every product in `src/data/products.json` should include:
+The live catalog is defined in `src/data/products.json` and is mapped to the store UI in `src/pages/Store.vue`.
 
-- A unique numeric `id` that does not duplicate another product ID
-- `name`, `price`, `description`, `image`, and `category`
-- An `images` array when more than one product image is available
-- `brand`, `model`, `weight`, `dimensions`, and `warranty`
+Current product categories in use include:
+
+- `Smart Home`
+- `Kitchen`
+- `Sensors`
+- `Security`
+- `Safety`
+- `Outdoor`
+- `Phones`
+- `Watches`
+- `Audio`
+- `Sounds`
+- `Accessories`
+- `Learning Videos`
+- `Stationery`
+- `Tutors`
+- `Clothing`
+- `Footwear`
+- `Bags`
+
+Do not invent a new category when an existing category already matches the item. The store’s department filters are built around the same category names and department grouping used by the page logic.
+
+Each product should generally include:
+
+- unique numeric `id`
+- `name`, `price`, `description`, `image`, `category`
+- `images` array when additional product visuals exist
+- `brand`, `model`, `weight`, `dimensions`, `warranty`
 - `specs`, `howToUse`, `dos`, and `donts` arrays
 
-Use numeric prices in Kenyan shillings. Keep descriptions specific about what the customer receives. For digital products, describe access and lesson format. For audio/video downloads, add `mediaType` (`audio` or `video`) and a `downloadUrl` only when the file exists under `public/media/` or is served by a real backend. For tutors, describe session length and delivery method. For clothing, include sizes, material, care, and exchange information.
+Keep prices in Kenyan shillings as numeric values. Use specific language that explains what the customer receives. For learning content, tutors, or digital items, describe access method and delivery expectations honestly without implying functionality that is not implemented.
 
-## Adding A Product
+## Store and cart behavior
 
-1. Inspect the existing catalog and choose a new, unique numeric ID.
-2. Add the product to `src/data/products.json` using the existing field shape.
-3. Use an image that exists under `public/images/`, or add a real asset before referencing it.
-4. Confirm the item works with the existing product listing, detail route, cart, and checkout without special-case code.
-5. Add special UI logic only when the product type genuinely needs behavior that generic products cannot provide.
-6. For clothing, expose size selection requirements clearly before payment. For tutor services, make scheduling or contact requirements clear. For digital content, do not imply instant access unless delivery is implemented.
-7. For downloadable media, keep the download action behind registered-user state. Never treat a public YouTube embed as a downloadable file. Upload the actual file before adding or enabling `downloadUrl`.
+- Cart is managed in `src/services/cart.service.js` and is persisted in browser storage.
+- The floating cart lives on the Store page rather than in the global navbar.
+- Product cards support add-to-cart and view actions through the shared component system.
+- Checkout navigation should continue to work for `/checkout` and `/store/user/checkout`.
+- Do not add hardcoded store logic that bypasses the normal product catalog or cart service.
 
-## Store UI Guidelines
+## Data and persistence rules
 
-- Preserve the existing Vue 3 Composition API patterns and reusable card components.
-- Keep category filtering and search working for every new category.
-- Keep product cards scannable: name, category, price, image, and concise description.
-- Use accessible labels for search, category controls, cart actions, and product images.
-- Do not break `/products/:id`, cart persistence, or checkout navigation.
-- Registered-user download gating currently uses `src/services/auth.service.js`; it is suitable for this frontend demo, not production authorization.
-- Avoid hardcoding a category list in multiple places when it can be derived from product data.
+- Local persistence is handled through `src/lib/localStore.js`.
+- Technician profile overrides are stored through `src/services/userProfiles.service.js`.
+- Admin user status, permissions, and overrides are currently browser-local prototype state; there is no production authentication or server-side authorization in this repo.
+- For user-facing work, prefer data-driven updates over hardcoded UI branches unless a feature truly needs custom logic.
+
+## Tech and UI conventions
+
+- This project uses Vue 3 Composition API patterns and dynamic route components.
+- Reuse existing layout and card components before creating new ones.
+- Keep search, category filters, and pagination working after adding or editing product data.
+- Preserve accessibility labels for inputs, buttons, and cart actions.
+- Keep file and import paths aligned with the current folder structure.
+- Use real assets only; do not reference image files that do not exist in `public/`.
+
+## Adding or editing content
+
+1. Check the relevant feature area before changing it: store catalog, route definitions, data files, or admin/technician views.
+2. Keep schema and naming consistent with the current data structure in `src/data/*.json`.
+3. Preserve unique IDs and valid JSON when editing catalog data.
+4. Reuse existing category names and department mappings instead of introducing a parallel taxonomy.
+5. Confirm the change still works in the relevant page, route, filter, and cart flow.
+6. Avoid promising payment, delivery, or access features that are not implemented in the front-end or backend.
 
 ## Validation
 
-Run these commands after marketplace changes:
+Run these checks after store or app changes:
 
 ```powershell
 npm run build
 git diff --check
 ```
 
-For catalog-only changes, also verify that the JSON parses and that all product IDs are unique. For UI changes, manually check the store, one new product detail page, category filtering, add-to-cart, and checkout navigation.
+For catalog-only updates, also verify the JSON parses correctly and that all product IDs are unique. For UI changes, manually check the relevant page, route, filter state, and any cart or checkout interaction that was affected.
 
 ## Boundaries
 
-This skill guides the storefront and catalog. Do not invent payment processing, production digital-content authorization, tutor availability, stock management, or delivery promises without an implementation or an explicit product requirement. Production downloads must be protected by server-side authentication and signed or authorized URLs.
+This skill covers the O!clok front-end app as it exists today. Do not assume production auth, payments, secure file delivery, or stock management exists unless the codebase implements it. The current project is a prototype/front-end demo with browser-local persistence and client-side routing.

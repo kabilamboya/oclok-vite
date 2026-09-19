@@ -1,4 +1,5 @@
 import mediaData from '../data/media.json';
+import mediaServices from '../data/mediaServices.json';
 
 /**
  * O!clok Media Service
@@ -141,6 +142,14 @@ const mediaService = {
       }
     });
     return Array.from(types);
+  },
+
+  /**
+   * Get available media services (recording, editing, mastering, etc.)
+   * @returns {Array} Array of service objects
+   */
+  getServices() {
+    return mediaServices;
   },
 
   /**

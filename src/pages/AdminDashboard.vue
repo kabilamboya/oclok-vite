@@ -19,27 +19,203 @@
         <p v-if="!sidebarCollapsed" class="nav-label">Team</p>
         <button class="nav-item" :class="{ active: activeSection === 'users' }" type="button" @click="activeSection = 'users'"><span>♙</span><b v-if="!sidebarCollapsed">Team Access</b></button>
       </nav>
-      <div v-if="!sidebarCollapsed" class="admin-profile"><div class="avatar">C</div><div><strong>Cornel Odera</strong><small>Manager</small></div><span>•••</span></div>
+      <div v-if="!sidebarCollapsed" class="admin-profile"><div class="avatar">A</div><div><strong>admin</strong><small>Operations</small></div><span>•••</span></div>
     </aside>
 
     <section class="admin-content">
-      <header class="topbar"><button class="mobile-menu" type="button" aria-label="Toggle sidebar" @click="sidebarCollapsed = !sidebarCollapsed">☰</button><strong>Dashboard</strong><div class="top-actions"><span class="status-pill">CBD</span><button class="icon-button" type="button" aria-label="Notifications" @click="notificationsOpen = !notificationsOpen">♧<em>{{ unreadMessages }}</em></button><button class="signout" type="button" @click="showNotice('Sign out is not connected yet.')">Sign out</button></div></header>
+      <header class="topbar"><button class="mobile-menu" type="button" aria-label="Toggle sidebar" @click="sidebarCollapsed = !sidebarCollapsed">☰</button><strong>Dashboard</strong><div class="top-actions"><span class="status-pill">admin</span><button class="icon-button" type="button" aria-label="Notifications" @click="notificationsOpen = !notificationsOpen">♧<em>{{ unreadMessages }}</em></button><button class="signout" type="button" @click="showNotice('Sign out is not connected yet.')">Sign out</button></div></header>
 
       <div v-if="activeSection === 'dashboard'" class="dashboard-body">
-        <section class="intro-panel"><div><h1>Oclok Business Cockpit</h1><p>YEAR TO DATE - 2026</p></div><div class="filters"><button v-for="period in periods" :key="period" type="button" :class="{ selected: selectedPeriod === period }" @click="selectedPeriod = period">{{ period }}</button><select v-model="selectedShop" aria-label="Select shop"><option>All Shops</option><option>Oclok Store</option><option>Oclok Cyber</option><option>Oclok Media</option></select></div></section>
-        <div v-if="notificationsOpen" class="notification-panel"><strong>Notifications</strong><p>3 new orders require review.</p><p>Technician profile activity increased this week.</p></div>
+        <section class="intro-panel"><div><h1>Oclok Business Cockpit</h1><p>YEAR TO DATE - {{ selectedYear }}</p></div><div class="filters"><button v-for="period in periods" :key="period" type="button" :class="{ selected: selectedPeriod === period }" @click="selectedPeriod = period">{{ period }}</button><select v-model="selectedShop" aria-label="Select shop"><option>All Shops</option><option>Oclok Store</option><option>Oclok Cyber</option><option>Oclok Media</option></select></div></section>
+        <div v-if="notificationsOpen" class="notification-panel"><strong>Notifications</strong><p>3 alerts require review.</p><p>Technician profile activity increased this week.</p></div>
 
         <section class="brief-grid"><article class="brief-card"><p>General remarks</p><h2>{{ selectedPeriod }} business summary</h2><span>{{ summaryText }}</span></article><article class="brief-card watchlist"><p>Watchlist</p><h2>Monitor stock, orders, and shop contribution.</h2><span>{{ productCount }} products across the current catalogue.</span></article></section>
 
         <section class="metric-grid"><article v-for="metric in metrics" :key="metric.label" class="metric-card"><div class="metric-heading"><span>{{ metric.label }}</span><b :class="metric.tone">{{ metric.icon }}</b></div><strong>{{ metric.value }}</strong><small>{{ metric.note }}</small></article></section>
 
-        <section class="lower-grid"><article class="dashboard-card"><div class="card-heading"><div><p>Live requests</p><h2>Orders and support requests</h2></div><span>{{ orders.length }} tracked</span></div><div v-if="recentOrders.length" class="request-list"><div v-for="order in recentOrders" :key="order.id" class="request-item"><div><strong>{{ order.customerName || order.name || order.recipientName || 'Unnamed request' }}</strong><small>{{ order.orderType || order.order_type || order.requestType || 'Request' }} • {{ order.sourcePage || 'website' }}</small></div><b>{{ order.phone || order.recipientPhone || 'No phone' }}</b></div></div><p v-else class="empty-users">No requests have been submitted yet.</p></article><article class="dashboard-card shop-performance"><div class="card-heading"><div><p>Shop performance</p><h2>Contribution by channel</h2></div><span>{{ selectedPeriod }}</span></div><div v-for="shop in shopPerformance" :key="shop.name" class="shop-row"><div><strong>{{ shop.name }}</strong><small>{{ shop.orders }} transactions</small></div><b>{{ shop.share }}%</b><div class="progress"><span :style="{ width: `${shop.share}%` }"></span></div></div></article></section>
+        <section class="analytics-grid">
+          <article class="dashboard-card sales-card">
+            <div class="card-heading">
+              <div><p>Sales dashboard</p><h2>Revenue performance</h2></div>
+              <span>{{ selectedPeriod }}</span>
+            </div>
+            <div class="chart-kpis">
+              <div><strong>{{ salesSummary.total }}</strong><small>Net sales</small></div>
+              <div><strong>{{ salesSummary.growth }}</strong><small>vs prior period</small></div>
+              <div><strong>{{ salesSummary.orders }}</strong><small>Orders closed</small></div>
+            </div>
+            <svg class="sales-chart" viewBox="0 0 440 180" preserveAspectRatio="none" aria-label="Sales chart">
+              <defs>
+                <linearGradient id="salesFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#df1f26" stop-opacity="0.24" />
+                  <stop offset="100%" stop-color="#df1f26" stop-opacity="0.02" />
+                </linearGradient>
+              </defs>
+              <path :d="salesAreaPath" fill="url(#salesFill)" opacity="0.9"></path>
+              <path :d="salesLinePath" fill="none" stroke="#df1f26" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+              <g v-for="point in salesChartPoints" :key="`point-${point.index}`">
+                <circle :cx="point.x" :cy="point.y" r="4.5" fill="#ffffff" stroke="#df1f26" stroke-width="2"></circle>
+              </g>
+            </svg>
+            <div class="chart-label-row">
+              <span v-for="label in salesChartLabels" :key="label">{{ label }}</span>
+            </div>
+          </article>
+
+          <article class="dashboard-card process-card">
+            <div class="card-heading">
+              <div><p>Process tracking</p><h2>Operations pipeline</h2></div>
+              <span>{{ processRows.filter((row) => row.status !== 'Complete').length }} active</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table process-table">
+                <thead>
+                  <tr>
+                    <th>Process</th>
+                    <th>Due</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="process in processRows" :key="process.name">
+                    <td><strong>{{ process.name }}</strong><small>{{ process.owner }}</small></td>
+                    <td>{{ process.due }}</td>
+                    <td>
+                      <div class="progress-track"><span :style="{ width: `${process.progress}%` }"></span></div>
+                      <small>{{ process.progress }}%</small>
+                    </td>
+                    <td>
+                      <button type="button" class="status-pill-table" :class="process.status.toLowerCase().replace(/\s+/g, '-')" @click="cycleProcessStatus(process)">
+                        {{ process.status }}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="dashboard-card table-card">
+            <div class="card-heading">
+              <div><p>Sales by channel</p><h2>Store revenue</h2></div>
+              <span>{{ selectedShop }}</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Channel</th>
+                    <th>Revenue</th>
+                    <th>Orders</th>
+                    <th>Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="channel in salesChannels" :key="channel.name">
+                    <td><strong>{{ channel.name }}</strong></td>
+                    <td>{{ channel.revenue }}</td>
+                    <td>{{ channel.orders }}</td>
+                    <td><span class="share-badge">{{ channel.share }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="dashboard-card stock-card">
+            <div class="card-heading">
+              <div><p>Stock management</p><h2>Catalogue inventory</h2></div>
+              <span>{{ stockEntries.length }} items</span>
+            </div>
+
+            <div class="stock-layout">
+              <form class="stock-form" @submit.prevent="addStockItem">
+                <h3>Add item</h3>
+                <div class="stock-form-row">
+                  <label>
+                    <span>Name</span>
+                    <input v-model="stockForm.name" type="text" placeholder="Product name" required />
+                  </label>
+                  <label>
+                    <span>Category</span>
+                    <select v-model="stockForm.category">
+                      <option v-for="category in stockCategories" :key="category" :value="category">{{ category }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="stock-form-row">
+                  <label>
+                    <span>Price (KES)</span>
+                    <input v-model.number="stockForm.price" type="number" min="0" step="100" required />
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select v-model="stockForm.inStock">
+                      <option :value="true">In stock</option>
+                      <option :value="false">Out of stock</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <textarea v-model="stockForm.description" rows="3" placeholder="Optional product description"></textarea>
+                </label>
+                <button type="submit" class="primary-action stock-submit">Add to stock</button>
+              </form>
+
+              <div class="stock-table-wrap">
+                <table class="stock-table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in stockEntries" :key="item.id">
+                      <td><strong>{{ item.name }}</strong></td>
+                      <td>{{ item.category }}</td>
+                      <td>
+                        <input
+                          :value="item.price"
+                          type="number"
+                          min="0"
+                          step="100"
+                          @input="updateStockPrice(item, $event.target.value)"
+                        />
+                      </td>
+                      <td>
+                        <button type="button" class="stock-toggle" :class="{ out: !item.inStock }" @click="toggleStockStatus(item)">
+                          {{ item.inStock !== false ? 'In stock' : 'Out of stock' }}
+                        </button>
+                      </td>
+                      <td>
+                        <button type="button" class="table-action danger" @click="removeStockItem(item.id)">Remove</button>
+                      </td>
+                    </tr>
+                    <tr v-if="stockEntries.length === 0">
+                      <td colspan="5" class="empty-users">No stock items yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="lower-grid"><article class="dashboard-card shop-performance"><div class="card-heading"><div><p>Shop performance</p><h2>Contribution by channel</h2></div><span>{{ selectedPeriod }}</span></div><div v-for="shop in shopPerformance" :key="shop.name" class="shop-row"><div><strong>{{ shop.name }}</strong><small>{{ shop.orders }} transactions</small></div><b>{{ shop.share }}%</b><div class="progress"><span :style="{ width: `${shop.share}%` }"></span></div></div></article></section>
 
         <section class="lower-grid"><article class="dashboard-card activity-card"><div class="card-heading"><div><p>Recent activity</p><h2>What needs attention</h2></div><button class="link-button" type="button" @click="showNotice('All activity view is coming next.')">View all</button></div><ul><li v-for="activity in activities" :key="activity.title"><span class="activity-icon">{{ activity.icon }}</span><div><strong>{{ activity.title }}</strong><small>{{ activity.meta }}</small></div><b>{{ activity.value }}</b></li></ul></article><article class="dashboard-card quick-actions"><div class="card-heading"><div><p>Quick actions</p><h2>Keep work moving</h2></div></div><button type="button" @click="showNotice('New record workflow selected.')">+ Add record <span>→</span></button><button type="button" @click="showNotice('Report export is ready for connection.')">↓ Export report <span>→</span></button><button type="button" @click="showNotice('Team access workflow selected.')">♙ Manage team <span>→</span></button></article></section>
       </div>
       <section v-else class="user-management dashboard-body">
         <section class="intro-panel"><div><h1>Team Access</h1><p>{{ users.length }} registered technicians</p></div><button class="primary-action" type="button" @click="showNotice('All technicians are already registered from the technician directory.')">+ Add User</button></section>
-        <section class="user-summary-grid"><article class="user-summary"><span>Registered users</span><strong>{{ users.length }}</strong><small>All technician profiles</small></article><article class="user-summary"><span>Active users</span><strong>{{ activeUserCount }}</strong><small>Can access the platform</small></article><article class="user-summary"><span>Pending review</span><strong>{{ pendingUserCount }}</strong><small>Require admin attention</small></article></section>
+        <section class="user-summary-grid"><article class="user-summary"><span>Technicians</span><strong>{{ technicianCount }}</strong><small>Registered technician profiles</small></article></section>
         <section class="dashboard-card users-card"><div class="card-heading users-heading"><div><p>User directory</p><h2>Manage registered users</h2></div><div class="user-filters"><input v-model="userSearch" type="search" placeholder="Search users..." aria-label="Search users" /><select v-model="userStatusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div></div><div class="users-table-wrap"><table class="users-table"><thead><tr><th>User</th><th>Role</th><th>Location</th><th>Status</th><th>Edit permission</th><th>Actions</th></tr></thead><tbody><tr v-for="user in filteredUsers" :key="user.id"><td><div class="user-cell"><span class="user-initial">{{ user.initial }}</span><div><strong>{{ user.name }}</strong><small>{{ user.email }}</small></div></div></td><td><span class="role-badge">{{ user.role }}</span></td><td>{{ user.location }}</td><td><span class="status-badge" :class="user.status">{{ user.status }}</span></td><td><button class="permission-button" type="button" :class="{ granted: user.canEditDetails }" @click="toggleEditPermission(user)">{{ user.canEditDetails ? 'Allowed' : 'Blocked' }}</button></td><td class="user-actions"><button class="table-action" type="button" :disabled="!user.canEditDetails" @click="openUserEditor(user)">Edit details</button><button class="table-action" type="button" @click="toggleUserStatus(user)">{{ user.status === 'active' ? 'Suspend' : 'Activate' }}</button></td></tr><tr v-if="filteredUsers.length === 0"><td colspan="6" class="empty-users">No users match your filters.</td></tr></tbody></table></div></section>
       </section>
       <div v-if="editingUser" class="editor-overlay" @click.self="closeUserEditor"><form class="profile-editor" @submit.prevent="saveUserDetails"><div class="editor-header"><div><p>Edit permissioned profile</p><h2>{{ editingUser.name }}</h2></div><button type="button" class="editor-close" aria-label="Close editor" @click="closeUserEditor">&times;</button></div><label>Name<input v-model="editForm.name" required /></label><label>Specialty<input v-model="editForm.specialty" required /></label><label>Bio<textarea v-model="editForm.bio" rows="4" required></textarea></label><div class="editor-fields"><label>Email<input v-model="editForm.email" type="email" required /></label><label>Phone<input v-model="editForm.phone" type="tel" /></label></div><label>Location<input v-model="editForm.location" required /></label><div class="editor-actions"><button type="button" class="secondary-action" @click="closeUserEditor">Cancel</button><button type="submit" class="primary-action">Save details</button></div></form></div>
@@ -52,11 +228,16 @@
 import { computed, onMounted, ref } from 'vue';
 import products from '../data/products.json';
 import technicians from '../data/technicians.json';
-import { readStore, writeStore } from '../lib/localStore';
+import media from '../data/media.json';
+import services from '../data/services.json';
+import mediaServices from '../data/mediaServices.json';
+import places from '../data/places.json';
+import { createId, readStore, writeStore } from '../lib/localStore';
 import { saveProfileOverride } from '../services/userProfiles.service';
 import { getRegisteredUser } from '../services/auth.service';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
+const STOCK_STORAGE_KEY = 'oclok_store_stock';
 const sidebarCollapsed = ref(false);
 const activeSection = ref('dashboard');
 const notificationsOpen = ref(false);
@@ -68,9 +249,38 @@ const userStatusFilter = ref('all');
 const editingUser = ref(null);
 const editForm = ref({});
 const periods = ['YTD', 'This Month', 'This Week', 'All Time'];
-const productCount = products.length;
+const stockCategories = ['Smart Home', 'Phones', 'Watches', 'Audio', 'Accessories', 'Security', 'Kitchen', 'Clothing', 'Footwear', 'Bags'];
+const stockForm = ref({ name: '', category: 'Smart Home', price: 0, inStock: true, description: '', image: '' });
+const stockEntries = ref((readStore(STOCK_STORAGE_KEY, products) || []).map((item) => ({
+  ...item,
+  id: item.id || createId('stock'),
+  price: Number(item.price) || 0,
+  inStock: item.inStock !== false,
+  image: item.image || '/images/placeholder.jpg',
+  description: item.description || item.name || 'Available product',
+})));
+const productCount = computed(() => Array.isArray(products) ? products.length : 0);
 const technicianCount = technicians.length;
 const unreadMessages = 3;
+
+const persistStock = () => {
+  writeStore(STOCK_STORAGE_KEY, stockEntries.value);
+  window.dispatchEvent(new CustomEvent('oclok-stock-updated', { detail: stockEntries.value }));
+};
+
+const syncStoreCatalog = () => {
+  const savedStock = readStore(STOCK_STORAGE_KEY, products);
+  const nextStock = Array.isArray(savedStock) && savedStock.length ? savedStock : products;
+  stockEntries.value = nextStock.map((item) => ({
+    ...item,
+    id: item.id || createId('stock'),
+    price: Number(item.price) || 0,
+    inStock: item.inStock !== false,
+    image: item.image || '/images/placeholder.jpg',
+    description: item.description || item.name || 'Available product',
+  }));
+  writeStore(STOCK_STORAGE_KEY, stockEntries.value);
+};
 const normalizeRole = (value) => {
   const normalized = String(value || '').trim().toLowerCase();
   if (normalized.includes('deliboi')) return 'Deliboi';
@@ -111,7 +321,6 @@ const users = ref((Array.isArray(storedUsers) ? storedUsers : defaultUsers).map(
     initial: user.initial || (user.name || 'U').charAt(0).toUpperCase(),
   };
 }));
-const orders = ref(readStore('oclok_delibois_orders', []));
 const activeUserCount = computed(() => users.value.filter((user) => user.status === 'active').length);
 const pendingUserCount = computed(() => users.value.filter((user) => user.status === 'pending').length);
 const filteredUsers = computed(() => users.value.filter((user) => {
@@ -120,20 +329,113 @@ const filteredUsers = computed(() => users.value.filter((user) => {
   const matchesStatus = userStatusFilter.value === 'all' || user.status === userStatusFilter.value;
   return matchesSearch && matchesStatus;
 }));
-const recentOrders = computed(() => orders.value.slice(0, 5));
+const recentOrders = computed(() => []);
+const storeCount = computed(() => Array.isArray(products) ? products.length : 0);
+const mediaCount = computed(() => Array.isArray(media) ? media.length : 0);
+const servicesCount = computed(() => {
+  const base = Array.isArray(services) ? services.length : 0;
+  const mediaSvc = Array.isArray(mediaServices) ? mediaServices.length : 0;
+  return base + mediaSvc;
+});
+const cyberCount = computed(() => (Array.isArray(services) ? services.filter((s) => String(s.title || s.category || '').toLowerCase().includes('cyber') || String(s.category || '').toLowerCase().includes('security')).length : 0));
+const discoverCount = computed(() => Array.isArray(places) ? places.length : 0);
+
 const metrics = computed(() => [
-  { label: 'Registered users', value: users.value.length, note: 'Profiles in the admin view', icon: '♙', tone: 'green' },
-  { label: 'Live requests', value: orders.value.length, note: 'Orders and support requests', icon: '▣', tone: 'blue' },
-  { label: 'Pending review', value: pendingUserCount.value, note: 'Accounts needing attention', icon: '!', tone: 'red' },
-  { label: 'Active accounts', value: activeUserCount.value, note: 'Ready for service access', icon: '◉', tone: 'neutral' },
-  { label: 'Technician profiles', value: technicianCount, note: 'Profiles in network', icon: '♙', tone: 'teal' },
-  { label: 'Active products', value: productCount, note: 'Current catalogue', icon: '▱', tone: 'yellow' },
+  { label: 'Store products', value: storeCount.value, note: 'Products in store', icon: '▱', tone: 'yellow' },
+  { label: 'Services', value: servicesCount.value, note: 'Catalogued services', icon: '⚙', tone: 'blue' },
+  { label: 'Media items', value: mediaCount.value, note: 'Media & content pieces', icon: '▣', tone: 'purple' },
+  { label: 'Technicians', value: technicianCount, note: 'Registered technicians', icon: '♙', tone: 'teal' },
+  { label: 'Cyber services', value: cyberCount.value, note: 'Cyber & security offerings', icon: '🛡', tone: 'red' },
+  { label: 'Discover items', value: discoverCount.value, note: 'Discoverable places/resources', icon: '🔎', tone: 'green' },
 ]);
+const salesSeriesMap = {
+  YTD: [42, 48, 54, 62, 76, 81, 92, 101, 108, 117, 126, 134],
+  'This Month': [48, 55, 59, 65, 74, 82],
+  'This Week': [20, 33, 41, 49, 56, 64],
+  'All Time': [32, 39, 48, 56, 63, 71, 79, 88, 95, 104, 112, 128],
+};
+const salesChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+const salesShopFactor = {
+  'All Shops': 1,
+  'Oclok Store': 1.22,
+  'Oclok Cyber': 0.86,
+  'Oclok Media': 0.72,
+};
+const salesSeries = computed(() => {
+  const base = salesSeriesMap[selectedPeriod.value] || salesSeriesMap.YTD;
+  const factor = salesShopFactor[selectedShop.value] || 1;
+  return base.map((value) => Math.round(value * factor));
+});
+const salesChartPoints = computed(() => {
+  const points = salesSeries.value;
+  const width = 440;
+  const height = 180;
+  const padding = 16;
+  const max = Math.max(...points, 1);
+  const min = Math.min(...points, 0);
+  const spread = max - min || 1;
+  return points.map((point, index) => ({
+    index,
+    x: padding + (index * (width - padding * 2)) / Math.max(points.length - 1, 1),
+    y: height - padding - ((point - min) / spread) * (height - padding * 2),
+  }));
+});
+const salesLinePath = computed(() => {
+  return salesChartPoints.value.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
+});
+const salesAreaPath = computed(() => {
+  const points = salesChartPoints.value;
+  if (!points.length) return '';
+  const line = salesLinePath.value;
+  const lastX = points[points.length - 1].x;
+  const firstX = points[0].x;
+  const bottomY = 180 - 16;
+  return `${line} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
+});
+const salesSummary = computed(() => {
+  const series = salesSeries.value;
+  const total = series.reduce((sum, value) => sum + value, 0);
+  const growth = Math.round(((series[series.length - 1] - series[0]) / Math.max(series[0], 1)) * 100);
+  const orders = Math.max(24, Math.round(total / 4));
+  return {
+    total: `KES ${total}K`,
+    growth: `${growth >= 0 ? '+' : ''}${growth}%`,
+    orders: `${orders}`,
+  };
+});
+const salesChannels = computed(() => {
+  const shopFactor = salesShopFactor[selectedShop.value] || 1;
+  const base = [
+    { name: 'Oclok Store', revenue: 128000, orders: 642, share: '54%' },
+    { name: 'Oclok Cyber', revenue: 76000, orders: 388, share: '31%' },
+    { name: 'Oclok Media', revenue: 46000, orders: 254, share: '15%' },
+  ];
+  return base.map((channel) => ({
+    ...channel,
+    revenue: `KES ${Math.round(channel.revenue * shopFactor / 1000)}K`,
+    orders: Math.round(channel.orders * shopFactor),
+    share: `${Math.min(99, Math.round((channel.orders / base.reduce((sum, item) => sum + item.orders, 0)) * 100 * shopFactor))}%`,
+  }));
+});
 const shopPerformance = [
   { name: 'Oclok Store', orders: 642, share: 78 },
   { name: 'Oclok Cyber', orders: 388, share: 56 },
   { name: 'Oclok Media', orders: 254, share: 34 },
 ];
+const processStatusOrder = ['On track', 'Review', 'Delayed', 'Complete'];
+const processRows = ref([
+  { name: 'Inbound order intake', owner: 'Operations desk', due: 'Today', progress: 84, status: 'On track' },
+  { name: 'Quality control', owner: 'Warehouse lead', due: 'Tomorrow', progress: 66, status: 'Review' },
+  { name: 'Customer follow-up', owner: 'Sales desk', due: '2 days', progress: 52, status: 'Delayed' },
+  { name: 'Finance reconciliation', owner: 'Accounts', due: 'Friday', progress: 93, status: 'Complete' },
+]);
+const cycleProcessStatus = (process) => {
+  const currentIndex = processStatusOrder.indexOf(process.status);
+  const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % processStatusOrder.length;
+  process.status = processStatusOrder[nextIndex];
+  process.progress = process.status === 'Complete' ? 100 : process.status === 'Delayed' ? 42 : process.status === 'Review' ? 68 : 84;
+  showNotice(`${process.name} moved to ${process.status}.`);
+};
 const categories = [
   { name: 'Smart Home', revenue: 'KES 128K', transactions: 486, share: '52%' },
   { name: 'Cyber Services', revenue: 'KES 74K', transactions: 294, share: '30%' },
@@ -144,14 +446,11 @@ const activities = [
   { icon: '♙', title: 'Technician profile updated', meta: 'Kabila Mboya / 1 hour ago', value: 'Review' },
   { icon: '!', title: 'Invoice requires follow-up', meta: 'Oclok Cyber / Yesterday', value: 'KES 18K' },
 ];
-const summaryText = computed(() => selectedShop.value === 'All Shops' ? 'Loading business performance summary...' : `${selectedShop.value} performance is ready for review.`);
+const summaryText = computed(() => selectedShop.value === 'All Shops' ? 'All business channels are tracking above target for the current period.' : `${selectedShop.value} performance is ready for review.`);
 const syncFromSupabase = async () => {
   if (!isSupabaseConfigured || !supabase) return;
   try {
-    const [usersResponse, ordersResponse] = await Promise.all([
-      supabase.from('users').select('*').order('created_at', { ascending: false }),
-      supabase.from('delibois_orders').select('*').order('created_at', { ascending: false }),
-    ]);
+    const usersResponse = await supabase.from('users').select('*').order('created_at', { ascending: false });
 
     if (!usersResponse.error && Array.isArray(usersResponse.data)) {
       const nextUsers = usersResponse.data.map((entry) => ({
@@ -173,15 +472,7 @@ const syncFromSupabase = async () => {
       writeStore('oclok_admin_users', users.value);
     }
 
-    if (!ordersResponse.error && Array.isArray(ordersResponse.data)) {
-      const nextOrders = ordersResponse.data.map((entry) => ({
-        ...entry,
-        customerName: entry.customer_name || entry.customerName || entry.name || 'Unnamed request',
-        orderType: entry.order_type || entry.orderType || 'Request',
-      }));
-      orders.value = nextOrders;
-      writeStore('oclok_delibois_orders', nextOrders);
-    }
+    // Orders sync removed from admin dashboard to avoid redundant tracking here
   } catch (error) {
     console.error('Unable to sync admin dashboard data:', error);
   }
@@ -228,6 +519,44 @@ const toggleUserStatus = (user) => {
   writeStore('oclok_admin_users', users.value);
   showNotice(`${user.name} is now ${user.status}.`);
 };
+const addStockItem = () => {
+  const trimmedName = stockForm.value.name.trim();
+  if (!trimmedName) return;
+
+  const nextItem = {
+    id: createId('stock'),
+    name: trimmedName,
+    category: stockForm.value.category,
+    price: Number(stockForm.value.price) || 0,
+    inStock: stockForm.value.inStock !== false,
+    description: stockForm.value.description.trim() || `${trimmedName} is now available in the catalogue.`,
+    image: stockForm.value.image || '/images/placeholder.jpg',
+  };
+
+  stockEntries.value.unshift(nextItem);
+  persistStock();
+  stockForm.value = { name: '', category: 'Smart Home', price: 0, inStock: true, description: '', image: '' };
+  showNotice(`${trimmedName} was added to stock.`);
+};
+
+const updateStockPrice = (item, value) => {
+  item.price = Number(value) || 0;
+  persistStock();
+};
+
+const toggleStockStatus = (item) => {
+  item.inStock = !item.inStock;
+  persistStock();
+  showNotice(`${item.name} marked ${item.inStock ? 'in stock' : 'out of stock'}.`);
+};
+
+const removeStockItem = (itemId) => {
+  const item = stockEntries.value.find((entry) => entry.id === itemId);
+  stockEntries.value = stockEntries.value.filter((entry) => entry.id !== itemId);
+  persistStock();
+  if (item) showNotice(`${item.name} was removed from stock.`);
+};
+
 const showNotice = (message) => { notice.value = message; window.clearTimeout(showNotice.timer); showNotice.timer = window.setTimeout(() => { notice.value = ''; }, 2800); };
 
 onMounted(() => {
@@ -250,10 +579,9 @@ onMounted(() => {
     writeStore('oclok_admin_users', users.value);
   }
 
-  if (Array.isArray(readStore('oclok_delibois_orders', []))) {
-    orders.value = readStore('oclok_delibois_orders', []);
-  }
+  // Orders are no longer loaded into the admin dashboard to avoid redundant tracking
 
+  syncStoreCatalog();
   syncFromSupabase();
 });
 </script>
@@ -274,5 +602,22 @@ onMounted(() => {
 .request-item strong { display:block; font-size:.78rem; }
 .request-item small { display:block; color:var(--muted); margin-top:.2rem; font-size:.62rem; }
 .request-item b { font-size:.7rem; color:var(--red); }
-@media (max-width:650px) { .admin-sidebar { width:76px; flex-basis:76px; }.admin-sidebar .brand-block { padding-inline:1.25rem; }.admin-sidebar .collapse-button { display:none; }.admin-sidebar .nav-label,.admin-sidebar .nav-item b,.admin-sidebar .nav-item i,.admin-sidebar .admin-profile { display:none; }.admin-nav { padding-inline:.8rem; }.nav-item { justify-content:center; }.topbar { justify-content:flex-start; padding-left:1rem; gap:.75rem; }.mobile-menu { display:block; border:1px solid var(--line); background:#fff; border-radius:7px; padding:.4rem .55rem; }.top-actions { right:.8rem; gap:.35rem; }.status-pill,.icon-button { display:none; }.signout { padding:.45rem .55rem; }.dashboard-body { padding:.9rem; }.metric-grid { grid-template-columns:repeat(2,1fr); }.metric-card { min-height:95px; }.brief-grid { margin-top:.75rem; }.intro-panel { padding:1rem; }.filters button { padding:.5rem .65rem; }.filters select { width:100%; margin-left:0; }.toast { right:.8rem; bottom:.8rem; left:.8rem; text-align:center; } }
+.stock-card { margin-top:1rem; }
+.stock-layout { display:grid; grid-template-columns:320px 1fr; gap:1rem; }
+.stock-form { display:grid; gap:.85rem; padding:1rem; border:1px solid var(--line); border-radius:14px; background:#fafcfb; }
+.stock-form h3 { margin:0; font-size:.95rem; }
+.stock-form-row { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+.stock-form label { display:grid; gap:.4rem; color:var(--muted); font:500 .65rem 'DM Mono'; text-transform:uppercase; }
+.stock-form input,.stock-form textarea,.stock-form select,.stock-table input { width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:8px; padding:.65rem .7rem; font:500 .75rem 'Manrope'; background:#fff; color:var(--ink); }
+.stock-form textarea { resize:vertical; min-height:70px; }
+.stock-submit { width:100%; margin-top:.2rem; }
+.stock-table-wrap { overflow:auto; }
+.stock-table { width:100%; min-width:560px; border-collapse:collapse; }
+.stock-table th,.stock-table td { text-align:left; padding:.8rem .6rem; border-bottom:1px solid var(--line); font-size:.72rem; }
+.stock-table th { color:var(--muted); font:500 .62rem 'DM Mono'; letter-spacing:.1em; text-transform:uppercase; }
+.stock-table strong { display:block; font-size:.78rem; }
+.stock-toggle { border:0; border-radius:999px; padding:.42rem .7rem; font:700 .62rem 'Manrope'; cursor:pointer; background:#d9f7e7; color:#1d9e5e; }
+.stock-toggle.out { background:#ffe1e1; color:var(--red); }
+.table-action.danger { color:var(--red); }
+@media (max-width:650px) { .admin-sidebar { width:76px; flex-basis:76px; }.admin-sidebar .brand-block { padding-inline:1.25rem; }.admin-sidebar .collapse-button { display:none; }.admin-sidebar .nav-label,.admin-sidebar .nav-item b,.admin-sidebar .nav-item i,.admin-sidebar .admin-profile { display:none; }.admin-nav { padding-inline:.8rem; }.nav-item { justify-content:center; }.topbar { justify-content:flex-start; padding-left:1rem; gap:.75rem; }.mobile-menu { display:block; border:1px solid var(--line); background:#fff; border-radius:7px; padding:.4rem .55rem; }.top-actions { right:.8rem; gap:.35rem; }.status-pill,.icon-button { display:none; }.signout { padding:.45rem .55rem; }.dashboard-body { padding:.9rem; }.metric-grid { grid-template-columns:repeat(2,1fr); }.metric-card { min-height:95px; }.brief-grid { margin-top:.75rem; }.intro-panel { padding:1rem; }.filters button { padding:.5rem .65rem; }.filters select { width:100%; margin-left:0; }.stock-layout { grid-template-columns:1fr; }.toast { right:.8rem; bottom:.8rem; left:.8rem; text-align:center; } }
 </style>

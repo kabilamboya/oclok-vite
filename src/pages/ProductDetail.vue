@@ -41,10 +41,10 @@
         <!-- Buttons -->
         <div class="actions">
           <button class="buy-btn" @click="CartModal">🛒 Add to Cart</button>
-          <button v-if="isMediaProduct && !registeredUser" class="account-btn" @click="$router.push('/account')">👤 Register to Download</button>
+          <button v-if="isMediaProduct && !registeredUser" class="account-btn" @click="$router.push('/signup')">👤 Register to Download</button>
           <button v-else-if="isMediaProduct && product.downloadUrl" class="download-btn" @click="downloadMedia">⬇ Download Media</button>
           <span v-else-if="isMediaProduct" class="media-status">Download will be available after the media file is uploaded.</span>
-          <button v-else class="account-btn" @click="$router.push('/account')">👤 Create Account</button>
+          <button v-else class="account-btn" @click="$router.push('/signup')">👤 Create Account</button>
           <button class="contact-btn" @click="contactSupplier">📞 Contact Supplier</button>
         </div>
       </div>

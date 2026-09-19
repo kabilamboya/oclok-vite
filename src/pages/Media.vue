@@ -8,10 +8,6 @@
         <a :href="featuredVideo?.youtubeLink" target="_blank" rel="noopener noreferrer" class="watch-button">Watch Featured Video</a>
         <a href="https://www.youtube.com/@kenyayouthchannel" target="_blank" rel="noopener noreferrer" class="secondary-link">Visit Channel</a>
       </div>
-      <router-link to="/account" class="account-cta">
-        <span>Create Account</span>
-        <small>Join O!clok</small>
-      </router-link>
     </div>
   </section>
 
@@ -50,7 +46,9 @@
       </section>
     </header>
 
-    <QuickOrderForm title="Need media support?" subtitle="Share your goal and we will help shape the next step." page="media" />
+    <div class="page-cta-row">
+      <router-link to="/support" class="support-access-btn">Need media support?</router-link>
+    </div>
 
     <!-- Videos Section with Tabs -->
     <section class="videos-section">
@@ -99,6 +97,26 @@
         </div>
       </div>
     </section>
+
+  <!-- Services & Offerings -->
+  <section class="services-section">
+    <h2 class="section-title">Services & Offerings</h2>
+    <p class="services-intro">Our media services: recording, editing, podcast production, meetings recording, online voting, and music mastering.</p>
+
+    <div class="service-grid">
+      <div v-for="svc in services" :key="svc.id" class="service-card">
+        <div class="service-header">
+          <h3>{{ svc.title }}</h3>
+          <span class="service-duration">{{ svc.duration }}</span>
+        </div>
+        <p class="service-desc">{{ svc.description }}</p>
+        <ul class="service-features">
+          <li v-for="f in svc.features" :key="f">{{ f }}</li>
+        </ul>
+        <a href="/support" class="cta-button">Request Service</a>
+      </div>
+    </div>
+  </section>
 
     <section class="latest-posts-section">
       <div class="section-heading">
@@ -165,13 +183,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import mediaService from '../services/media.service';
-import QuickOrderForm from '../components/QuickOrderForm.vue';
 
 // State
 const selectedVideoTab = ref('recorded');
 const videos = ref([]);
 const blogs = ref([]);
 const posts = ref([]);
+const services = ref([]);
 const videoTabs = ['live', 'recorded', 'commissioned'];
 
 // Computed
@@ -198,6 +216,7 @@ const formatDate = (dateString) => {
 onMounted(async () => {
   videos.value = mediaService.getVideos();
   blogs.value = mediaService.getBlogs();
+  services.value = mediaService.getServices();
 
   try {
     const response = await fetch('/linkedin-posts.json');
@@ -210,6 +229,30 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.page-cta-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0 0;
+}
+
+.support-access-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb36b 0%, #ff8a3d 100%);
+  color: #111827;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 12px 24px rgba(255, 138, 61, 0.22);
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.support-access-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
 
 /* Core resets & fonts – add Google Fonts or local if needed */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
@@ -726,6 +769,62 @@ onMounted(async () => {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0 2rem 2rem;
+}
+
+/* ===== SERVICES SECTION ===== */
+.services-section {
+  margin: 3rem 0 4rem;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.services-intro {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.service-card {
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.service-desc {
+  color: #94a3b8;
+  margin: 0;
+}
+
+.service-features {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  color: #cbd5e1;
+}
+
+.service-duration {
+  background: rgba(255, 107, 0, 0.12);
+  color: #ffb36b;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .empty-state {

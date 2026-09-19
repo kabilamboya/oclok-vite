@@ -1,0 +1,66 @@
+[
+  {
+    "id": "svc-1",
+    "category": "Recording",
+    "title": "Half-day Recording",
+    "duration": "Up to 4 hours",
+    "description": "On-site or studio recording session for interviews, podcasts, or short shoots. Includes basic setup and engineer support.",
+    "features": ["Engineer support", "Room hire", "Basic microphone set"]
+  },
+  {
+    "id": "svc-2",
+    "category": "Recording",
+    "title": "Full-day Recording",
+    "duration": "Up to 8 hours",
+    "description": "Extended studio or on-location recording for longer productions. Includes setup, technician, and basic edits.",
+    "features": ["Technician on-site", "Multiple takes", "Basic audio cleanup"]
+  },
+  {
+    "id": "svc-3",
+    "category": "Recording",
+    "title": "Extended / Multi-day (24+ hrs)",
+    "duration": "Flexible (24+ hours)",
+    "description": "Long-form productions, live events, or multi-day shoots. Custom scheduling and crew available.",
+    "features": ["Custom crew", "Multi-day logistics", "On-site support"]
+  },
+  {
+    "id": "svc-4",
+    "category": "Post-Production",
+    "title": "Video Editing",
+    "duration": "Per project",
+    "description": "Professional video editing, color grading, and motion graphics for social or broadcast delivery.",
+    "features": ["Rough cut & revisions", "Color grading", "Export masters"]
+  },
+  {
+    "id": "svc-5",
+    "category": "Audio",
+    "title": "Podcast Production / Recording Session",
+    "duration": "Per episode / session",
+    "description": "End-to-end podcast recording and production, including editing, mixing, and hosting guidance.",
+    "features": ["Recording", "Editing & mixing", "Publishing support"]
+  },
+  {
+    "id": "svc-6",
+    "category": "Events",
+    "title": "Meetings Setup & Recording",
+    "duration": "Per meeting",
+    "description": "Online or hybrid meeting setup, multi-camera recording, and post-meeting deliverables.",
+    "features": ["Streaming setup", "Multi-track recording", "Minutes & highlights"]
+  },
+  {
+    "id": "svc-7",
+    "category": "Platform",
+    "title": "Online Voting Systems",
+    "duration": "Per event",
+    "description": "Secure and auditable online voting for polls, contests, or stakeholder votes. Integration and technical support included.",
+    "features": ["Secure ballots", "Real-time tallies", "Custom branding"]
+  },
+  {
+    "id": "svc-8",
+    "category": "Music",
+    "title": "Music Recording & Mastering",
+    "duration": "Per track / album",
+    "description": "Professional music recording, mixing, and mastering services for singles, EPs, and albums.",
+    "features": ["Tracking", "Mixing", "Mastering & delivery"]
+  }
+]
