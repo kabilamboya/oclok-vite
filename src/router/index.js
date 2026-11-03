@@ -69,8 +69,26 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() {
-    return { left: 0, top: 0 };
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+
+    if (to.hash) {
+      return { el: to.hash, top: 0, behavior: 'auto' };
+    }
+
+    return { left: 0, top: 0, behavior: 'auto' };
+  }
+});
+
+if (typeof window !== 'undefined') {
+  window.history.scrollRestoration = 'manual';
+}
+
+router.afterEach(() => {
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }
 });
 

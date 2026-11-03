@@ -18,11 +18,10 @@ const kisumu_estates = computed(() => [
   ...estatePhases.flatMap((phase) => phase.estates),
 ]);
 
-const estatesExcludingCBD = computed(() => kisumu_estates.value.filter((e) => e !== "CBD"));
-
 const whatsappNumber = "254732379292"; // WhatsApp international format
-const phoneDisplay = "+254 0732379292"; // Display format for call/booking
 const orderTypes = [
+  "Local cab driver request",
+  "Kisumu city & environment visit",
   "Parcel pick-up",
   "Grocery/household shopping",
   "Supermarket shopping",
@@ -52,15 +51,7 @@ const createDefaultOrderForm = () => ({
   accountType: "novice customer",
 });
 
-const orderForm = ref(createDefaultOrderForm());
-const orderErrors = ref({});
-const orderFeedback = ref({ type: "", message: "" });
-const orderSubmitting = ref(false);
-const latestOrder = ref(null);
-const orderTab = ref("personal"); // "personal" or "items"
-const orderTabsRef = ref(null);
-
-const orderItemDetails = ref({
+const createEmptyOrderItemDetails = () => ({
   show: false,
   title: "",
   image: "",
@@ -72,21 +63,21 @@ const orderItemDetails = ref({
   fragile: false,
 });
 
+const orderForm = ref(createDefaultOrderForm());
+const orderErrors = ref({});
+const orderFeedback = ref({ type: "", message: "" });
+const orderSubmitting = ref(false);
+const latestOrder = ref(null);
+const orderTab = ref("personal"); // "personal" or "items"
+const orderTabsRef = ref(null);
+
+const orderItemDetails = ref(createEmptyOrderItemDetails());
+
 const serviceCards = [
   {
     icon: "🚚",
     title: "Parcel Delivery",
     description: "Fast same-day parcel pickup and delivery across Kisumu.",
-  },
-  {
-    icon: "🛒",
-    title: "Grocery Shopping",
-    description: "Shop from local supermarkets and deliver groceries to your door.",
-  },
-  {
-    icon: "📄",
-    title: "Document Delivery",
-    description: "Secure document pickup, drop-off and courier support for important files.",
   },
   {
     icon: "⏳",
@@ -103,30 +94,57 @@ const serviceCards = [
     title: "Item Returns",
     description: "Convenient returns delivery for online orders and store exchanges.",
   },
+  {
+    icon: "🛒",
+    title: "Grocery Shopping",
+    description: "Shop from local supermarkets and deliver groceries to your door.",
+  },
+  {
+    icon: "📄",
+    title: "Document Delivery",
+    description: "Secure document pickup, drop-off and courier support for important files.",
+  },
 ];
 
-const trustIndicators = [
-  {
-    title: "Same-day delivery",
-    subtitle: "Quick pickups and fast local drop-offs across Kisumu.",
-  },
-  {
-    title: "Real-time WhatsApp updates",
-    subtitle: "Track your delivery and get status updates instantly.",
-  },
-  {
-    title: "Transparent pricing",
-    subtitle: "Know your delivery cost before you book.",
-  },
-  {
-    title: "Secure handling",
-    subtitle: "Trusted handling for packages and personal errands.",
-  },
-  {
-    title: "Local Kisumu team",
-    subtitle: "Delivered by local riders who know Kisumu neighborhoods.",
-  },
+const mapPoints = [
+  { name: "CBD", description: "Central dispatch hub for fast city pickups.", x: 50, y: 54, color: "#3b82f6" },
+  { name: "Milimani", description: "Upper residential area with quiet streets.", x: 68, y: 30, color: "#60a5fa" },
+  { name: "Stage", description: "Busy market and commuter hotspot.", x: 72, y: 18, color: "#60a5fa" },
+  { name: "Obunga", description: "Popular residential zone with quick access routes.", x: 16, y: 42, color: "#f59e0b" },
+  { name: "Kisian", description: "Suburban area with steady daily traffic.", x: 19, y: 67, color: "#f59e0b" },
+  { name: "Nyamasaria", description: "Growing residential estate and family homes.", x: 30, y: 18, color: "#10b981" },
+  { name: "Mowlem", description: "Commercial route near key transport lines.", x: 86, y: 58, color: "#10b981" },
+  { name: "Nyalenda", description: "Dense local neighborhood with active demand.", x: 39, y: 83, color: "#10b981" },
+  { name: "Dunga", description: "Waterfront area with scenic travel corridors.", x: 81, y: 46, color: "#8b5cf6" },
+  { name: "Manyatta", description: "Busy residential quarter and service corridor.", x: 88, y: 32, color: "#8b5cf6" },
+  { name: "Tom Mboya", description: "Urban neighborhood with strong local connectivity.", x: 58, y: 82, color: "#8b5cf6" },
+  { name: "Kibuye", description: "Riverline area with easy pickup access.", x: 27, y: 41, color: "#06b6d4" },
+  { name: "Arina", description: "A growing route for local errands and travel.", x: 73, y: 24, color: "#06b6d4" },
+  { name: "Kondele", description: "Fast-growing residential zone toward the west.", x: 32, y: 86, color: "#06b6d4" },
+  { name: "Kaloleni", description: "Steady neighborhood with high support demand.", x: 75, y: 82, color: "#06b6d4" },
+  { name: "Mamboleo", description: "Southern estate with direct service routes.", x: 78, y: 76, color: "#ef4444" },
+  { name: "Lolwe", description: "Southwest area with convenient residential access.", x: 12, y: 80, color: "#ef4444" },
+  { name: "Kanyamedha", description: "South side destination with easy coordination.", x: 63, y: 80, color: "#ef4444" },
+  { name: "RIAT", description: "Academic and residential zone for quick errands.", x: 34, y: 31, color: "#ef4444" },
+  { name: "Pipeline", description: "Commercial route with strong local demand.", x: 72, y: 20, color: "#f59e0b" },
 ];
+
+const activeMapPoint = ref(null);
+
+function getMapPointByName(name) {
+  return mapPoints.find((point) => point.name === name) || null;
+}
+
+function getMapCalloutStyle(name) {
+  const point = getMapPointByName(name);
+  if (!point) return {};
+
+  return {
+    left: `${point.x}%`,
+    top: `${point.y}%`,
+    "--callout-color": point.color,
+  };
+}
 
 // Watch for sameAsCustomer toggle to update recipient fields
 watch(() => orderForm.value.sameAsCustomer, (newVal) => {
@@ -329,30 +347,37 @@ function buildOrderWhatsAppMessage(payload) {
   ].join("\n");
 }
 
-function validateOrderForm() {
+function getFormErrors(includeItemDetails = false) {
   const errors = {};
+
   if (!sanitize(orderForm.value.customerName)) errors.customerName = "Full name is required.";
   if (!validatePhone(orderForm.value.phone)) errors.phone = "Use a valid phone number.";
   if (!sanitize(orderForm.value.estate)) errors.estate = "Select an estate.";
-  if (!sanitize(orderForm.value.orderType)) errors.orderType = "Select an order type.";
+
   if (!orderForm.value.sameAsCustomer) {
     if (!sanitize(orderForm.value.recipientName)) errors.recipientName = "Recipient name is required.";
     if (!validatePhone(orderForm.value.recipientPhone)) errors.recipientPhone = "Use a valid recipient phone number.";
   }
-  if (!sanitize(orderForm.value.pickup)) errors.pickup = "Pickup location is required.";
-  if (!sanitize(orderForm.value.dropoff)) errors.dropoff = "Drop-off location is required.";
-  if (!sanitize(orderForm.value.preferredTime)) errors.preferredTime = "Choose preferred time.";
-  orderErrors.value = errors;
-  return Object.keys(errors).length === 0;
+
+  if (includeItemDetails) {
+    if (!sanitize(orderItemDetails.value.title)) errors.itemTitle = "Item title is required.";
+    if (!sanitize(orderForm.value.orderType)) errors.orderType = "Select an order type.";
+    if (!sanitize(orderForm.value.pickup)) errors.pickup = "Pickup location is required.";
+    if (!sanitize(orderForm.value.dropoff)) errors.dropoff = "Drop-off location is required.";
+    if (!sanitize(orderForm.value.preferredTime)) errors.preferredTime = "Choose preferred time.";
+  }
+
+  return errors;
+}
+
+function validateOrderForm() {
+  orderErrors.value = getFormErrors(true);
+  return Object.keys(orderErrors.value).length === 0;
 }
 
 function validatePersonalDetails() {
-  const errors = {};
-  if (!sanitize(orderForm.value.customerName)) errors.customerName = "Full name is required.";
-  if (!validatePhone(orderForm.value.phone)) errors.phone = "Use a valid phone number.";
-  if (!sanitize(orderForm.value.estate)) errors.estate = "Select an estate.";
-  orderErrors.value = errors;
-  return Object.keys(errors).length === 0;
+  orderErrors.value = getFormErrors();
+  return Object.keys(orderErrors.value).length === 0;
 }
 
 function proceedToItemsTab() {
@@ -367,6 +392,13 @@ if (typeof window !== 'undefined') {
 }
 
 function goToPersonalDetails() {
+  orderTab.value = "personal";
+  nextTick(scrollToOrderTabs);
+}
+
+function startLocalDriverRequest() {
+  orderForm.value.orderType = "Local cab driver request";
+  orderForm.value.notes = "Request a local cab driver to take me through Kisumu and the surrounding environment / attractions.";
   orderTab.value = "personal";
   nextTick(scrollToOrderTabs);
 }
@@ -415,17 +447,7 @@ async function submitOrder() {
     };
     orderErrors.value = {};
     orderForm.value = createDefaultOrderForm();
-    orderItemDetails.value = {
-      show: false,
-      title: "",
-      image: "",
-      imageFile: null,
-      videoFile: null,
-      mediaType: null,
-      description: "",
-      instructions: "",
-      fragile: false,
-    };
+    orderItemDetails.value = createEmptyOrderItemDetails();
 
     const message = buildOrderWhatsAppMessage(snapshot);
     openWhatsAppMessage(message);
@@ -446,26 +468,27 @@ async function submitOrder() {
 
 function handleMediaUpload(event) {
   const file = event.target.files?.[0];
-  if (file) {
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
-    
-    if (isImage) {
-      orderItemDetails.value.imageFile = file;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        orderItemDetails.value.image = e.target?.result || "";
-        orderItemDetails.value.mediaType = 'image';
-      };
-      reader.readAsDataURL(file);
-    } else if (isVideo) {
-      orderItemDetails.value.videoFile = file;
-      orderItemDetails.value.mediaType = 'video';
-      // Create video preview URL
-      const videoUrl = URL.createObjectURL(file);
-      orderItemDetails.value.image = videoUrl;
-    }
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isImage && !isVideo) return;
+
+  if (isImage) {
+    orderItemDetails.value.imageFile = file;
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      orderItemDetails.value.image = loadEvent.target?.result || "";
+      orderItemDetails.value.mediaType = "image";
+    };
+    reader.readAsDataURL(file);
+    return;
   }
+
+  orderItemDetails.value.videoFile = file;
+  orderItemDetails.value.mediaType = "video";
+  orderItemDetails.value.image = URL.createObjectURL(file);
 }
 </script>
 
@@ -483,35 +506,243 @@ function handleMediaUpload(event) {
 
   <main class="discover-page">
 
-    <section class="hero-highlights">
-      <div class="hero-highlights-main card-wrapper">
-        <div class="hero-highlights-intro">
-          <h3>Why Delibois is the trusted choice in Kisumu</h3>
-          <p>From urgent pickups to thoughtful shopping assistance, our local team makes every delivery and errand safer, faster, and easier.</p>
-          <p>Real delivery workflows, careful handling, and service touchpoints that protect your parcel from pickup to drop-off.</p>
+    <section class="request-layout">
+      <aside class="request-side-panel">
+        <div class="panel-header">
+          <span class="panel-kicker">What we handle</span>
+          <h3>Local support for daily life</h3>
         </div>
-
-        <div class="hero-highlights-bottom">
-          <div class="service-highlight-grid">
-            <article v-for="card in serviceCards" :key="card.title" class="service-card">
-              <div class="service-icon">{{ card.icon }}</div>
-              <div>
-                <h3>{{ card.title }}</h3>
-                <p>{{ card.description }}</p>
-              </div>
-            </article>
-          </div>
-
-          <div class="trust-highlight-grid">
-            <div class="trust-cards">
-              <article v-for="item in trustIndicators" :key="item.title" class="trust-card">
-                <strong>{{ item.title }}</strong>
-                <p>{{ item.subtitle }}</p>
-              </article>
+        <div class="panel-stack">
+          <article v-for="card in serviceCards.slice(0, 4)" :key="card.title" class="service-card static-card">
+            <div class="service-icon">{{ card.icon }}</div>
+            <div>
+              <h3>{{ card.title }}</h3>
+              <p>{{ card.description }}</p>
             </div>
-          </div>
+          </article>
         </div>
-      </div>
+      </aside>
+
+      <section class="engagement request-form-panel" aria-label="Request a local delivery or driver">
+        <article class="card">
+          <div class="section-head">
+            <span class="section-kicker">We bet on convenience</span>
+            <h2>Schedule a Delivery</h2>
+          </div>
+
+          <div class="driver-request-banner">
+            <div>
+              <p class="driver-request-label">Need a local cab driver?</p>
+              <h3>Request a driver to guide you through Kisumu and its surroundings.</h3>
+            </div>
+            <button class="driver-request-btn" type="button" @click="startLocalDriverRequest">
+              Book Driver
+            </button>
+          </div>
+
+          <div class="order-tabs" ref="orderTabsRef">
+            <button
+              type="button"
+              :class="['tab-btn', { 'active-primary': orderTab === 'personal' }]"
+              @click="orderTab = 'personal'; nextTick(scrollToOrderTabs)"
+            >
+              <span class="tab-number">1</span>
+              Sender & Recipient Details
+            </button>
+            <button
+              type="button"
+              :class="['tab-btn', { 'active-secondary': orderTab === 'items', disabled: !canProceedToItemsTab }]"
+              @click="proceedToItemsTab"
+              :disabled="!canProceedToItemsTab"
+            >
+              <span class="tab-number">2</span>
+              Item Details
+            </button>
+          </div>
+          <p class="tab-hint" v-if="!canProceedToItemsTab">Complete sender and recipient details first to unlock item details.</p>
+
+          <form v-if="orderTab === 'personal'" class="smart-form" @submit.prevent="proceedToItemsTab">
+            <div class="form-grid two">
+              <label class="field">
+                <span>Customer name <span class="required">*</span></span>
+                <input v-model="orderForm.customerName" type="text" placeholder="Full name" />
+                <small v-if="orderErrors.customerName" class="field-error">{{ orderErrors.customerName }}</small>
+              </label>
+              <label class="field">
+                <span>Phone number <span class="required">*</span></span>
+                <input v-model="orderForm.phone" type="tel" placeholder="+254..." />
+                <small v-if="orderErrors.phone" class="field-error">{{ orderErrors.phone }}</small>
+              </label>
+            </div>
+
+            <div class="form-grid two">
+              <label class="field">
+                <span>Email (optional)</span>
+                <input v-model="orderForm.email" type="email" placeholder="name@email.com" />
+              </label>
+              <label class="field">
+                <span>Estate / Area <span class="required">*</span></span>
+                <select v-model="orderForm.estate">
+                  <option v-for="estate in kisumu_estates" :key="estate" :value="estate">{{ estate }}</option>
+                </select>
+                <small v-if="orderErrors.estate" class="field-error">{{ orderErrors.estate }}</small>
+                <small class="cost-display">Delivery cost: {{ currentDeliveryCost }}</small>
+              </label>
+            </div>
+
+            <label class="checkbox-line">
+              <input v-model="orderForm.sameAsCustomer" type="checkbox" />
+              <span>Recipient is the same person (use my details above)</span>
+            </label>
+
+            <div v-if="!orderForm.sameAsCustomer" class="form-grid two">
+              <label class="field">
+                <span>Recipient name <span class="required">*</span></span>
+                <input v-model="orderForm.recipientName" type="text" placeholder="Full name" />
+                <small v-if="orderErrors.recipientName" class="field-error">{{ orderErrors.recipientName }}</small>
+              </label>
+              <label class="field">
+                <span>Recipient phone <span class="required">*</span></span>
+                <input v-model="orderForm.recipientPhone" type="tel" placeholder="+254..." />
+                <small v-if="orderErrors.recipientPhone" class="field-error">{{ orderErrors.recipientPhone }}</small>
+              </label>
+            </div>
+
+            <div class="tab-actions">
+              <button class="form-btn primary" type="submit">Next: Item Details →</button>
+            </div>
+          </form>
+
+          <form v-if="orderTab === 'items'" class="smart-form" @submit.prevent="submitOrder">
+            <div class="form-section">
+              <h3 class="section-title">Item Information</h3>
+
+              <label class="field">
+                <span>Item title <span class="required">*</span></span>
+                <input v-model="orderItemDetails.title" type="text" placeholder="e.g., Electronics package" />
+                <small v-if="orderErrors.itemTitle" class="field-error">{{ orderErrors.itemTitle }}</small>
+              </label>
+
+              <label class="field">
+                <span>Upload media - image or video (optional)</span>
+                <input type="file" accept="image/*,video/*" @change="handleMediaUpload" />
+                <small class="field-hint">Supported: JPG, PNG, GIF, WebP, MP4, WebM</small>
+              </label>
+
+              <label class="field">
+                <span>Item Description</span>
+                <textarea
+                  v-model="orderItemDetails.description"
+                  rows="3"
+                  placeholder="Describe the item, condition, special handling needs"
+                ></textarea>
+              </label>
+
+              <label class="field">
+                <span>Delivery instructions</span>
+                <textarea
+                  v-model="orderItemDetails.instructions"
+                  rows="3"
+                  placeholder="e.g., Place on porch, fragile, requires signature"
+                ></textarea>
+              </label>
+
+              <div class="checkbox-row">
+                <label class="checkbox-line">
+                  <input v-model="orderItemDetails.fragile" type="checkbox" />
+                  <span>Item is delicate / fragile</span>
+                </label>
+                <label class="checkbox-line">
+                  <input v-model="orderForm.urgent" type="checkbox" />
+                  <span>Mark as urgent priority request</span>
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Pickup location / Area <span class="required">*</span></span>
+                <select v-model="orderForm.pickup">
+                  <option value="">-- Select pickup area --</option>
+                  <option v-for="location in availableLocations" :key="location" :value="location">
+                    {{ location }}
+                  </option>
+                </select>
+                <small v-if="orderErrors.pickup" class="field-error">{{ orderErrors.pickup }}</small>
+              </label>
+
+              <div v-if="orderItemDetails.image" class="item-preview">
+                <img v-if="orderItemDetails.mediaType === 'image'" :src="orderItemDetails.image" :alt="orderItemDetails.title" />
+                <video v-else-if="orderItemDetails.mediaType === 'video'" :src="orderItemDetails.image" controls style="width: 100%; border-radius: 8px;"></video>
+                <div class="preview-text">
+                  <h4>{{ orderItemDetails.title }}</h4>
+                  <p v-if="orderItemDetails.mediaType === 'image'" class="media-type-badge">📸 Image</p>
+                  <p v-else-if="orderItemDetails.mediaType === 'video'" class="media-type-badge">🎥 Video</p>
+                  <p>{{ orderItemDetails.description }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3 class="section-title">Delivery Details</h3>
+
+              <div class="form-grid two">
+                <label class="field">
+                  <span>Service type <span class="required">*</span></span>
+                  <select v-model="orderForm.orderType">
+                    <option v-for="type in orderTypes" :key="type" :value="type">{{ type }}</option>
+                  </select>
+                  <small v-if="orderErrors.orderType" class="field-error">{{ orderErrors.orderType }}</small>
+                </label>
+                <label class="field">
+                  <span>Preferred time <span class="required">*</span></span>
+                  <input v-model="orderForm.preferredTime" type="datetime-local" />
+                  <small v-if="orderErrors.preferredTime" class="field-error">{{ orderErrors.preferredTime }}</small>
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Drop-off location / Area <span class="required">*</span></span>
+                <select v-model="orderForm.dropoff">
+                  <option value="">-- Select drop-off area --</option>
+                  <option v-for="location in availableLocations" :key="location" :value="location">
+                    {{ location }}
+                  </option>
+                </select>
+                <small v-if="orderErrors.dropoff" class="field-error">{{ orderErrors.dropoff }}</small>
+              </label>
+
+              <label class="field">
+                <span>Order notes</span>
+                <textarea
+                  v-model="orderForm.notes"
+                  rows="3"
+                  placeholder="Package details, special instructions, or delivery constraints"
+                ></textarea>
+              </label>
+            </div>
+
+            <div class="tab-actions">
+              <button class="form-btn secondary" type="button" @click="goToPersonalDetails">← Back</button>
+              <button class="form-btn primary" type="submit" :disabled="orderSubmitting">
+                {{ orderSubmitting ? "Submitting..." : "Submit order" }}
+              </button>
+            </div>
+
+            <p v-if="orderFeedback.message" :class="['form-feedback', orderFeedback.type]">
+              {{ orderFeedback.message }}
+            </p>
+          </form>
+
+          <aside v-if="latestOrder && orderTab === 'items'" class="latest-order">
+            <h3>Latest order summary</h3>
+            <p><strong>Request ID:</strong> {{ latestOrder.requestId }}</p>
+            <p><strong>Type:</strong> {{ latestOrder.orderType }}</p>
+            <p><strong>Estate:</strong> {{ latestOrder.estate }}</p>
+            <p><strong>Pickup:</strong> {{ latestOrder.pickup }}</p>
+            <p><strong>Drop-off:</strong> {{ latestOrder.dropoff }}</p>
+            <p><strong>Submitted:</strong> {{ latestOrder.submittedAt }}</p>
+          </aside>
+        </article>
+      </section>
     </section>
 
     <section class="operations">
@@ -520,132 +751,89 @@ function handleMediaUpload(event) {
           <h2>Service areas in Kisumu</h2>
           <p>We deliver across all these estates from CBD as our central hub:</p>
         <div class="map-container">
-          <svg viewBox="0 0 800 600" class="estates-map" xmlns="http://www.w3.org/2000/svg">
-            <!-- Color definitions for each zone -->
-            <defs>
-              <!-- CBD Zone - Blue -->
-              <linearGradient id="cbdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.1" />
-              </linearGradient>
-              <!-- West Zone 1 - Orange -->
-              <linearGradient id="west1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.1" />
-              </linearGradient>
-              <!-- North Zone - Green -->
-              <linearGradient id="northGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.1" />
-              </linearGradient>
-              <!-- East Zone - Purple -->
-              <linearGradient id="eastGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.1" />
-              </linearGradient>
-              <!-- South Zone - Red -->
-              <linearGradient id="southGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.1" />
-              </linearGradient>
-              <!-- West Zone 2 - Cyan -->
-              <linearGradient id="west2Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.1" />
-              </linearGradient>
-            </defs>
-            
-            <!-- CBD Center Hub -->
-            <circle cx="400" cy="300" r="32" fill="#3b82f6" filter="drop-shadow(0 0 8px rgba(59, 130, 246, 0.4))" />
-            <text x="400" y="308" text-anchor="middle" fill="#fff" font-weight="bold" font-size="16">CBD</text>
-            
-            <!-- Estate nodes and connections by zone -->
-            <g id="estates">
-              <!-- CBD Zone (Blue) -->
-              <line x1="400" y1="300" x2="480" y2="100" stroke="url(#cbdGradient)" stroke-width="2.5" />
-              <circle cx="480" cy="100" r="18" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
-              <text x="480" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Stage</text>
-              
-              <line x1="400" y1="300" x2="480" y2="130" stroke="url(#cbdGradient)" stroke-width="2.5" />
-              <circle cx="480" cy="130" r="18" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
-              <text x="480" y="135" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Milimani</text>
-              
-              <!-- West Zone 1 (Orange) -->
-              <line x1="400" y1="300" x2="100" y2="200" stroke="url(#west1Gradient)" stroke-width="2.5" />
-              <circle cx="100" cy="200" r="18" fill="#f59e0b" stroke="#92400e" stroke-width="2" />
-              <text x="100" y="205" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Obunga</text>
-              
-              <line x1="400" y1="300" x2="550" y2="120" stroke="url(#west1Gradient)" stroke-width="2.5" />
-              <circle cx="550" cy="120" r="18" fill="#f59e0b" stroke="#92400e" stroke-width="2" />
-              <text x="550" y="125" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Pipeline</text>
-              
-              <line x1="400" y1="300" x2="150" y2="380" stroke="url(#west1Gradient)" stroke-width="2.5" />
-              <circle cx="150" cy="380" r="18" fill="#f59e0b" stroke="#92400e" stroke-width="2" />
-              <text x="150" y="385" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Kisian</text>
-              
-              <!-- North Zone (Green) -->
-              <line x1="400" y1="300" x2="750" y2="350" stroke="url(#northGradient)" stroke-width="2.5" />
-              <circle cx="750" cy="350" r="18" fill="#10b981" stroke="#065f46" stroke-width="2" />
-              <text x="750" y="355" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Mowlem</text>
-              
-              <line x1="400" y1="300" x2="200" y2="100" stroke="url(#northGradient)" stroke-width="2.5" />
-              <circle cx="200" cy="100" r="18" fill="#10b981" stroke="#065f46" stroke-width="2" />
-              <text x="200" y="105" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Nyamasaria</text>
-              
-              <line x1="400" y1="300" x2="300" y2="480" stroke="url(#northGradient)" stroke-width="2.5" />
-              <circle cx="300" cy="480" r="18" fill="#10b981" stroke="#065f46" stroke-width="2" />
-              <text x="300" y="485" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Nyalenda</text>
-              
-              <!-- East Zone (Purple) -->
-              <line x1="400" y1="300" x2="650" y2="320" stroke="url(#eastGradient)" stroke-width="2.5" />
-              <circle cx="650" cy="320" r="18" fill="#8b5cf6" stroke="#4c1d95" stroke-width="2" />
-              <text x="650" y="325" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Dunga</text>
-              
-              <line x1="400" y1="300" x2="700" y2="200" stroke="url(#eastGradient)" stroke-width="2.5" />
-              <circle cx="700" cy="200" r="18" fill="#8b5cf6" stroke="#4c1d95" stroke-width="2" />
-              <text x="700" y="205" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Manyatta</text>
-              
-              <line x1="400" y1="300" x2="450" y2="500" stroke="url(#eastGradient)" stroke-width="2.5" />
-              <circle cx="450" cy="500" r="18" fill="#8b5cf6" stroke="#4c1d95" stroke-width="2" />
-              <text x="450" y="505" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Tom Mboya</text>
-              
-              <!-- West Zone 2 (Cyan) -->
-              <line x1="400" y1="300" x2="200" y2="250" stroke="url(#west2Gradient)" stroke-width="2.5" />
-              <circle cx="200" cy="250" r="18" fill="#06b6d4" stroke="#164e63" stroke-width="2" />
-              <text x="200" y="255" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Kibuye</text>
-              
-              <line x1="400" y1="300" x2="580" y2="150" stroke="url(#west2Gradient)" stroke-width="2.5" />
-              <circle cx="580" cy="150" r="18" fill="#06b6d4" stroke="#164e63" stroke-width="2" />
-              <text x="580" y="155" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Arina</text>
-              
-              <line x1="400" y1="300" x2="250" y2="500" stroke="url(#west2Gradient)" stroke-width="2.5" />
-              <circle cx="250" cy="500" r="18" fill="#06b6d4" stroke="#164e63" stroke-width="2" />
-              <text x="250" y="505" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Kondele</text>
-              
-              <line x1="400" y1="300" x2="600" y2="480" stroke="url(#west2Gradient)" stroke-width="2.5" />
-              <circle cx="600" cy="480" r="18" fill="#06b6d4" stroke="#164e63" stroke-width="2" />
-              <text x="600" y="485" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Kaloleni</text>
-              
-              <!-- South Zone (Red) -->
-              <line x1="400" y1="300" x2="650" y2="480" stroke="url(#southGradient)" stroke-width="2.5" />
-              <circle cx="650" cy="480" r="18" fill="#ef4444" stroke="#7f1d1d" stroke-width="2" />
-              <text x="650" y="485" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Mamboleo</text>
-              
-              <line x1="400" y1="300" x2="100" y2="480" stroke="url(#southGradient)" stroke-width="2.5" />
-              <circle cx="100" cy="480" r="18" fill="#ef4444" stroke="#7f1d1d" stroke-width="2" />
-              <text x="100" y="485" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Lolwe</text>
-              
-              <line x1="400" y1="300" x2="520" y2="480" stroke="url(#southGradient)" stroke-width="2.5" />
-              <circle cx="520" cy="480" r="18" fill="#ef4444" stroke="#7f1d1d" stroke-width="2" />
-              <text x="520" y="485" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Kanyamedha</text>
-              
-              <line x1="400" y1="300" x2="280" y2="180" stroke="url(#southGradient)" stroke-width="2.5" />
-              <circle cx="280" cy="180" r="18" fill="#ef4444" stroke="#7f1d1d" stroke-width="2" />
-              <text x="280" y="185" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">RIAT</text>
-            </g>
-          </svg>
+          <div class="map-surface">
+            <svg viewBox="0 0 800 600" class="estates-map" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cbdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.1" />
+                </linearGradient>
+                <linearGradient id="west1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.1" />
+                </linearGradient>
+                <linearGradient id="northGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.1" />
+                </linearGradient>
+                <linearGradient id="eastGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.1" />
+                </linearGradient>
+                <linearGradient id="southGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.1" />
+                </linearGradient>
+                <linearGradient id="west2Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.1" />
+                </linearGradient>
+              </defs>
 
-          <!-- Zone Legend -->
+              <circle cx="400" cy="300" r="38" fill="#3b82f6" filter="drop-shadow(0 0 12px rgba(59, 130, 246, 0.45))" />
+              <text x="400" y="307" text-anchor="middle" fill="#fff" font-weight="800" font-size="18">CBD</text>
+
+              <g id="estates" aria-label="Kisumu service zones map">
+                <line x1="400" y1="300" x2="490" y2="120" stroke="url(#cbdGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="500" y2="180" stroke="url(#cbdGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="150" y2="240" stroke="url(#west1Gradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="140" y2="390" stroke="url(#west1Gradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="220" y2="100" stroke="url(#northGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="300" y2="470" stroke="url(#northGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="650" y2="165" stroke="url(#eastGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="580" y2="450" stroke="url(#eastGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="180" y2="420" stroke="url(#west2Gradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="290" y2="470" stroke="url(#west2Gradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="670" y2="460" stroke="url(#southGradient)" stroke-width="3" />
+                <line x1="400" y1="300" x2="120" y2="480" stroke="url(#southGradient)" stroke-width="3" />
+
+                <g
+                  v-for="point in mapPoints"
+                  :key="point.name"
+                  class="map-point"
+                  :class="{ active: activeMapPoint === point.name }"
+                  :tabindex="0"
+                  role="button"
+                  :aria-label="point.name + ': ' + point.description"
+                  @mouseenter="activeMapPoint = point.name"
+                  @mouseleave="activeMapPoint = null"
+                  @focus="activeMapPoint = point.name"
+                  @blur="activeMapPoint = null"
+                >
+                  <circle :cx="point.x * 8" :cy="point.y * 6" r="18" :fill="point.color" stroke="rgba(10,13,18,0.8)" stroke-width="2.5" />
+                  <text
+                    class="map-label"
+                    :x="point.x * 8"
+                    :y="point.y * 6 + 6"
+                    text-anchor="middle"
+                    :fill="'#ffffff'"
+                    font-weight="800"
+                    font-size="12"
+                  >{{ point.name }}</text>
+                </g>
+              </g>
+            </svg>
+
+            <div
+              v-if="activeMapPoint"
+              class="map-callout"
+              :style="getMapCalloutStyle(activeMapPoint)"
+            >
+              <strong>{{ activeMapPoint }}</strong>
+              <span>{{ getMapPointByName(activeMapPoint)?.description }}</span>
+            </div>
+          </div>
+
           <div class="map-legend">
             <div class="legend-title">Service Zones by Phase</div>
             <div class="legend-items">
@@ -710,217 +898,6 @@ function handleMediaUpload(event) {
       </div>
     </section>
 
-    <section class="engagement">
-      <article class="card">
-        <div class="section-head">
-          <h2>Schedule a Delivery</h2>
-          <p>Step-by-step process to submit your order details.</p>
-        </div>
-
-        <div class="order-tabs" ref="orderTabsRef">
-          <button
-            type="button"
-            :class="['tab-btn', { 'active-primary': orderTab === 'personal' }]"
-            @click="orderTab = 'personal'; nextTick(scrollToOrderTabs)"
-          >
-            <span class="tab-number">1</span>
-            Sender & Recipient Details
-          </button>
-          <button
-            type="button"
-            :class="['tab-btn', { 'active-secondary': orderTab === 'items', disabled: !canProceedToItemsTab }]"
-            @click="proceedToItemsTab"
-            :disabled="!canProceedToItemsTab"
-          >
-            <span class="tab-number">2</span>
-            Item Details
-          </button>
-        </div>
-        <p class="tab-hint" v-if="!canProceedToItemsTab">Complete sender and recipient details first to unlock item details.</p>
-
-        <!-- Step 1: Personal Details Tab -->
-        <form v-if="orderTab === 'personal'" class="smart-form" @submit.prevent="proceedToItemsTab">
-          <div class="form-grid two">
-            <label class="field">
-              <span>Customer name <span class="required">*</span></span>
-              <input v-model="orderForm.customerName" type="text" placeholder="Full name" />
-              <small v-if="orderErrors.customerName" class="field-error">{{ orderErrors.customerName }}</small>
-            </label>
-            <label class="field">
-              <span>Phone number <span class="required">*</span></span>
-              <input v-model="orderForm.phone" type="tel" placeholder="+254..." />
-              <small v-if="orderErrors.phone" class="field-error">{{ orderErrors.phone }}</small>
-            </label>
-          </div>
-
-          <div class="form-grid two">
-            <label class="field">
-              <span>Email (optional)</span>
-              <input v-model="orderForm.email" type="email" placeholder="name@email.com" />
-            </label>
-            <label class="field">
-              <span>Estate / Area <span class="required">*</span></span>
-              <select v-model="orderForm.estate">
-                <option v-for="estate in kisumu_estates" :key="estate" :value="estate">{{ estate }}</option>
-              </select>
-              <small v-if="orderErrors.estate" class="field-error">{{ orderErrors.estate }}</small>
-              <small class="cost-display">Delivery cost: {{ currentDeliveryCost }}</small>
-            </label>
-          </div>
-
-          <label class="checkbox-line">
-            <input v-model="orderForm.sameAsCustomer" type="checkbox" />
-            <span>Recipient is the same person (use my details above)</span>
-          </label>
-
-          <div v-if="!orderForm.sameAsCustomer" class="form-grid two">
-            <label class="field">
-              <span>Recipient name <span class="required">*</span></span>
-              <input v-model="orderForm.recipientName" type="text" placeholder="Full name" />
-              <small v-if="orderErrors.recipientName" class="field-error">{{ orderErrors.recipientName }}</small>
-            </label>
-            <label class="field">
-              <span>Recipient phone <span class="required">*</span></span>
-              <input v-model="orderForm.recipientPhone" type="tel" placeholder="+254..." />
-              <small v-if="orderErrors.recipientPhone" class="field-error">{{ orderErrors.recipientPhone }}</small>
-            </label>
-          </div>
-
-          <div class="tab-actions">
-            <button class="form-btn primary" type="submit">Next: Item Details →</button>
-          </div>
-        </form>
-
-        <!-- Step 2: Item & Delivery Details Tab -->
-        <form v-if="orderTab === 'items'" class="smart-form" @submit.prevent="submitOrder">
-          <div class="form-section">
-            <h3 class="section-title">Item Information</h3>
-            
-            <label class="field">
-              <span>Item title <span class="required">*</span></span>
-              <input v-model="orderItemDetails.title" type="text" placeholder="e.g., Electronics package" />
-            </label>
-
-            <label class="field">
-              <span>Upload media - image or video (optional)</span>
-              <input type="file" accept="image/*,video/*" @change="handleMediaUpload" />
-              <small class="field-hint">Supported: JPG, PNG, GIF, WebP, MP4, WebM</small>
-            </label>
-
-            <label class="field">
-              <span>Item Description</span>
-              <textarea
-                v-model="orderItemDetails.description"
-                rows="3"
-                placeholder="Describe the item, condition, special handling needs"
-              ></textarea>
-            </label>
-
-            <label class="field">
-              <span>Delivery instructions</span>
-              <textarea
-                v-model="orderItemDetails.instructions"
-                rows="3"
-                placeholder="e.g., Place on porch, fragile, requires signature"
-              ></textarea>
-            </label>
-
-            <div class="checkbox-row">
-              <label class="checkbox-line">
-                <input v-model="orderItemDetails.fragile" type="checkbox" />
-                <span>Item is delicate / fragile</span>
-              </label>
-              <label class="checkbox-line">
-                <input v-model="orderForm.urgent" type="checkbox" />
-                <span>Mark as urgent priority request</span>
-              </label>
-            </div>
-            
-            <label class="field">
-              <span>Pickup location / Area <span class="required">*</span></span>
-              <select v-model="orderForm.pickup">
-                <option value="">-- Select pickup area --</option>
-                <option v-for="location in availableLocations" :key="location" :value="location">
-                  {{ location }}
-                </option>
-              </select>
-              <small v-if="orderErrors.pickup" class="field-error">{{ orderErrors.pickup }}</small>
-            </label>
-
-            <div v-if="orderItemDetails.image" class="item-preview">
-              <img v-if="orderItemDetails.mediaType === 'image'" :src="orderItemDetails.image" :alt="orderItemDetails.title" />
-              <video v-else-if="orderItemDetails.mediaType === 'video'" :src="orderItemDetails.image" controls style="width: 100%; border-radius: 8px;"></video>
-              <div class="preview-text">
-                <h4>{{ orderItemDetails.title }}</h4>
-                <p v-if="orderItemDetails.mediaType === 'image'" class="media-type-badge">📸 Image</p>
-                <p v-else-if="orderItemDetails.mediaType === 'video'" class="media-type-badge">🎥 Video</p>
-                <p>{{ orderItemDetails.description }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <h3 class="section-title">Delivery Details</h3>
-
-            <div class="form-grid two">
-              <label class="field">
-                <span>Service type <span class="required">*</span></span>
-                <select v-model="orderForm.orderType">
-                  <option v-for="type in orderTypes" :key="type" :value="type">{{ type }}</option>
-                </select>
-                <small v-if="orderErrors.orderType" class="field-error">{{ orderErrors.orderType }}</small>
-              </label>
-              <label class="field">
-                <span>Preferred time <span class="required">*</span></span>
-                <input v-model="orderForm.preferredTime" type="datetime-local" />
-                <small v-if="orderErrors.preferredTime" class="field-error">{{ orderErrors.preferredTime }}</small>
-              </label>
-            </div>
-
-            <label class="field">
-              <span>Drop-off location / Area <span class="required">*</span></span>
-              <select v-model="orderForm.dropoff">
-                <option value="">-- Select drop-off area --</option>
-                <option v-for="location in availableLocations" :key="location" :value="location">
-                  {{ location }}
-                </option>
-              </select>
-              <small v-if="orderErrors.dropoff" class="field-error">{{ orderErrors.dropoff }}</small>
-            </label>
-
-            <label class="field">
-              <span>Order notes</span>
-              <textarea
-                v-model="orderForm.notes"
-                rows="3"
-                placeholder="Package details, special instructions, or delivery constraints"
-              ></textarea>
-            </label>
-          </div>
-
-          <div class="tab-actions">
-            <button class="form-btn secondary" type="button" @click="goToPersonalDetails">← Back</button>
-            <button class="form-btn primary" type="submit" :disabled="orderSubmitting">
-              {{ orderSubmitting ? "Submitting..." : "Submit order" }}
-            </button>
-          </div>
-
-          <p v-if="orderFeedback.message" :class="['form-feedback', orderFeedback.type]">
-            {{ orderFeedback.message }}
-          </p>
-        </form>
-
-        <aside v-if="latestOrder && orderTab === 'items'" class="latest-order">
-          <h3>Latest order summary</h3>
-          <p><strong>Request ID:</strong> {{ latestOrder.requestId }}</p>
-          <p><strong>Type:</strong> {{ latestOrder.orderType }}</p>
-          <p><strong>Estate:</strong> {{ latestOrder.estate }}</p>
-          <p><strong>Pickup:</strong> {{ latestOrder.pickup }}</p>
-          <p><strong>Drop-off:</strong> {{ latestOrder.dropoff }}</p>
-          <p><strong>Submitted:</strong> {{ latestOrder.submittedAt }}</p>
-        </aside>
-      </article>
-    </section>
 
     <section class="discover-locations">
       <div class="section-head">
@@ -982,8 +959,8 @@ function handleMediaUpload(event) {
   --panel: var(--surface-dark);
   --soft-panel: var(--surface-dark-alt);
   --line: var(--border-dark);
-  --accent: var(--color-primary);
-  --accent-soft: var(--color-secondary);
+  --accent: var(--color-secondary);
+  --accent-soft: var(--color-secondary-hover);
   --text: var(--text-dark);
   --muted: var(--text-muted-dark);
   max-width: 1180px;
@@ -1004,7 +981,7 @@ function handleMediaUpload(event) {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  margin-bottom: 32px;
+  margin-bottom: 18px;
   color: var(--text-dark);
 }
 
@@ -1121,7 +1098,7 @@ function handleMediaUpload(event) {
 }
 
 .card {
-  background: var(--panel);
+  background: var(--color-secondary);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 20px;
@@ -1220,15 +1197,104 @@ function handleMediaUpload(event) {
   box-sizing: border-box;
 }
 
-.map-container > div:first-child {
+.map-surface {
+  position: relative;
   width: 100%;
   height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(24, 32, 43, 0.9) 0%, rgba(12, 16, 22, 0.98) 62%, rgba(8, 10, 14, 1) 100%);
+  border: 1px solid rgba(118, 138, 167, 0.35);
 }
 
 .estates-map {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  display: block;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.28));
+}
+
+#estates {
+  outline: none;
+}
+
+#estates line {
+  opacity: 0.9;
+}
+
+.map-point {
+  cursor: pointer;
+  outline: none;
+}
+
+.map-point text {
+  font-size: 12px;
+  font-weight: 800;
+  fill: #ffffff;
+  stroke: rgba(15, 18, 24, 0.9);
+  stroke-width: 1.1;
+  paint-order: stroke;
+  transition: transform 0.2s ease, fill 0.2s ease, font-size 0.2s ease, filter 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.map-point:hover text,
+.map-point:focus text,
+.map-point.active text {
+  fill: #f8fffe;
+  font-size: 13px;
+  filter: drop-shadow(0 4px 12px rgba(15, 157, 138, 0.6));
+}
+
+.map-point:hover circle,
+.map-point:focus circle,
+.map-point.active circle {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 3;
+  transform: scale(1.06);
+}
+
+.map-callout {
+  position: absolute;
+  z-index: 2;
+  min-width: 170px;
+  max-width: 200px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(13, 17, 23, 0.96);
+  border: 1px solid var(--callout-color, rgba(255,255,255,0.3));
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+  transform: translate(-50%, calc(-100% - 14px));
+  pointer-events: none;
+}
+
+.map-callout::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  background: rgba(13, 17, 23, 0.96);
+  border-right: 1px solid var(--callout-color, rgba(255,255,255,0.3));
+  border-bottom: 1px solid var(--callout-color, rgba(255,255,255,0.3));
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.map-callout strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.map-callout span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
 }
 
 .map-legend {
@@ -1252,7 +1318,7 @@ function handleMediaUpload(event) {
 
 .legend-items {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
@@ -1260,7 +1326,7 @@ function handleMediaUpload(event) {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 7px 10px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1277,7 +1343,7 @@ function handleMediaUpload(event) {
 .legend-label {
   font-size: 0.82rem;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .estates-list {
@@ -1333,7 +1399,7 @@ function handleMediaUpload(event) {
 }
 
 .phase-badge {
-  color: #fff;
+  color: #0f1218;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 5px 10px;
@@ -1414,19 +1480,24 @@ function handleMediaUpload(event) {
 }
 
 .estate-badge {
-  background: currentColor;
-  opacity: 0.15;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid currentColor;
+  color: var(--text);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 6px 12px;
   border-radius: 8px;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-.estate-badge:hover {
-  opacity: 0.25;
+.estate-badge:hover,
+.estate-badge:focus-visible {
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 8px 18px rgba(15, 157, 138, 0.18);
+  outline: none;
 }
 
 .zone-item,
@@ -1464,8 +1535,58 @@ function handleMediaUpload(event) {
   padding: 20px;
 }
 
+.request-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(420px, 2.2fr);
+  gap: 20px;
+  align-items: stretch;
+  margin-top: 10px;
+}
+
+.request-form-panel {
+  min-width: 0;
+}
+
+.request-side-panel {
+  background: var(--soft-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-header {
+  display: grid;
+  gap: 8px;
+}
+
+.panel-kicker {
+  color: #ffb36b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.panel-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.static-card {
+  min-height: 0;
+}
+
 .engagement {
-  margin-top: 28px;
+  margin-top: 0;
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
@@ -1666,6 +1787,54 @@ function handleMediaUpload(event) {
   font-size: 0.8rem;
   font-weight: 600;
   margin: 4px 0 !important;
+}
+
+.driver-request-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 18px 0 12px;
+  padding: 16px 18px;
+  border: 1px solid #0f1218; 
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(15, 157, 138, 0.12), rgba(59, 130, 246, 0.08));
+}
+
+.driver-request-label {
+  margin: 0 0 6px;
+  color: #ffb36b;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.driver-request-banner h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.driver-request-btn {
+  margin: 6px 10px 0;
+  border: 1px solid rgba(255, 122, 0, 0.45);
+  border-radius: 10px;
+  padding: 11px 16px;
+  color: #101318;
+  background: var(--color-primary);
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 6px 18px rgba(255, 122, 0, 0.22);
+}
+
+.driver-request-btn:hover {
+  background: var(--color-primary-hover);
+  filter: brightness(0.65);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(255, 122, 0, 0.26);
 }
 
 .form-btn {
@@ -2098,6 +2267,15 @@ function handleMediaUpload(event) {
 }
 
 @media (max-width: 980px) {
+  .request-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-request-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .delibois-hero,
   .engagement {
     grid-template-columns: 1fr;

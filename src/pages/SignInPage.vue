@@ -83,16 +83,16 @@ export default {
   display: grid;
   place-items: center;
   padding: 40px 16px;
-  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  background: #f8f8f8;
 }
 
 .auth-card {
   max-width: 980px;
   width: 100%;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
   border-radius: 24px;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
   padding: 32px;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -101,7 +101,7 @@ export default {
 
 .eyebrow {
   margin: 0 0 10px;
-  color: #f97316;
+  color: #ff7a00;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -110,27 +110,31 @@ export default {
 
 .auth-copy h1 {
   margin: 0 0 12px;
-  color: #111827;
+  color: #1f2937;
   font-size: clamp(2rem, 4vw, 2.9rem);
 }
 
 .auth-copy p {
   margin: 0;
   line-height: 1.7;
-  color: #475569;
+  color: #4b5563;
 }
 
 .benefits-list {
   margin: 22px 0 0;
   padding-left: 18px;
-  color: #475569;
+  color: #4b5563;
   line-height: 2;
 }
 
+.benefits-list li::marker {
+  color: #0f9d8a;
+}
+
 .auth-panel {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e7eb;
   border-radius: 18px;
-  background: #f8fafc;
+  background: #f5f7f8;
   padding: 22px;
 }
 
@@ -146,24 +150,32 @@ export default {
 
 label {
   font-weight: 700;
-  color: #0f172a;
+  color: #111827;
 }
 
 input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #d1d5db;
   border-radius: 12px;
   font: inherit;
-  background: #fff;
+  background: #ffffff;
+  color: #111111;
+}
+
+input:focus {
+  outline: none;
+  border-color: #0f9d8a;
+  box-shadow: 0 0 0 3px rgba(15, 157, 138, 0.12);
 }
 
 .feedback-banner {
   margin-bottom: 16px;
   padding: 10px 12px;
   border-radius: 12px;
-  background: #fef2f2;
-  color: #991b1b;
+  background: #fff3e8;
+  border: 1px solid #ffd8b5;
+  color: #8a4300;
   font-weight: 600;
 }
 
@@ -181,18 +193,18 @@ input {
 }
 
 .primary-btn {
-  background: #111827;
-  color: #fff;
+  background: #ff7a00;
+  color: #ffffff;
 }
 
 .secondary-btn {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #0f9d8a;
+  color: #ffffff;
 }
 
 .secondary-btn.alt {
-  background: transparent;
-  border: 1px solid #111827;
+  background: #6d28d9;
+  color: #ffffff;
 }
 
 @media (max-width: 820px) {

@@ -1,0 +1,286 @@
+
+[
+  {
+    "id": 1,
+    "name": "Executive Leather Belt",
+    "price": 2500,
+    "description": "A polished leather belt built for official wear and everyday smart styling.",
+    "image": "/images/belt.jpg",
+    "images": ["/images/belt.jpg"],
+    "category": "Accessories",
+    "brand": "O!clok",
+    "model": "Executive Leather",
+    "weight": "0.3 kg",
+    "dimensions": "One size",
+    "warranty": "30-day quality guarantee",
+    "specs": [
+      "Premium leather finish",
+      "Adjustable fit",
+      "Classic buckle design"
+    ],
+    "howToUse": [
+      "Choose your preferred fit",
+      "Pair with official or smart casual outfits"
+    ],
+    "dos": ["Store in a cool dry place"],
+    "donts": [
+      "Do not leave in direct sunlight for long periods"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Classic Men's Smart Casual Set",
+    "price": 5500,
+    "description": "A versatile men's outfit designed for smart casual occasions and everyday comfort.",
+    "image": "/images/mens-smart-casual.jpeg",
+    "images": ["/images/mens-smart-casual.jpeg"],
+    "category": "Men",
+    "brand": "O!clok",
+    "model": "Smart Casual Set",
+    "weight": "0.8 kg",
+    "dimensions": "S-XXL",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Breathable fabric",
+      "Modern tailored fit",
+      "All-day comfort"
+    ],
+    "howToUse": [
+      "Pick your size",
+      "Match with sneakers or sandals"
+    ],
+    "dos": [
+      "Wash gently",
+      "Follow the care label"
+    ],
+    "donts": ["Do not tumble dry on high heat"]
+  },
+  {
+    "id": 3,
+    "name": "Ladies Everyday Sport Set",
+    "price": 4900,
+    "description": "A comfortable ladies' activewear set for movement, errands, and weekend outings.",
+    "image": "/images/ladies-Sports-set1.jpeg",
+    "images": ["/images/ladies-Sports-set1.jpeg"],
+    "category": "Ladies",
+    "brand": "O!clok",
+    "model": "Sport Set",
+    "weight": "0.7 kg",
+    "dimensions": "XS-XL",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Stretch fit",
+      "Moisture-wicking fabric",
+      "Lightweight design"
+    ],
+    "howToUse": [
+      "Select your fit",
+      "Wear for errands, walks, or casual outings"
+    ],
+    "dos": ["Machine wash cold"],
+    "donts": ["Do not use bleach"]
+  },
+  {
+    "id": 4,
+    "name": "Kids Play & Travel Set",
+    "price": 3200,
+    "description": "A playful children's outfit for school, outings, and comfortable everyday movement.",
+    "image": "/images/kidsPlayTravelSet.jpeg",
+    "images": ["/images/kidsPlayTravelSet.jpeg"],
+    "category": "Kids",
+    "brand": "O!clok Kids",
+    "model": "Play Set",
+    "weight": "0.5 kg",
+    "dimensions": "Ages 4-12",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Soft-touch fabric",
+      "Easy movement fit",
+      "Child-friendly colours"
+    ],
+    "howToUse": [
+      "Choose the size using the size guide",
+      "Pair with sneakers or sandals"
+    ],
+    "dos": ["Wash before first wear"],
+    "donts": ["Do not over-dry in high heat"]
+  },
+  {
+    "id": 5,
+    "name": "Coastal Sandals",
+    "price": 2800,
+    "description": "Comfortable sandals designed for daily wear, travel, and relaxed everyday style.",
+    "image": "/images/coastlSandals.jpeg",
+    "images": ["/images/coastlSandals.jpeg"],
+    "category": "Footwear",
+    "brand": "O!clok",
+    "model": "Coastal Sandals",
+    "weight": "0.45 kg",
+    "dimensions": "EU 36-42",
+    "warranty": "30-day quality guarantee",
+    "specs": [
+      "Cushioned sole",
+      "Lightweight design",
+      "Slip-resistant grip"
+    ],
+    "howToUse": ["Pair with casual or travel outfits"],
+    "dos": ["Clean gently after use"],
+    "donts": ["Do not leave in water overnight"]
+  },
+  {
+    "id": 6,
+    "name": "City Runner Sneakers",
+    "price": 4200,
+    "description": "Supportive everyday sneakers for walking, commuting, and casual city movement.",
+    "image": "/images/city-runner-sneakers.jpg",
+    "images": ["/images/city-runner-sneakers.jpg"],
+    "category": "Footwear",
+    "brand": "O!clok",
+    "model": "City Runner",
+    "weight": "0.7 kg",
+    "dimensions": "EU 36-42",
+    "warranty": "30-day quality guarantee",
+    "specs": [
+      "Cushioned insole",
+      "Flexible sole",
+      "Lightweight frame"
+    ],
+    "howToUse": ["Wear for work, travel, or errands"],
+    "dos": ["Store in a dry place"],
+    "donts": ["Do not machine wash"]
+  },
+  {
+    "id": 7,
+    "name": "Classic O!clok Cap",
+    "price": 1800,
+    "description": "A clean everyday cap for casual, sports, and streetwear outfits.",
+    "image": "/images/cap.jpeg",
+    "images": ["/images/cap.jpeg"],
+    "category": "Accessories",
+    "brand": "O!clok",
+    "model": "Classic Cap",
+    "weight": "0.18 kg",
+    "dimensions": "One size adjustable",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Adjustable strap",
+      "Cotton blend fabric",
+      "Structured front panel"
+    ],
+    "howToUse": [
+      "Adjust to your preferred fit",
+      "Pair with casual or sportswear"
+    ],
+    "dos": ["Spot clean as needed"],
+    "donts": ["Do not tumble dry"]
+  },
+  {
+    "id": 8,
+    "name": "Commuter Crossbody Bag",
+    "price": 3600,
+    "description": "A practical day bag for essentials, devices, errands, and everyday travel.",
+    "image": "/images/city-bag.jpeg",
+    "images": ["/images/city-bag.jpeg"],
+    "category": "Accessories",
+    "brand": "O!clok",
+    "model": "Commuter Crossbody",
+    "weight": "0.4 kg",
+    "dimensions": "Compact carry size",
+    "warranty": "30-day quality guarantee",
+    "specs": [
+      "Adjustable strap",
+      "Secure zip closure",
+      "Roomy internal pocket"
+    ],
+    "howToUse": [
+      "Carry daily essentials",
+      "Use for travel or errands"
+    ],
+    "dos": ["Store away from moisture"],
+    "donts": ["Do not overload the bag"]
+  },
+  {
+    "id": 9,
+    "name": "Men's Classic Oxford Shirt",
+    "price": 3200,
+    "description": "A timeless men's button-down shirt suitable for office wear, meetings, dinners, and smart casual occasions.",
+    "image": "/images/oxford-tshirt.jpg",
+    "images": ["/images/oxford-tshirt.jpg"],
+    "category": "Men",
+    "brand": "O!clok",
+    "model": "Classic Oxford",
+    "weight": "0.35 kg",
+    "dimensions": "S-XXL",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Classic button-down design",
+      "Smart collar",
+      "Versatile styling"
+    ],
+    "howToUse": [
+      "Choose the appropriate size",
+      "Pair with trousers, jeans, or chinos"
+    ],
+    "dos": [
+      "Follow the garment care label",
+      "Iron at the recommended temperature"
+    ],
+    "donts": ["Do not use excessive heat when ironing"]
+  },
+  {
+    "id": 10,
+    "name": "Ladies Elegant Everyday Dress",
+    "price": 3800,
+    "description": "A versatile women's dress for casual outings, social gatherings, and everyday smart styling.",
+    "image": "/images/elegant-dress.jpeg",
+    "images": ["/images/elegant-dress.jpeg"],
+    "category": "Ladies",
+    "brand": "O!clok",
+    "model": "Elegant Everyday",
+    "weight": "0.45 kg",
+    "dimensions": "XS-XL",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Comfortable silhouette",
+      "Versatile styling",
+      "Lightweight design"
+    ],
+    "howToUse": [
+      "Select your preferred size",
+      "Style with sandals, flats, or heels"
+    ],
+    "dos": [
+      "Follow the care label",
+      "Store on a suitable hanger"
+    ],
+    "donts": ["Do not bleach coloured fabric"]
+  },
+  {
+    "id": 11,
+    "name": "Kids Everyday Hoodie Set",
+    "price": 3500,
+    "description": "A cosy hoodie and matching bottoms set for children's outings, relaxed days, and cooler weather.",
+    "image": "/images/kids-hoodie.jpeg",
+    "images": ["/images/kids-hoodie.jpeg"],
+    "category": "Kids",
+    "brand": "O!clok Kids",
+    "model": "Everyday Hoodie Set",
+    "weight": "0.65 kg",
+    "dimensions": "Ages 4-12",
+    "warranty": "7-day exchange",
+    "specs": [
+      "Comfortable two-piece set",
+      "Soft-touch feel",
+      "Easy-to-wear design"
+    ],
+    "howToUse": [
+      "Choose a size using the size guide",
+      "Pair with sneakers for casual outings"
+    ],
+    "dos": [
+      "Wash according to the care label",
+      "Check the fit as the child grows"
+    ],
+    "donts": ["Do not use excessive heat when drying"]
+  }
+]

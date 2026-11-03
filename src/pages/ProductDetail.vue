@@ -101,9 +101,36 @@
 </template>
 
 <script>
-import productsData from "../data/products.json";
+import electronicProductsData from "../data/electronics.json";
+import boutiqueProductsData from "../data/boutique.json";
 import { addProductToCart, persistCart, readCart } from "../services/cart.service";
 import { getRegisteredUser } from "../services/auth.service";
+
+const normalizeCatalogIds = (...catalogs) => {
+  const seen = new Set();
+  const merged = [];
+
+  catalogs.forEach((catalog) => {
+    (Array.isArray(catalog) ? catalog : []).forEach((item) => {
+      if (!item || typeof item !== "object") return;
+
+      let nextId = Number(item.id);
+      if (!Number.isFinite(nextId) || seen.has(nextId)) {
+        nextId = 1;
+        while (seen.has(nextId)) {
+          nextId += 1;
+        }
+      }
+
+      seen.add(nextId);
+      merged.push({ ...item, id: nextId });
+    });
+  });
+
+  return merged;
+};
+
+const productsData = normalizeCatalogIds(electronicProductsData, boutiqueProductsData);
 
 export default {
   props: ["id"],
@@ -155,8 +182,12 @@ export default {
     },
 
     loadProduct() {
-      const productId = Number(this.id);
-      this.product = this.products.find((p) => Number(p.id) === productId) || null;
+      const routeId = String(this.id ?? "").trim();
+      const productId = Number(routeId);
+
+      this.product = this.products.find((p) => Number(p.id) === productId)
+        || this.products.find((p) => String(p.id) === routeId)
+        || null;
 
       if (!this.product) {
         this.activeImage = "";

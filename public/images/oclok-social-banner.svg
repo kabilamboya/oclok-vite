@@ -1,0 +1,55 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="70" y1="40" x2="1100" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020817"/>
+      <stop offset="0.5" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="232" y1="118" x2="928" y2="474" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE"/>
+      <stop offset="0.5" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="card" x1="100" y1="110" x2="970" y2="490" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1120" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#111827" stop-opacity="0.82"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1040" cy="120" r="170" fill="#22D3EE" fill-opacity="0.12"/>
+  <circle cx="180" cy="530" r="210" fill="#8B5CF6" fill-opacity="0.14"/>
+  <circle cx="960" cy="500" r="180" fill="#3B82F6" fill-opacity="0.1"/>
+
+  <rect x="84" y="82" width="1032" height="466" rx="30" fill="url(#card)" stroke="rgba(148,163,184,0.3)"/>
+
+  <g transform="translate(148 156)">
+    <rect x="0" y="0" width="180" height="180" rx="42" fill="url(#accent)"/>
+    <path d="M52 52L128 52L128 128L52 128V52Z" stroke="white" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M81 80H99V124H81V80ZM88 64C94.6274 64 100 69.3726 100 76C100 82.6274 94.6274 88 88 88C81.3726 88 76 82.6274 76 76C76 69.3726 81.3726 64 88 64Z" fill="white"/>
+    <path d="M52 144H128" stroke="white" stroke-width="18" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(390 170)">
+    <text x="0" y="120" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="82">O!clok</text>
+    <text x="4" y="174" fill="#A5F3FC" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="28" letter-spacing="3">MEDIA • CYBER • PRODUCTS • TECH</text>
+    <rect x="0" y="206" width="280" height="6" rx="3" fill="url(#accent)"/>
+    <text x="0" y="280" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="34">Local technician services and creative digital solutions</text>
+    <text x="0" y="330" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="28">for homes, businesses, and modern brands in Kenya</text>
+  </g>
+
+  <g transform="translate(820 184)">
+    <rect x="0" y="0" width="200" height="132" rx="18" fill="#0F172A" fill-opacity="0.8" stroke="rgba(148,163,184,0.28)"/>
+    <text x="20" y="48" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700">Trusted</text>
+    <text x="20" y="80" fill="#A5F3FC" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700">24/7</text>
+    <text x="20" y="110" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="18">Support</text>
+  </g>
+
+  <g transform="translate(840 380)">
+    <circle cx="0" cy="0" r="6" fill="#22D3EE"/>
+    <circle cx="34" cy="0" r="6" fill="#60A5FA"/>
+    <circle cx="68" cy="0" r="6" fill="#A78BFA"/>
+    <circle cx="102" cy="0" r="6" fill="#34D399"/>
+    <text x="130" y="8" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="600">oclok.co.ke</text>
+  </g>
+</svg>

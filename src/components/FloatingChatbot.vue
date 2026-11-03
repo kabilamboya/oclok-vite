@@ -88,9 +88,36 @@
 
 <script>
 import servicesData from "../data/services.json";
-import productsData from "../data/products.json";
+import electronicProductsData from "../data/electronics.json";
+import boutiqueProductsData from "../data/boutique.json";
 import techniciansData from "../data/technicians.json";
 import placesData from "../data/places.json";
+
+const normalizeCatalogIds = (...catalogs) => {
+  const seen = new Set();
+  const merged = [];
+
+  catalogs.forEach((catalog) => {
+    (Array.isArray(catalog) ? catalog : []).forEach((item) => {
+      if (!item || typeof item !== "object") return;
+
+      let nextId = Number(item.id);
+      if (!Number.isFinite(nextId) || seen.has(nextId)) {
+        nextId = 1;
+        while (seen.has(nextId)) {
+          nextId += 1;
+        }
+      }
+
+      seen.add(nextId);
+      merged.push({ ...item, id: nextId });
+    });
+  });
+
+  return merged;
+};
+
+const productsData = normalizeCatalogIds(electronicProductsData, boutiqueProductsData);
 
 export default {
   name: "FloatingChatbot",
@@ -353,7 +380,7 @@ export default {
 
       return {
         text: `Our store has ${this.products.length} products in ${categories.length} categories. Price range is KES ${this.formatCurrency(minPrice)} to KES ${this.formatCurrency(maxPrice)}. Sample items: ${sampleProducts}.`,
-        references: ["src/data/products.json", "Route: /products"],
+        references: ["Store catalog", "Route: /products"],
       };
     },
     buildTechniciansResponse(normalizedInput) {

@@ -9,246 +9,232 @@
       <RouterLink to="/" class="back-website" :title="sidebarCollapsed ? 'Back to website' : ''"><span>&larr;</span><b v-if="!sidebarCollapsed">Back to Website</b></RouterLink>
       <nav class="admin-nav" aria-label="Admin navigation">
         <p v-if="!sidebarCollapsed" class="nav-label">Overview</p>
-        <button class="nav-item" :class="{ active: activeSection === 'dashboard' }" type="button" @click="activeSection = 'dashboard'"><span>▥</span><b v-if="!sidebarCollapsed">Dashboard</b></button>
+        <button class="nav-item" :class="{ active: activeSection === 'overview' }" type="button" @click="activeSection = 'overview'"><span>▥</span><b v-if="!sidebarCollapsed">Overview</b></button>
         <p v-if="!sidebarCollapsed" class="nav-label">Operations</p>
-        <button class="nav-item" type="button" @click="showNotice('Messages are ready for the next admin module.')"><span>□</span><b v-if="!sidebarCollapsed">Messages</b><i v-if="!sidebarCollapsed">{{ unreadMessages }}</i></button>
-        <button class="nav-item" type="button" @click="showNotice('Workshop management is ready for connection.')"><span>▧</span><b v-if="!sidebarCollapsed">Workshop</b></button>
-        <button class="nav-item" type="button" @click="showNotice('Records management is ready for connection.')"><span>▤</span><b v-if="!sidebarCollapsed">Records</b></button>
-        <button class="nav-item" type="button" @click="showNotice('Reports will be connected to analytics data.')"><span>◫</span><b v-if="!sidebarCollapsed">Reports</b></button>
-        <button class="nav-item" type="button" @click="showNotice('Stock management is ready for connection.')"><span>▱</span><b v-if="!sidebarCollapsed">Stock</b></button>
+        <button v-if="hasWorkshops" class="nav-item" type="button" @click="activeSection = 'workshop'"><span>▧</span><b v-if="!sidebarCollapsed">Workshop</b></button>
+        <button v-if="hasRecords" class="nav-item" type="button" @click="activeSection = 'records'"><span>▤</span><b v-if="!sidebarCollapsed">Records</b></button>
+        <button v-if="hasReports" class="nav-item" type="button" @click="activeSection = 'reports'"><span>◫</span><b v-if="!sidebarCollapsed">Reports</b></button>
+        <button v-if="hasStock" class="nav-item" type="button" @click="activeSection = 'stock'"><span>▱</span><b v-if="!sidebarCollapsed">Stock</b></button>
+        <p v-if="!sidebarCollapsed" class="nav-label">Analytics</p>
+        <button class="nav-item" :class="{ active: activeSection === 'sales' }" type="button" @click="activeSection = 'sales'"><span>▱</span><b v-if="!sidebarCollapsed">Sales</b></button>
+        <button class="nav-item" :class="{ active: activeSection === 'financials' }" type="button" @click="activeSection = 'financials'"><span>₵</span><b v-if="!sidebarCollapsed">Financials</b></button>
         <p v-if="!sidebarCollapsed" class="nav-label">Team</p>
         <button class="nav-item" :class="{ active: activeSection === 'users' }" type="button" @click="activeSection = 'users'"><span>♙</span><b v-if="!sidebarCollapsed">Team Access</b></button>
       </nav>
-      <div v-if="!sidebarCollapsed" class="admin-profile"><div class="avatar">A</div><div><strong>admin</strong><small>Operations</small></div><span>•••</span></div>
+      <div v-if="!sidebarCollapsed" class="admin-profile-wrap">
+        <div class="admin-profile">
+          <div class="avatar">A</div>
+          <div class="admin-profile-meta">
+            <strong>admin</strong>
+            <small>{{ currentRole }}</small>
+          </div>
+          <button class="profile-role-toggle" type="button" aria-label="Switch admin role" @click="roleMenuOpen = !roleMenuOpen">✎</button>
+        </div>
+        <div v-if="roleMenuOpen" class="role-menu" role="menu" aria-label="Admin role menu">
+          <button v-for="role in roleOptions" :key="role" class="role-menu-item" type="button" :class="{ active: currentRole === role }" @click="setRole(role)">
+            {{ role }}
+          </button>
+          <button class="role-menu-item signout-item" type="button" @click="signOutAdmin">Sign out</button>
+        </div>
+      </div>
     </aside>
 
     <section class="admin-content">
-      <header class="topbar"><button class="mobile-menu" type="button" aria-label="Toggle sidebar" @click="sidebarCollapsed = !sidebarCollapsed">☰</button><strong>Dashboard</strong><div class="top-actions"><span class="status-pill">admin</span><button class="icon-button" type="button" aria-label="Notifications" @click="notificationsOpen = !notificationsOpen">♧<em>{{ unreadMessages }}</em></button><button class="signout" type="button" @click="showNotice('Sign out is not connected yet.')">Sign out</button></div></header>
-
-      <div v-if="activeSection === 'dashboard'" class="dashboard-body">
-        <section class="intro-panel"><div><h1>Oclok Business Cockpit</h1><p>YEAR TO DATE - {{ selectedYear }}</p></div><div class="filters"><button v-for="period in periods" :key="period" type="button" :class="{ selected: selectedPeriod === period }" @click="selectedPeriod = period">{{ period }}</button><select v-model="selectedShop" aria-label="Select shop"><option>All Shops</option><option>Oclok Store</option><option>Oclok Cyber</option><option>Oclok Media</option></select></div></section>
-        <div v-if="notificationsOpen" class="notification-panel"><strong>Notifications</strong><p>3 alerts require review.</p><p>Technician profile activity increased this week.</p></div>
-
-        <section class="brief-grid"><article class="brief-card"><p>General remarks</p><h2>{{ selectedPeriod }} business summary</h2><span>{{ summaryText }}</span></article><article class="brief-card watchlist"><p>Watchlist</p><h2>Monitor stock, orders, and shop contribution.</h2><span>{{ productCount }} products across the current catalogue.</span></article></section>
-
-        <section class="metric-grid"><article v-for="metric in metrics" :key="metric.label" class="metric-card"><div class="metric-heading"><span>{{ metric.label }}</span><b :class="metric.tone">{{ metric.icon }}</b></div><strong>{{ metric.value }}</strong><small>{{ metric.note }}</small></article></section>
-
-        <section class="analytics-grid">
-          <article class="dashboard-card sales-card">
-            <div class="card-heading">
-              <div><p>Sales dashboard</p><h2>Revenue performance</h2></div>
-              <span>{{ selectedPeriod }}</span>
+      <header class="topbar">
+        <div class="topbar-main">
+          <button class="mobile-menu" type="button" aria-label="Toggle sidebar" @click="sidebarCollapsed = !sidebarCollapsed">☰</button>
+          <div class="page-title-block">
+            <strong>Oclok Business Cockpit</strong>
+            <div class="cockpit-header">
+              <p> - {{ selectedYear }}</p>
             </div>
-            <div class="chart-kpis">
-              <div><strong>{{ salesSummary.total }}</strong><small>Net sales</small></div>
-              <div><strong>{{ salesSummary.growth }}</strong><small>vs prior period</small></div>
-              <div><strong>{{ salesSummary.orders }}</strong><small>Orders closed</small></div>
-            </div>
-            <svg class="sales-chart" viewBox="0 0 440 180" preserveAspectRatio="none" aria-label="Sales chart">
-              <defs>
-                <linearGradient id="salesFill" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#df1f26" stop-opacity="0.24" />
-                  <stop offset="100%" stop-color="#df1f26" stop-opacity="0.02" />
-                </linearGradient>
-              </defs>
-              <path :d="salesAreaPath" fill="url(#salesFill)" opacity="0.9"></path>
-              <path :d="salesLinePath" fill="none" stroke="#df1f26" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-              <g v-for="point in salesChartPoints" :key="`point-${point.index}`">
-                <circle :cx="point.x" :cy="point.y" r="4.5" fill="#ffffff" stroke="#df1f26" stroke-width="2"></circle>
-              </g>
-            </svg>
-            <div class="chart-label-row">
-              <span v-for="label in salesChartLabels" :key="label">{{ label }}</span>
-            </div>
-          </article>
+          </div>
+          <div class="top-actions">
+            <span class="status-pill">{{ currentRole }}</span>
+          </div>
+        </div>
+        <div class="header-filters">
+          <div class="filters">
+            <button v-for="period in periods" :key="period" type="button" :class="{ selected: selectedPeriod === period }" @click="selectedPeriod = period">{{ period }}</button>
+            <select v-model="selectedShop" aria-label="Select shop"><option>All Shops</option><option>Oclok Store</option><option>Oclok Cyber</option><option>Oclok Media</option></select>
+          </div>
+        </div>
+      </header>
 
-          <article class="dashboard-card process-card">
-            <div class="card-heading">
-              <div><p>Process tracking</p><h2>Operations pipeline</h2></div>
-              <span>{{ processRows.filter((row) => row.status !== 'Complete').length }} active</span>
-            </div>
-            <div class="table-wrap">
-              <table class="data-table process-table">
-                <thead>
-                  <tr>
-                    <th>Process</th>
-                    <th>Due</th>
-                    <th>Progress</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="process in processRows" :key="process.name">
-                    <td><strong>{{ process.name }}</strong><small>{{ process.owner }}</small></td>
-                    <td>{{ process.due }}</td>
-                    <td>
-                      <div class="progress-track"><span :style="{ width: `${process.progress}%` }"></span></div>
-                      <small>{{ process.progress }}%</small>
-                    </td>
-                    <td>
-                      <button type="button" class="status-pill-table" :class="process.status.toLowerCase().replace(/\s+/g, '-')" @click="cycleProcessStatus(process)">
-                        {{ process.status }}
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-
-        <section class="lower-grid">
-          <article class="dashboard-card table-card">
-            <div class="card-heading">
-              <div><p>Sales by channel</p><h2>Store revenue</h2></div>
-              <span>{{ selectedShop }}</span>
-            </div>
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Channel</th>
-                    <th>Revenue</th>
-                    <th>Orders</th>
-                    <th>Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="channel in salesChannels" :key="channel.name">
-                    <td><strong>{{ channel.name }}</strong></td>
-                    <td>{{ channel.revenue }}</td>
-                    <td>{{ channel.orders }}</td>
-                    <td><span class="share-badge">{{ channel.share }}</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-
-          <article class="dashboard-card stock-card">
-            <div class="card-heading">
-              <div><p>Stock management</p><h2>Catalogue inventory</h2></div>
-              <span>{{ stockEntries.length }} items</span>
-            </div>
-
-            <div class="stock-layout">
-              <form class="stock-form" @submit.prevent="addStockItem">
-                <h3>Add item</h3>
-                <div class="stock-form-row">
-                  <label>
-                    <span>Name</span>
-                    <input v-model="stockForm.name" type="text" placeholder="Product name" required />
-                  </label>
-                  <label>
-                    <span>Category</span>
-                    <select v-model="stockForm.category">
-                      <option v-for="category in stockCategories" :key="category" :value="category">{{ category }}</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="stock-form-row">
-                  <label>
-                    <span>Price (KES)</span>
-                    <input v-model.number="stockForm.price" type="number" min="0" step="100" required />
-                  </label>
-                  <label>
-                    <span>Status</span>
-                    <select v-model="stockForm.inStock">
-                      <option :value="true">In stock</option>
-                      <option :value="false">Out of stock</option>
-                    </select>
-                  </label>
-                </div>
-                <label>
-                  <span>Description</span>
-                  <textarea v-model="stockForm.description" rows="3" placeholder="Optional product description"></textarea>
-                </label>
-                <button type="submit" class="primary-action stock-submit">Add to stock</button>
-              </form>
-
-              <div class="stock-table-wrap">
-                <table class="stock-table">
-                  <thead>
-                    <tr>
-                      <th>Item</th>
-                      <th>Category</th>
-                      <th>Price</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in stockEntries" :key="item.id">
-                      <td><strong>{{ item.name }}</strong></td>
-                      <td>{{ item.category }}</td>
-                      <td>
-                        <input
-                          :value="item.price"
-                          type="number"
-                          min="0"
-                          step="100"
-                          @input="updateStockPrice(item, $event.target.value)"
-                        />
-                      </td>
-                      <td>
-                        <button type="button" class="stock-toggle" :class="{ out: !item.inStock }" @click="toggleStockStatus(item)">
-                          {{ item.inStock !== false ? 'In stock' : 'Out of stock' }}
-                        </button>
-                      </td>
-                      <td>
-                        <button type="button" class="table-action danger" @click="removeStockItem(item.id)">Remove</button>
-                      </td>
-                    </tr>
-                    <tr v-if="stockEntries.length === 0">
-                      <td colspan="5" class="empty-users">No stock items yet.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <section class="lower-grid"><article class="dashboard-card shop-performance"><div class="card-heading"><div><p>Shop performance</p><h2>Contribution by channel</h2></div><span>{{ selectedPeriod }}</span></div><div v-for="shop in shopPerformance" :key="shop.name" class="shop-row"><div><strong>{{ shop.name }}</strong><small>{{ shop.orders }} transactions</small></div><b>{{ shop.share }}%</b><div class="progress"><span :style="{ width: `${shop.share}%` }"></span></div></div></article></section>
-
-        <section class="lower-grid"><article class="dashboard-card activity-card"><div class="card-heading"><div><p>Recent activity</p><h2>What needs attention</h2></div><button class="link-button" type="button" @click="showNotice('All activity view is coming next.')">View all</button></div><ul><li v-for="activity in activities" :key="activity.title"><span class="activity-icon">{{ activity.icon }}</span><div><strong>{{ activity.title }}</strong><small>{{ activity.meta }}</small></div><b>{{ activity.value }}</b></li></ul></article><article class="dashboard-card quick-actions"><div class="card-heading"><div><p>Quick actions</p><h2>Keep work moving</h2></div></div><button type="button" @click="showNotice('New record workflow selected.')">+ Add record <span>→</span></button><button type="button" @click="showNotice('Report export is ready for connection.')">↓ Export report <span>→</span></button><button type="button" @click="showNotice('Team access workflow selected.')">♙ Manage team <span>→</span></button></article></section>
+      <div v-if="activeSection !== 'users'" class="dashboard-body">
+        <component :is="panelComponent" v-bind="panelProps" @save="saveFinancials"></component>
       </div>
+
       <section v-else class="user-management dashboard-body">
-        <section class="intro-panel"><div><h1>Team Access</h1><p>{{ users.length }} registered technicians</p></div><button class="primary-action" type="button" @click="showNotice('All technicians are already registered from the technician directory.')">+ Add User</button></section>
-        <section class="user-summary-grid"><article class="user-summary"><span>Technicians</span><strong>{{ technicianCount }}</strong><small>Registered technician profiles</small></article></section>
-        <section class="dashboard-card users-card"><div class="card-heading users-heading"><div><p>User directory</p><h2>Manage registered users</h2></div><div class="user-filters"><input v-model="userSearch" type="search" placeholder="Search users..." aria-label="Search users" /><select v-model="userStatusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div></div><div class="users-table-wrap"><table class="users-table"><thead><tr><th>User</th><th>Role</th><th>Location</th><th>Status</th><th>Edit permission</th><th>Actions</th></tr></thead><tbody><tr v-for="user in filteredUsers" :key="user.id"><td><div class="user-cell"><span class="user-initial">{{ user.initial }}</span><div><strong>{{ user.name }}</strong><small>{{ user.email }}</small></div></div></td><td><span class="role-badge">{{ user.role }}</span></td><td>{{ user.location }}</td><td><span class="status-badge" :class="user.status">{{ user.status }}</span></td><td><button class="permission-button" type="button" :class="{ granted: user.canEditDetails }" @click="toggleEditPermission(user)">{{ user.canEditDetails ? 'Allowed' : 'Blocked' }}</button></td><td class="user-actions"><button class="table-action" type="button" :disabled="!user.canEditDetails" @click="openUserEditor(user)">Edit details</button><button class="table-action" type="button" @click="toggleUserStatus(user)">{{ user.status === 'active' ? 'Suspend' : 'Activate' }}</button></td></tr><tr v-if="filteredUsers.length === 0"><td colspan="6" class="empty-users">No users match your filters.</td></tr></tbody></table></div></section>
+        <section class="intro-panel">
+          <div>
+            <h1>Team Access</h1>
+            <p>{{ users.length }} registered technicians</p>
+          </div>
+          <button class="primary-action" type="button" @click="showNotice('All technicians are already registered from the technician directory.')">+ Add User</button>
+        </section>
+
+        <section class="user-summary-grid">
+          <article class="user-summary">
+            <span>Technicians</span>
+            <strong>{{ technicianCount }}</strong>
+            <small>Registered technician profiles</small>
+          </article>
+        </section>
+
+        <section class="dashboard-card users-card">
+          <div class="card-heading users-heading">
+            <div>
+              <p>User directory</p>
+              <h2>Manage registered users</h2>
+            </div>
+            <div class="user-filters">
+              <input v-model="userSearch" type="search" placeholder="Search users..." aria-label="Search users" />
+              <select v-model="userStatusFilter" aria-label="Filter by status">
+                <option value="all">All statuses</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="users-table-wrap">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Edit permission</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in filteredUsers" :key="user.id">
+                  <td>
+                    <div class="user-cell">
+                      <span class="user-initial">{{ user.initial }}</span>
+                      <div>
+                        <strong>{{ user.name }}</strong>
+                        <small>{{ user.email }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="role-badge">{{ user.role }}</span></td>
+                  <td>{{ user.location }}</td>
+                  <td><span class="status-badge" :class="user.status">{{ user.status }}</span></td>
+                  <td>
+                    <button class="permission-button" type="button" :class="{ granted: user.canEditDetails }" @click="toggleEditPermission(user)">
+                      {{ user.canEditDetails ? 'Allowed' : 'Blocked' }}
+                    </button>
+                  </td>
+                  <td class="user-actions">
+                    <button class="table-action" type="button" :disabled="!user.canEditDetails" @click="openUserEditor(user)">Edit details</button>
+                    <button class="table-action" type="button" @click="toggleUserStatus(user)">{{ user.status === 'active' ? 'Suspend' : 'Activate' }}</button>
+                  </td>
+                </tr>
+
+                <tr v-if="filteredUsers.length === 0">
+                  <td colspan="6" class="empty-users">No users match your filters.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div v-if="editingUser" class="editor-overlay" @click.self="closeUserEditor">
+          <form class="profile-editor" @submit.prevent="saveUserDetails">
+            <div class="editor-header">
+              <div>
+                <p>Edit permissioned profile</p>
+                <h2>{{ editingUser.name }}</h2>
+              </div>
+              <button type="button" class="editor-close" aria-label="Close editor" @click="closeUserEditor">&times;</button>
+            </div>
+
+            <label>Name<input v-model="editForm.name" required /></label>
+            <label>Specialty<input v-model="editForm.specialty" required /></label>
+            <label>Bio<textarea v-model="editForm.bio" rows="4" required></textarea></label>
+
+            <div class="editor-fields">
+              <label>Email<input v-model="editForm.email" type="email" required /></label>
+              <label>Phone<input v-model="editForm.phone" type="tel" /></label>
+            </div>
+
+            <label>Location<input v-model="editForm.location" required /></label>
+
+            <div class="editor-actions">
+              <button type="button" class="secondary-action" @click="closeUserEditor">Cancel</button>
+              <button type="submit" class="primary-action">Save details</button>
+            </div>
+          </form>
+        </div>
+
+        <p v-if="notice" class="toast" role="status">{{ notice }}</p>
       </section>
-      <div v-if="editingUser" class="editor-overlay" @click.self="closeUserEditor"><form class="profile-editor" @submit.prevent="saveUserDetails"><div class="editor-header"><div><p>Edit permissioned profile</p><h2>{{ editingUser.name }}</h2></div><button type="button" class="editor-close" aria-label="Close editor" @click="closeUserEditor">&times;</button></div><label>Name<input v-model="editForm.name" required /></label><label>Specialty<input v-model="editForm.specialty" required /></label><label>Bio<textarea v-model="editForm.bio" rows="4" required></textarea></label><div class="editor-fields"><label>Email<input v-model="editForm.email" type="email" required /></label><label>Phone<input v-model="editForm.phone" type="tel" /></label></div><label>Location<input v-model="editForm.location" required /></label><div class="editor-actions"><button type="button" class="secondary-action" @click="closeUserEditor">Cancel</button><button type="submit" class="primary-action">Save details</button></div></form></div>
-      <p v-if="notice" class="toast" role="status">{{ notice }}</p>
     </section>
   </main>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import products from '../data/products.json';
+import electronicProducts from '../data/electronics.json';
+import boutiqueProducts from '../data/boutique.json';
 import technicians from '../data/technicians.json';
 import media from '../data/media.json';
 import services from '../data/services.json';
 import mediaServices from '../data/mediaServices.json';
 import places from '../data/places.json';
+import AdminOverview from '../components/admin/AdminOverview.vue';
+import AdminSales from '../components/admin/AdminSales.vue';
+import AdminFinancials from '../components/admin/AdminFinancials.vue';
 import { createId, readStore, writeStore } from '../lib/localStore';
 import { saveProfileOverride } from '../services/userProfiles.service';
 import { getRegisteredUser } from '../services/auth.service';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
 const STOCK_STORAGE_KEY = 'oclok_store_stock';
+const normalizeCatalogIds = (...catalogs) => {
+  const seen = new Set();
+  const merged = [];
+
+  catalogs.forEach((catalog) => {
+    (Array.isArray(catalog) ? catalog : []).forEach((item) => {
+      if (!item || typeof item !== 'object') return;
+
+      let nextId = Number(item.id);
+      if (!Number.isFinite(nextId) || seen.has(nextId)) {
+        nextId = 1;
+        while (seen.has(nextId)) {
+          nextId += 1;
+        }
+      }
+
+      seen.add(nextId);
+      merged.push({ ...item, id: nextId });
+    });
+  });
+
+  return merged;
+};
+
+const products = normalizeCatalogIds(electronicProducts, boutiqueProducts);
 const sidebarCollapsed = ref(false);
-const activeSection = ref('dashboard');
-const notificationsOpen = ref(false);
+const activeSection = ref('overview');
 const selectedPeriod = ref('YTD');
 const selectedShop = ref('All Shops');
+const currentRole = ref('Operations');
+const roleOptions = ['Operations', 'General Manager'];
+const roleMenuOpen = ref(false);
 const notice = ref('');
 const userSearch = ref('');
 const userStatusFilter = ref('all');
 const editingUser = ref(null);
 const editForm = ref({});
 const periods = ['YTD', 'This Month', 'This Week', 'All Time'];
+const selectedYear = ref(2026);
 const stockCategories = ['Smart Home', 'Phones', 'Watches', 'Audio', 'Accessories', 'Security', 'Kitchen', 'Clothing', 'Footwear', 'Bags'];
 const stockForm = ref({ name: '', category: 'Smart Home', price: 0, inStock: true, description: '', image: '' });
 const stockEntries = ref((readStore(STOCK_STORAGE_KEY, products) || []).map((item) => ({
@@ -261,7 +247,11 @@ const stockEntries = ref((readStore(STOCK_STORAGE_KEY, products) || []).map((ite
 })));
 const productCount = computed(() => Array.isArray(products) ? products.length : 0);
 const technicianCount = technicians.length;
-const unreadMessages = 3;
+// Visibility flags for admin modules — computed from available data
+const hasWorkshops = computed(() => false); // no workshops data yet
+const hasRecords = computed(() => false); // no records data yet
+const hasReports = computed(() => true); // reports use computed metrics
+const hasStock = computed(() => Array.isArray(stockEntries.value) && stockEntries.value.length > 0);
 
 const persistStock = () => {
   writeStore(STOCK_STORAGE_KEY, stockEntries.value);
@@ -348,24 +338,44 @@ const metrics = computed(() => [
   { label: 'Cyber services', value: cyberCount.value, note: 'Cyber & security offerings', icon: '🛡', tone: 'red' },
   { label: 'Discover items', value: discoverCount.value, note: 'Discoverable places/resources', icon: '🔎', tone: 'green' },
 ]);
-const salesSeriesMap = {
-  YTD: [42, 48, 54, 62, 76, 81, 92, 101, 108, 117, 126, 134],
-  'This Month': [48, 55, 59, 65, 74, 82],
-  'This Week': [20, 33, 41, 49, 56, 64],
-  'All Time': [32, 39, 48, 56, 63, 71, 79, 88, 95, 104, 112, 128],
-};
+// Sales: simple per-category revenue model (values in KES thousands)
+const STORE_UNIT_K = 25; // KES x1000 per product (approx)
+const MEDIA_UNIT_K = 10; // per media item
+const SERVICE_UNIT_K = 15; // per service
+
+const storeRevenueK = computed(() => Math.round(storeCount.value * STORE_UNIT_K));
+const mediaRevenueK = computed(() => Math.round(mediaCount.value * MEDIA_UNIT_K));
+const servicesRevenueK = computed(() => Math.round(servicesCount.value * SERVICE_UNIT_K));
+const totalRevenueK = computed(() => storeRevenueK.value + mediaRevenueK.value + servicesRevenueK.value);
+
 const salesChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-const salesShopFactor = {
-  'All Shops': 1,
-  'Oclok Store': 1.22,
-  'Oclok Cyber': 0.86,
-  'Oclok Media': 0.72,
-};
 const salesSeries = computed(() => {
-  const base = salesSeriesMap[selectedPeriod.value] || salesSeriesMap.YTD;
-  const factor = salesShopFactor[selectedShop.value] || 1;
-  return base.map((value) => Math.round(value * factor));
+  // simple synthetic series based on totalRevenueK for charting
+  const base = Array.from({ length: salesChartLabels.length }, (_, i) => Math.round((totalRevenueK.value / salesChartLabels.length) * (0.7 + i * 0.06)));
+  return base;
 });
+
+// Stock chart: lightweight line-graph of recent stock value totals
+const stockChartLabels = ['W1', 'W2', 'W3', 'W4'];
+const stockSeries = computed(() => {
+  const totals = stockChartLabels.map(() => stockEntries.value.reduce((s, i) => s + (Number(i.price) || 0), 0));
+  return totals;
+});
+const stockChartPoints = computed(() => {
+  const points = stockSeries.value;
+  const width = 440;
+  const height = 120;
+  const padding = 12;
+  const max = Math.max(...points, 1);
+  const min = Math.min(...points, 0);
+  const spread = max - min || 1;
+  return points.map((point, index) => ({
+    index,
+    x: padding + (index * (width - padding * 2)) / Math.max(points.length - 1, 1),
+    y: height - padding - ((point - min) / spread) * (height - padding * 2),
+  }));
+});
+const stockLinePath = computed(() => stockChartPoints.value.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' '));
 const salesChartPoints = computed(() => {
   const points = salesSeries.value;
   const width = 440;
@@ -380,9 +390,7 @@ const salesChartPoints = computed(() => {
     y: height - padding - ((point - min) / spread) * (height - padding * 2),
   }));
 });
-const salesLinePath = computed(() => {
-  return salesChartPoints.value.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
-});
+const salesLinePath = computed(() => salesChartPoints.value.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' '));
 const salesAreaPath = computed(() => {
   const points = salesChartPoints.value;
   if (!points.length) return '';
@@ -393,35 +401,42 @@ const salesAreaPath = computed(() => {
   return `${line} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
 });
 const salesSummary = computed(() => {
-  const series = salesSeries.value;
-  const total = series.reduce((sum, value) => sum + value, 0);
-  const growth = Math.round(((series[series.length - 1] - series[0]) / Math.max(series[0], 1)) * 100);
-  const orders = Math.max(24, Math.round(total / 4));
+  const total = totalRevenueK.value;
+  const growth = 0; // placeholder: growth by year requires historical data
+  const orders = Math.max(24, Math.round(total / 10));
   return {
     total: `KES ${total}K`,
     growth: `${growth >= 0 ? '+' : ''}${growth}%`,
     orders: `${orders}`,
   };
 });
+
+// Financials: input capital, gross revenue, gross profit/loss persisted in local storage
+const FINANCIAL_KEY = 'oclok_admin_financials';
+const storedFinancials = readStore(FINANCIAL_KEY, { capital: 0, revenue: 0 });
+const financials = ref({ capital: Number(storedFinancials.capital) || 0, revenue: Number(storedFinancials.revenue) || 0 });
+const grossProfit = computed(() => {
+  const profit = Number(financials.value.revenue) - Number(financials.value.capital);
+  return profit;
+});
+const grossProfitLabel = computed(() => (grossProfit.value >= 0 ? `Profit KES ${grossProfit.value}` : `Loss KES ${Math.abs(grossProfit.value)}`));
+const saveFinancials = () => {
+  writeStore(FINANCIAL_KEY, financials.value);
+  showNotice('Financials saved');
+};
 const salesChannels = computed(() => {
-  const shopFactor = salesShopFactor[selectedShop.value] || 1;
-  const base = [
-    { name: 'Oclok Store', revenue: 128000, orders: 642, share: '54%' },
-    { name: 'Oclok Cyber', revenue: 76000, orders: 388, share: '31%' },
-    { name: 'Oclok Media', revenue: 46000, orders: 254, share: '15%' },
-  ];
+  const store = { name: 'Oclok Store', revenueK: storeRevenueK.value, orders: Math.round(storeRevenueK.value / 10) };
+  const cyber = { name: 'Oclok Cyber', revenueK: servicesRevenueK.value, orders: Math.round(servicesRevenueK.value / 10) };
+  const mediaCh = { name: 'Oclok Media', revenueK: mediaRevenueK.value, orders: Math.round(mediaRevenueK.value / 10) };
+  const base = [store, cyber, mediaCh];
+  const total = base.reduce((s, c) => s + c.revenueK, 0) || 1;
   return base.map((channel) => ({
     ...channel,
-    revenue: `KES ${Math.round(channel.revenue * shopFactor / 1000)}K`,
-    orders: Math.round(channel.orders * shopFactor),
-    share: `${Math.min(99, Math.round((channel.orders / base.reduce((sum, item) => sum + item.orders, 0)) * 100 * shopFactor))}%`,
+    revenue: `KES ${channel.revenueK}K`,
+    share: `${Math.round((channel.revenueK / total) * 100)}%`,
   }));
 });
-const shopPerformance = [
-  { name: 'Oclok Store', orders: 642, share: 78 },
-  { name: 'Oclok Cyber', orders: 388, share: 56 },
-  { name: 'Oclok Media', orders: 254, share: 34 },
-];
+const shopPerformance = computed(() => salesChannels.value.map((c) => ({ name: c.name, orders: c.orders, share: Number(c.share.replace('%', '')) })));
 const processStatusOrder = ['On track', 'Review', 'Delayed', 'Complete'];
 const processRows = ref([
   { name: 'Inbound order intake', owner: 'Operations desk', due: 'Today', progress: 84, status: 'On track' },
@@ -557,6 +572,18 @@ const removeStockItem = (itemId) => {
   if (item) showNotice(`${item.name} was removed from stock.`);
 };
 
+const setRole = (role) => {
+  if (!roleOptions.includes(role)) return;
+  currentRole.value = role;
+  roleMenuOpen.value = false;
+  showNotice(`${role} role selected.`);
+};
+
+const signOutAdmin = () => {
+  roleMenuOpen.value = false;
+  showNotice('Signed out of admin role.');
+};
+
 const showNotice = (message) => { notice.value = message; window.clearTimeout(showNotice.timer); showNotice.timer = window.setTimeout(() => { notice.value = ''; }, 2800); };
 
 onMounted(() => {
@@ -584,16 +611,34 @@ onMounted(() => {
   syncStoreCatalog();
   syncFromSupabase();
 });
+
+const panelComponent = computed(() => {
+  switch (activeSection.value) {
+    case 'overview': return AdminOverview;
+    case 'stock': return AdminSales;
+    case 'sales': return AdminSales;
+    case 'financials': return AdminFinancials;
+    default: return AdminOverview;
+  }
+});
+
+const panelProps = computed(() => {
+  if (activeSection.value === 'overview') return { selectedPeriod: selectedPeriod.value, summaryText: summaryText.value, productCount: productCount.value, metrics: metrics.value };
+  if (activeSection.value === 'sales') return { selectedPeriod: selectedPeriod.value, selectedShop: selectedShop.value, salesSummary: salesSummary.value, salesChartPoints: salesChartPoints.value, salesAreaPath: salesAreaPath.value, salesLinePath: salesLinePath.value, salesChartLabels: salesChartLabels, salesChannels: salesChannels.value };
+  if (activeSection.value === 'financials') return { selectedYear: selectedYear.value, financials: financials.value, grossProfitLabel: grossProfitLabel.value };
+  if (activeSection.value === 'stock') return { selectedPeriod: selectedPeriod.value, selectedShop: selectedShop.value, salesSummary: salesSummary.value, salesChartPoints: salesChartPoints.value, salesAreaPath: salesAreaPath.value, salesLinePath: salesLinePath.value, salesChartLabels: salesChartLabels, salesChannels: salesChannels.value, stockEntries: stockEntries.value, stockChartLabels: stockChartLabels, stockLinePath: stockLinePath.value };
+  return {};
+});
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
-.admin-shell { --ink:#202523; --muted:#717975; --paper:#f7f8f5; --card:#fff; --line:#e0e4df; --red:#df1f26; --green:#29b66f; min-height:100vh; display:flex; background:var(--paper); color:var(--ink); font-family:'Manrope', Arial, sans-serif; }
+.admin-shell { --ink: var(--text); --muted: var(--text-muted); --paper: var(--bg); --card: var(--surface); --line: var(--border); --red: var(--color-primary); --green: var(--color-secondary); --purple: var(--color-accent); min-height:100vh; display:flex; background:var(--paper); color:var(--ink); font-family:'Manrope', Arial, sans-serif; }
 .admin-sidebar { width:220px; flex:0 0 220px; position:relative; background:#fff; border-right:1px solid var(--line); transition:width .25s, flex-basis .25s; padding:1.4rem 0; display:flex; flex-direction:column; }
-.sidebar-collapsed .admin-sidebar { width:76px; flex-basis:76px; }.brand-block { display:flex; align-items:center; gap:.7rem; padding:0 1.25rem 1.6rem; border-bottom:1px solid var(--line); }.brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--red); color:#fff; font-weight:800; font-size:1rem; }.brand-block strong { display:block; letter-spacing:.12em; font-size:.82rem; }.brand-block small,.admin-profile small { display:block; color:var(--muted); font:500 .6rem 'DM Mono'; letter-spacing:.14em; margin-top:.18rem; }.collapse-button { position:absolute; right:-13px; top:1.25rem; width:26px; height:26px; border:1px solid var(--line); border-radius:50%; background:#fff; color:var(--ink); cursor:pointer; }.admin-nav { padding:1.1rem .8rem; }.nav-label { padding:0 .65rem; margin:.9rem 0 .5rem; color:#9aa29c; font:500 .62rem 'DM Mono'; letter-spacing:.14em; text-transform:uppercase; }.nav-item { width:100%; display:flex; align-items:center; gap:.75rem; padding:.75rem .7rem; border:0; border-left:2px solid transparent; background:transparent; color:var(--muted); text-align:left; cursor:pointer; font:500 .78rem 'Manrope'; }.nav-item span { width:22px; text-align:center; font-size:1rem; }.nav-item b { font-weight:600; }.nav-item i { margin-left:auto; font-style:normal; color:var(--red); }.nav-item.active { background:#fff0f0; border-left-color:var(--red); color:var(--red); }.admin-profile { display:flex; align-items:center; gap:.55rem; margin:auto .9rem 0; padding:.7rem; border:1px solid var(--line); background:#f8f8f5; font-size:.7rem; }.admin-profile .avatar { width:29px; height:29px; display:grid; place-items:center; border-radius:50%; background:#ffd8d8; color:var(--red); font-weight:800; }.admin-profile span { margin-left:auto; color:var(--muted); }
+.sidebar-collapsed .admin-sidebar { width:76px; flex-basis:76px; }.brand-block { display:flex; align-items:center; gap:.7rem; padding:0 1.25rem 1.6rem; border-bottom:1px solid var(--line); }.brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--red); color:#fff; font-weight:800; font-size:1rem; }.brand-block strong { display:block; letter-spacing:.12em; font-size:.82rem; }.brand-block small,.admin-profile small { display:block; color:var(--muted); font:500 .6rem 'DM Mono'; letter-spacing:.14em; margin-top:.18rem; }.collapse-button { position:absolute; right:-13px; top:1.25rem; width:26px; height:26px; border:1px solid var(--line); border-radius:50%; background:#fff; color:var(--ink); cursor:pointer; }.admin-nav { padding:1.1rem .8rem; }.nav-label { padding:0 .65rem; margin:.9rem 0 .5rem; color:#9aa29c; font:500 .62rem 'DM Mono'; letter-spacing:.14em; text-transform:uppercase; }.nav-item { width:100%; display:flex; align-items:center; gap:.75rem; padding:.75rem .7rem; border:0; border-left:2px solid transparent; background:transparent; color:var(--muted); text-align:left; cursor:pointer; font:500 .78rem 'Manrope'; }.nav-item span { width:22px; text-align:center; font-size:1rem; }.nav-item b { font-weight:600; }.nav-item i { margin-left:auto; font-style:normal; color:var(--red); }.nav-item.active { background:#fff0f0; border-left-color:var(--red); color:var(--red); }.admin-profile-wrap { margin:auto .9rem 0; display:flex; flex-direction:column; gap:.5rem; }.admin-profile { display:flex; align-items:center; gap:.55rem; padding:.7rem; border:1px solid var(--line); background:#f8f8f5; font-size:.7rem; position:relative; }.admin-profile .avatar { width:29px; height:29px; display:grid; place-items:center; border-radius:50%; background:#ffd8d8; color:var(--red); font-weight:800; }.admin-profile-meta { flex:1; min-width:0; }.admin-profile-meta strong,.admin-profile-meta small { display:block; }.profile-role-toggle { width:28px; height:28px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); cursor:pointer; font-size:.82rem; }.role-menu { display:flex; flex-direction:column; gap:.35rem; padding:.45rem; border:1px solid var(--line); background:#fff; border-radius:10px; box-shadow:0 10px 24px rgba(15,23,42,.08); }.role-menu-item { width:100%; border:1px solid transparent; background:#f7f7f7; color:var(--ink); padding:.6rem .7rem; border-radius:8px; text-align:left; font:600 .72rem 'Manrope'; cursor:pointer; }.role-menu-item.active { border-color:var(--red); background:rgba(255,122,0,.08); color:var(--red); }.role-menu-item.signout-item { background:transparent; border-color:var(--line); color:var(--muted); } .admin-profile span { margin-left:auto; color:var(--muted); }
 .back-website { display:flex; align-items:center; gap:.65rem; margin:1rem .8rem 0; padding:.7rem .65rem; color:var(--ink); text-decoration:none; font-size:.75rem; font-weight:700; border-bottom:1px solid var(--line); }.back-website span { width:22px; text-align:center; font-size:1rem; }.back-website:hover { color:var(--red); }
-.admin-content { min-width:0; flex:1; }.topbar { height:64px; display:flex; align-items:center; justify-content:center; position:relative; background:#fff; border-bottom:1px solid var(--line); font-size:.9rem; }.top-actions { position:absolute; right:1.5rem; display:flex; align-items:center; gap:1rem; }.status-pill { border:1px solid #b5e4dc; background:#effbf8; color:#219482; border-radius:999px; padding:.38rem .85rem; font:500 .68rem 'DM Mono'; }.icon-button,.signout { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:7px; padding:.5rem .75rem; cursor:pointer; position:relative; }.icon-button em { position:absolute; right:-5px; top:-6px; width:15px; height:15px; display:grid; place-items:center; border-radius:50%; background:var(--red); color:#fff; font:500 .55rem Arial; }.signout { font-size:.72rem; }.mobile-menu { display:none; }
-.dashboard-body { max-width:1050px; margin:0 auto; padding:1.6rem; }.intro-panel,.brief-card,.dashboard-card,.metric-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.intro-panel { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1.25rem 1.5rem; }.intro-panel h1 { margin:0 0 .35rem; font-size:1.3rem; letter-spacing:-.03em; }.intro-panel p,.brief-card>p,.card-heading p { margin:0; color:var(--muted); font:500 .65rem 'DM Mono'; letter-spacing:.1em; text-transform:uppercase; }.filters { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }.filters button,.filters select,.card-heading select { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--muted); padding:.55rem .8rem; font:500 .7rem 'Manrope'; cursor:pointer; }.filters button.selected { background:var(--red); border-color:var(--red); color:#fff; }.filters select,.card-heading select { border-radius:7px; color:var(--ink); }.notification-panel { position:absolute; z-index:3; right:2rem; top:72px; width:250px; padding:1rem; background:#fff; border:1px solid var(--line); box-shadow:0 10px 25px rgba(0,0,0,.12); font-size:.75rem; }.notification-panel p { color:var(--muted); }
+.admin-content { min-width:0; flex:1; }.topbar { background:#fff; border-bottom:1px solid var(--line); font-size:.9rem; display:flex; flex-direction:column; }.topbar-main { min-height:64px; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0 1.4rem; position:relative; }.page-title-block { flex:1; display:flex; align-items:center; gap:1rem; min-width:0; }.page-title-block > strong { font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }.cockpit-header { display:flex; flex-direction:column; gap:.2rem; }.cockpit-header h1 { margin:0; font-size:1.25rem; letter-spacing:-.03em; }.cockpit-header p,.brief-card>p,.card-heading p { margin:0; color:var(--muted); font:500 .65rem 'DM Mono'; letter-spacing:.1em; text-transform:uppercase; }.header-filters { padding:0 1.4rem 1rem; }.top-actions { display:flex; align-items:center; gap:1rem; }.status-pill { border:1px solid #b5e4dc; background:#effbf8; color:#219482; border-radius:999px; padding:.38rem .85rem; font:500 .68rem 'DM Mono'; }.signout { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:7px; padding:.5rem .75rem; cursor:pointer; font-size:.72rem; }.mobile-menu { display:none; }
+.dashboard-body { max-width:1050px; margin:0 auto; padding:1.6rem; }.intro-panel,.brief-card,.dashboard-card,.metric-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.filters { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }.filters button,.filters select,.card-heading select { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--muted); padding:.55rem .8rem; font:500 .7rem 'Manrope'; cursor:pointer; }.filters button.selected { background:var(--red); border-color:var(--red); color:#fff; }.filters select,.card-heading select { border-radius:7px; color:var(--ink); }
 .primary-action { border:0; border-radius:7px; background:var(--red); color:#fff; padding:.7rem 1rem; font:700 .75rem 'Manrope'; cursor:pointer; }.user-summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin-top:1rem; }.user-summary { display:flex; flex-direction:column; gap:.35rem; padding:1rem 1.15rem; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.user-summary span,.user-summary small { color:var(--muted); font-size:.7rem; }.user-summary strong { font-size:1.5rem; }.users-card { margin-top:1rem; }.users-heading { align-items:center; }.user-filters { display:flex; gap:.5rem; }.user-filters input,.user-filters select { border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); padding:.6rem .7rem; font:500 .72rem 'Manrope'; }.users-table-wrap { overflow-x:auto; }.users-table { min-width:760px; }.user-cell { display:flex; align-items:center; gap:.65rem; }.user-initial { width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:#ffe1e1; color:var(--red); font-weight:800; }.user-cell strong,.user-cell small { display:block; }.user-cell strong { color:var(--ink); font-size:.75rem; }.user-cell small { margin-top:.2rem; color:var(--muted); font-size:.65rem; }.role-badge,.status-badge { display:inline-block; padding:.32rem .55rem; border-radius:999px; font-size:.65rem; }.role-badge { background:#edf4f1; color:#427167; }.status-badge { text-transform:capitalize; }.status-badge.active { background:#d9f7e7; color:#1d9e5e; }.status-badge.pending { background:#fff0d5; color:#bd7b00; }.status-badge.suspended { background:#ffe1e1; color:var(--red); }.table-action { border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--red); padding:.4rem .55rem; font-size:.65rem; cursor:pointer; }.empty-users { padding:2rem; text-align:center; color:var(--muted); }
 .brief-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:1rem; margin-top:1rem; }.brief-card { padding:1.15rem 1.4rem; border-left:3px solid var(--red); }.brief-card h2 { margin:.7rem 0 .4rem; font-size:.95rem; font-weight:600; }.brief-card span { color:var(--muted); font-size:.78rem; }.metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-top:1rem; }.metric-card { padding:1rem; min-height:105px; border-top:3px solid var(--red); }.metric-heading { display:flex; justify-content:space-between; gap:.5rem; color:var(--muted); font:500 .62rem 'DM Mono'; text-transform:uppercase; }.metric-heading b { width:25px; height:25px; display:grid; place-items:center; border-radius:7px; font:700 .85rem Arial; }.metric-heading .green { background:#d9f7e7; color:#1d9e5e; }.metric-heading .blue { background:#e0f0ff; color:#2587cb; }.metric-heading .red { background:#ffe1e1; color:var(--red); }.metric-heading .orange { background:#fff0d5; color:#e99716; }.metric-heading .purple { background:#f0e2f8; color:#a756c4; }.metric-heading .teal { background:#dbf6f1; color:#168f80; }.metric-heading .yellow { background:#fff4d2; color:#d99c00; }.metric-heading .neutral { background:#f0f1ef; color:#68726d; }.metric-card>strong { display:block; margin:1rem 0 .6rem; font-size:1.05rem; }.metric-card small { color:var(--muted); font-size:.65rem; }.lower-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:1rem; margin-top:1rem; }.dashboard-card { padding:1.15rem 1.25rem; }.card-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; margin-bottom:1.2rem; }.card-heading h2 { margin:.45rem 0 0; font-size:1rem; }.card-heading>span { color:var(--muted); font:500 .65rem 'DM Mono'; }.shop-row { display:grid; grid-template-columns:1fr auto; gap:.2rem .75rem; margin-bottom:1.15rem; }.shop-row strong { display:block; font-size:.8rem; }.shop-row small { color:var(--muted); font-size:.65rem; }.shop-row>b { grid-column:2; grid-row:1 / span 2; align-self:center; font-size:.8rem; }.progress { grid-column:1 / span 2; height:7px; margin-top:.3rem; background:#e9ebe8; border-radius:99px; overflow:hidden; }.progress span { display:block; height:100%; background:var(--red); border-radius:99px; }.table-wrap { overflow:auto; } table { width:100%; border-collapse:collapse; font-size:.7rem; } th { background:#f2f3ef; color:#68716c; font:500 .62rem 'DM Mono'; text-transform:uppercase; text-align:left; padding:.7rem; } td { padding:.75rem; border-bottom:1px solid var(--line); color:var(--muted); } td:first-child { color:var(--ink); font-weight:600; }.activity-card ul { list-style:none; padding:0; margin:0; }.activity-card li { display:flex; align-items:center; gap:.7rem; padding:.75rem 0; border-bottom:1px solid var(--line); }.activity-icon { width:28px; height:28px; display:grid; place-items:center; border-radius:7px; background:#ffe8e8; color:var(--red); }.activity-card li div { min-width:0; flex:1; }.activity-card li strong,.activity-card li small { display:block; }.activity-card li strong { font-size:.75rem; }.activity-card li small { color:var(--muted); font-size:.65rem; margin-top:.2rem; }.activity-card li>b { font-size:.7rem; color:var(--red); }.link-button { border:0; background:none; color:var(--red); cursor:pointer; font-size:.7rem; font-weight:700; }.quick-actions button { width:100%; display:flex; justify-content:space-between; margin-bottom:.55rem; padding:.75rem .8rem; border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); font-size:.75rem; cursor:pointer; }.quick-actions button span { color:var(--red); }.toast { position:fixed; right:1.5rem; bottom:1.5rem; z-index:5; background:var(--ink); color:#fff; padding:.8rem 1rem; border-radius:7px; font-size:.75rem; box-shadow:0 8px 20px rgba(0,0,0,.2); }
 @media (max-width:900px) { .metric-grid { grid-template-columns:repeat(3,1fr); }.intro-panel { align-items:flex-start; flex-direction:column; }.filters { width:100%; }.filters select { margin-left:auto; }.brief-grid,.lower-grid { grid-template-columns:1fr; } }

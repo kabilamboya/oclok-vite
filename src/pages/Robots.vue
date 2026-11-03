@@ -1,6 +1,33 @@
 <script setup>
 import { computed } from "vue";
-import products from "../data/products.json";
+import electronicProducts from "../data/electronics.json";
+import boutiqueProducts from "../data/boutique.json";
+
+const normalizeCatalogIds = (...catalogs) => {
+  const seen = new Set();
+  const merged = [];
+
+  catalogs.forEach((catalog) => {
+    (Array.isArray(catalog) ? catalog : []).forEach((item) => {
+      if (!item || typeof item !== "object") return;
+
+      let nextId = Number(item.id);
+      if (!Number.isFinite(nextId) || seen.has(nextId)) {
+        nextId = 1;
+        while (seen.has(nextId)) {
+          nextId += 1;
+        }
+      }
+
+      seen.add(nextId);
+      merged.push({ ...item, id: nextId });
+    });
+  });
+
+  return merged;
+};
+
+const products = normalizeCatalogIds(electronicProducts, boutiqueProducts);
 
 const knowledgePillars = [
   {

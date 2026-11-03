@@ -283,19 +283,20 @@ export default {
 }
 
 .card-body {
-  padding: 1rem;
+  padding: 0.8rem 0.8rem 0.6rem;
   flex-grow: 1;
 }
 
 .card-title {
-  font-size: 1.2rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.96rem;
+  margin-bottom: 0.2rem;
   color: #111827 !important;
 }
 
 .card-subtitle {
   color: #4b5563 !important;
   font-weight: bold;
+  font-size: 0.74rem;
 }
 
 .card-meta {
@@ -338,10 +339,10 @@ export default {
 }
 
 .card-price {
-  font-size: 1rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #111827 !important;
-  margin: 0.2rem 0 0.5rem;
+  margin: 0.2rem 0 0.45rem;
 }
 
 .card-rating {
@@ -371,9 +372,9 @@ export default {
   }
 
 .card-description {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   color: #4b5563 !important;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 
 .card-experience {
@@ -393,8 +394,8 @@ export default {
 .card-footer {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-    padding: 0.8rem;
+    gap: 0.5rem;
+    padding: 0.6rem 0.7rem 0.7rem;
     border-top: 1px solid var(--border);
     background: var(--surface-alt);
   }
@@ -405,20 +406,19 @@ export default {
     min-width: 0;
     text-align: center;
     margin: 0;
-    padding: 0.75rem 0.85rem;
+    padding: 0.58rem 0.7rem;
     border: none;
-    border-radius: 0.85rem;
+    border-radius: 0.7rem;
     cursor: pointer;
     font-weight: 600;
+    font-size: 0.76rem;
     text-transform: none;
     white-space: normal;
     letter-spacing: 0.01em;
     transition: 0.24s ease;
     width: 100%;
     box-sizing: border-box;
-  }
-
-  .primary-btn {
+    min-height: 32px;
     background: var(--color-primary);
     color: var(--text-dark);
   }
