@@ -129,7 +129,7 @@ const mapPoints = [
   { name: "Pipeline", description: "Commercial route with strong local demand.", x: 72, y: 20, color: "#f59e0b" },
 ];
 
-const activeMapPoint = ref(null);
+const activeMapPoint = ref("CBD");
 
 function getMapPointByName(name) {
   return mapPoints.find((point) => point.name === name) || null;
@@ -1227,6 +1227,13 @@ function handleMediaUpload(event) {
   outline: none;
 }
 
+.map-point circle,
+.map-point text {
+  transition: transform 0.2s ease, fill 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 .map-point text {
   font-size: 12px;
   font-weight: 800;
@@ -1234,9 +1241,6 @@ function handleMediaUpload(event) {
   stroke: rgba(15, 18, 24, 0.9);
   stroke-width: 1.1;
   paint-order: stroke;
-  transition: transform 0.2s ease, fill 0.2s ease, font-size 0.2s ease, filter 0.2s ease;
-  transform-box: fill-box;
-  transform-origin: center;
 }
 
 .map-point:hover text,
@@ -1244,7 +1248,7 @@ function handleMediaUpload(event) {
 .map-point.active text {
   fill: #f8fffe;
   font-size: 13px;
-  filter: drop-shadow(0 4px 12px rgba(15, 157, 138, 0.6));
+  stroke-width: 1.35;
 }
 
 .map-point:hover circle,
@@ -1252,7 +1256,8 @@ function handleMediaUpload(event) {
 .map-point.active circle {
   stroke: rgba(255, 255, 255, 0.9);
   stroke-width: 3;
-  transform: scale(1.06);
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.45));
+  transform: scale(1.04);
 }
 
 .map-callout {
@@ -1415,37 +1420,37 @@ function handleMediaUpload(event) {
 }
 
 .phase-cbd-zone {
-  color: var(--phase-cbd-zone);
+  color: #0f1218;
   background-color: var(--phase-cbd-zone);
   border-color: var(--phase-cbd-zone);
 }
 
 .phase-west-zone-1 {
-  color: var(--phase-west-zone-1);
+  color: #0f1218;
   background-color: var(--phase-west-zone-1);
   border-color: var(--phase-west-zone-1);
 }
 
 .phase-north-zone {
-  color: var(--phase-north-zone);
+  color: #0f1218;
   background-color: var(--phase-north-zone);
   border-color: var(--phase-north-zone);
 }
 
 .phase-east-zone {
-  color: var(--phase-east-zone);
+  color: #0f1218;
   background-color: var(--phase-east-zone);
   border-color: var(--phase-east-zone);
 }
 
 .phase-west-zone-2 {
-  color: var(--phase-west-zone-2);
+  color: #0f1218;
   background-color: var(--phase-west-zone-2);
   border-color: var(--phase-west-zone-2);
 }
 
 .phase-south-zone {
-  color: var(--phase-south-zone);
+  color: #0f1218;
   background-color: var(--phase-south-zone);
   border-color: var(--phase-south-zone);
 }
@@ -2299,6 +2304,10 @@ function handleMediaUpload(event) {
     min-height: 280px;
     padding: 48px 18px;
   }
+
+  .hero-actions {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2318,6 +2327,16 @@ function handleMediaUpload(event) {
 
   .hero-text h1 {
     margin-bottom: 8px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta {
+    width: 100%;
+    text-align: center;
   }
 
   .hero-highlights {
@@ -2402,18 +2421,6 @@ function handleMediaUpload(event) {
     margin: 0;
   }
 
-  @media (min-width: 980px) {
-    .service-highlight-grid {
-      flex-wrap: wrap;
-      overflow-x: visible;
-    }
-
-    .service-card {
-      flex: 0 0 calc(50% - 12px);
-      min-width: 180px;
-    }
-  }
-
   .hero-highlights-pictorials-wrap {
     margin-top: 8px;
     padding-top: 18px;
@@ -2484,11 +2491,52 @@ function handleMediaUpload(event) {
     color: var(--muted);
   }
 
+  .driver-request-banner {
+    padding: 14px;
+  }
+
+  .driver-request-btn {
+    width: 100%;
+    margin: 8px 0 0;
+  }
+
+  .order-tabs {
+    display: grid;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: left;
+  }
+
   .zone-grid,
   .pricing-grid,
   .pictorial-grid,
   .form-grid.two {
     grid-template-columns: 1fr;
+  }
+
+  .checkbox-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .category-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
   }
 
   .places-scroll {

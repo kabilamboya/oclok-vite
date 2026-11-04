@@ -1393,6 +1393,44 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .products-page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .store-intro {
+    margin-top: 18px;
+    padding: 24px 12px 18px;
+  }
+
+  .shop-hero {
+    padding: 20px 18px;
+    border-radius: 22px;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .hero-copy h2 {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+  }
+
+  .hero-showcase {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .showcase-card {
+    min-height: 140px;
+  }
+
+  .primary-action,
+  .secondary-action {
+    width: 100%;
+  }
+
   .product-image {
     height: 160px;
   }
@@ -1412,6 +1450,10 @@ export default {
   .filters {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .search-wrapper {
+    max-width: none;
   }
 
   .search-bar,
@@ -1442,6 +1484,27 @@ export default {
 }
 
 @media (max-width: 480px) {
+  .products-page {
+    padding-bottom: 36px;
+  }
+
+  .store-intro .eyebrow {
+    letter-spacing: 0.08em;
+  }
+
+  .category-button {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.72rem;
+  }
+
+  .search-wrapper {
+    gap: 6px;
+  }
+
+  .search-btn {
+    padding: 10px 11px;
+  }
+
   .pagination {
     gap: 8px;
   }
@@ -1449,6 +1512,13 @@ export default {
   .page-btn {
     min-width: 34px;
     padding: 0.4rem 0.6rem;
+  }
+
+  .floating-cart {
+    right: 12px;
+    bottom: 12px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
   }
 }
 </style>

@@ -10,6 +10,7 @@
       <nav class="admin-nav" aria-label="Admin navigation">
         <p v-if="!sidebarCollapsed" class="nav-label">Overview</p>
         <button class="nav-item" :class="{ active: activeSection === 'overview' }" type="button" @click="activeSection = 'overview'"><span>▥</span><b v-if="!sidebarCollapsed">Overview</b></button>
+        <button class="nav-item" :class="{ active: activeSection === 'board' }" type="button" @click="activeSection = 'board'"><span>☑</span><b v-if="!sidebarCollapsed">Task Board</b></button>
         <p v-if="!sidebarCollapsed" class="nav-label">Operations</p>
         <button v-if="hasWorkshops" class="nav-item" type="button" @click="activeSection = 'workshop'"><span>▧</span><b v-if="!sidebarCollapsed">Workshop</b></button>
         <button v-if="hasRecords" class="nav-item" type="button" @click="activeSection = 'records'"><span>▤</span><b v-if="!sidebarCollapsed">Records</b></button>
@@ -338,6 +339,43 @@ const metrics = computed(() => [
   { label: 'Cyber services', value: cyberCount.value, note: 'Cyber & security offerings', icon: '🛡', tone: 'red' },
   { label: 'Discover items', value: discoverCount.value, note: 'Discoverable places/resources', icon: '🔎', tone: 'green' },
 ]);
+
+const taskBoard = computed(() => {
+  const clientRequests = [
+    { id: 'req-1', title: 'Smart-home installation', customer: 'Njeri M.', owner: 'Sales desk', due: 'Today', progress: 58, status: 'Awaiting dispatch' },
+    { id: 'req-2', title: 'CCTV inspection', customer: 'Akinyi K.', owner: 'Cyber support', due: 'Tomorrow', progress: 72, status: 'In progress' },
+    { id: 'req-3', title: 'Brand photo package', customer: 'Moses O.', owner: 'Media team', due: '2 days', progress: 38, status: 'Review' },
+  ];
+
+  const technicianJobs = [
+    { id: 'tech-1', title: 'Home automation setup', technician: 'Kabila Mboya', client: 'Njeri M.', due: 'Today', progress: 76, status: 'In progress' },
+    { id: 'tech-2', title: 'CCTV troubleshooting', technician: 'Akinyi K.', client: 'Otieno D.', due: 'Today', progress: 46, status: 'Queued' },
+    { id: 'tech-3', title: 'Solar panel check', technician: 'Mwangi P.', client: 'Ruto S.', due: 'Tomorrow', progress: 100, status: 'Completed' },
+  ];
+
+  const directEmployeeTasks = [
+    { id: 'emp-1', title: 'Customer follow-up call', employee: 'Mary W.', owner: 'Operations', due: 'Today', progress: 82, status: 'In progress' },
+    { id: 'emp-2', title: 'Inventory reconciliation', employee: 'Joseph T.', owner: 'Warehouse', due: 'Today', progress: 64, status: 'Review' },
+    { id: 'emp-3', title: 'Finance closeout', employee: 'Mariam N.', owner: 'Accounts', due: 'Friday', progress: 100, status: 'Completed' },
+  ];
+
+  const allTasks = [...clientRequests, ...technicianJobs, ...directEmployeeTasks];
+  const openTasks = allTasks.filter((task) => !['Completed', 'Delivered'].includes(task.status)).length;
+  const completionRate = Math.round((allTasks.filter((task) => task.status === 'Completed').length / Math.max(allTasks.length, 1)) * 100);
+
+  return {
+    clientRequests,
+    technicianJobs,
+    directEmployeeTasks,
+    summary: {
+      totalOpen: openTasks,
+      completionRate,
+      activeRequests: clientRequests.length,
+      activeJobs: technicianJobs.filter((job) => job.status !== 'Completed').length,
+      employeeTasks: directEmployeeTasks.filter((task) => task.status !== 'Completed').length,
+    },
+  };
+});
 // Sales: simple per-category revenue model (values in KES thousands)
 const STORE_UNIT_K = 25; // KES x1000 per product (approx)
 const MEDIA_UNIT_K = 10; // per media item
@@ -614,7 +652,9 @@ onMounted(() => {
 
 const panelComponent = computed(() => {
   switch (activeSection.value) {
-    case 'overview': return AdminOverview;
+    case 'overview':
+    case 'board':
+      return AdminOverview;
     case 'stock': return AdminSales;
     case 'sales': return AdminSales;
     case 'financials': return AdminFinancials;
@@ -623,7 +663,16 @@ const panelComponent = computed(() => {
 });
 
 const panelProps = computed(() => {
-  if (activeSection.value === 'overview') return { selectedPeriod: selectedPeriod.value, summaryText: summaryText.value, productCount: productCount.value, metrics: metrics.value };
+  if (activeSection.value === 'overview' || activeSection.value === 'board') {
+    return {
+      selectedPeriod: selectedPeriod.value,
+      summaryText: summaryText.value,
+      productCount: productCount.value,
+      metrics: metrics.value,
+      taskBoard: taskBoard.value,
+      boardMode: activeSection.value === 'board',
+    };
+  }
   if (activeSection.value === 'sales') return { selectedPeriod: selectedPeriod.value, selectedShop: selectedShop.value, salesSummary: salesSummary.value, salesChartPoints: salesChartPoints.value, salesAreaPath: salesAreaPath.value, salesLinePath: salesLinePath.value, salesChartLabels: salesChartLabels, salesChannels: salesChannels.value };
   if (activeSection.value === 'financials') return { selectedYear: selectedYear.value, financials: financials.value, grossProfitLabel: grossProfitLabel.value };
   if (activeSection.value === 'stock') return { selectedPeriod: selectedPeriod.value, selectedShop: selectedShop.value, salesSummary: salesSummary.value, salesChartPoints: salesChartPoints.value, salesAreaPath: salesAreaPath.value, salesLinePath: salesLinePath.value, salesChartLabels: salesChartLabels, salesChannels: salesChannels.value, stockEntries: stockEntries.value, stockChartLabels: stockChartLabels, stockLinePath: stockLinePath.value };
@@ -638,7 +687,34 @@ const panelProps = computed(() => {
 .sidebar-collapsed .admin-sidebar { width:76px; flex-basis:76px; }.brand-block { display:flex; align-items:center; gap:.7rem; padding:0 1.25rem 1.6rem; border-bottom:1px solid var(--line); }.brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--red); color:#fff; font-weight:800; font-size:1rem; }.brand-block strong { display:block; letter-spacing:.12em; font-size:.82rem; }.brand-block small,.admin-profile small { display:block; color:var(--muted); font:500 .6rem 'DM Mono'; letter-spacing:.14em; margin-top:.18rem; }.collapse-button { position:absolute; right:-13px; top:1.25rem; width:26px; height:26px; border:1px solid var(--line); border-radius:50%; background:#fff; color:var(--ink); cursor:pointer; }.admin-nav { padding:1.1rem .8rem; }.nav-label { padding:0 .65rem; margin:.9rem 0 .5rem; color:#9aa29c; font:500 .62rem 'DM Mono'; letter-spacing:.14em; text-transform:uppercase; }.nav-item { width:100%; display:flex; align-items:center; gap:.75rem; padding:.75rem .7rem; border:0; border-left:2px solid transparent; background:transparent; color:var(--muted); text-align:left; cursor:pointer; font:500 .78rem 'Manrope'; }.nav-item span { width:22px; text-align:center; font-size:1rem; }.nav-item b { font-weight:600; }.nav-item i { margin-left:auto; font-style:normal; color:var(--red); }.nav-item.active { background:#fff0f0; border-left-color:var(--red); color:var(--red); }.admin-profile-wrap { margin:auto .9rem 0; display:flex; flex-direction:column; gap:.5rem; }.admin-profile { display:flex; align-items:center; gap:.55rem; padding:.7rem; border:1px solid var(--line); background:#f8f8f5; font-size:.7rem; position:relative; }.admin-profile .avatar { width:29px; height:29px; display:grid; place-items:center; border-radius:50%; background:#ffd8d8; color:var(--red); font-weight:800; }.admin-profile-meta { flex:1; min-width:0; }.admin-profile-meta strong,.admin-profile-meta small { display:block; }.profile-role-toggle { width:28px; height:28px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); cursor:pointer; font-size:.82rem; }.role-menu { display:flex; flex-direction:column; gap:.35rem; padding:.45rem; border:1px solid var(--line); background:#fff; border-radius:10px; box-shadow:0 10px 24px rgba(15,23,42,.08); }.role-menu-item { width:100%; border:1px solid transparent; background:#f7f7f7; color:var(--ink); padding:.6rem .7rem; border-radius:8px; text-align:left; font:600 .72rem 'Manrope'; cursor:pointer; }.role-menu-item.active { border-color:var(--red); background:rgba(255,122,0,.08); color:var(--red); }.role-menu-item.signout-item { background:transparent; border-color:var(--line); color:var(--muted); } .admin-profile span { margin-left:auto; color:var(--muted); }
 .back-website { display:flex; align-items:center; gap:.65rem; margin:1rem .8rem 0; padding:.7rem .65rem; color:var(--ink); text-decoration:none; font-size:.75rem; font-weight:700; border-bottom:1px solid var(--line); }.back-website span { width:22px; text-align:center; font-size:1rem; }.back-website:hover { color:var(--red); }
 .admin-content { min-width:0; flex:1; }.topbar { background:#fff; border-bottom:1px solid var(--line); font-size:.9rem; display:flex; flex-direction:column; }.topbar-main { min-height:64px; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0 1.4rem; position:relative; }.page-title-block { flex:1; display:flex; align-items:center; gap:1rem; min-width:0; }.page-title-block > strong { font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }.cockpit-header { display:flex; flex-direction:column; gap:.2rem; }.cockpit-header h1 { margin:0; font-size:1.25rem; letter-spacing:-.03em; }.cockpit-header p,.brief-card>p,.card-heading p { margin:0; color:var(--muted); font:500 .65rem 'DM Mono'; letter-spacing:.1em; text-transform:uppercase; }.header-filters { padding:0 1.4rem 1rem; }.top-actions { display:flex; align-items:center; gap:1rem; }.status-pill { border:1px solid #b5e4dc; background:#effbf8; color:#219482; border-radius:999px; padding:.38rem .85rem; font:500 .68rem 'DM Mono'; }.signout { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:7px; padding:.5rem .75rem; cursor:pointer; font-size:.72rem; }.mobile-menu { display:none; }
-.dashboard-body { max-width:1050px; margin:0 auto; padding:1.6rem; }.intro-panel,.brief-card,.dashboard-card,.metric-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.filters { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }.filters button,.filters select,.card-heading select { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--muted); padding:.55rem .8rem; font:500 .7rem 'Manrope'; cursor:pointer; }.filters button.selected { background:var(--red); border-color:var(--red); color:#fff; }.filters select,.card-heading select { border-radius:7px; color:var(--ink); }
+.dashboard-body { max-width:1050px; margin:0 auto; padding:1.6rem; }.intro-panel,.brief-card,.dashboard-card,.metric-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.filters { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }.filters button,.filters select,.card-heading select { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--muted); padding:.55rem .8rem; font:500 .7rem 'Manrope'; cursor:pointer; transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }.filters button.selected { background:var(--red); border-color:var(--red); color:#fff; }.filters select,.card-heading select { border-radius:7px; color:var(--ink); }
+
+.nav-item:focus-visible,
+.filters button:focus-visible,
+.filters select:focus-visible,
+.card-heading select:focus-visible,
+.primary-action:focus-visible,
+.table-action:focus-visible,
+.permission-button:focus-visible,
+.role-menu-item:focus-visible,
+.admin-profile .avatar:focus-visible,
+.profile-role-toggle:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(255, 122, 0, 0.28);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(255, 122, 0, 0.1);
+}
+
+.nav-item:focus-visible,
+.nav-item:hover {
+  border-left-color: var(--red);
+  background: rgba(255, 122, 0, 0.05);
+  color: var(--red);
+}
 .primary-action { border:0; border-radius:7px; background:var(--red); color:#fff; padding:.7rem 1rem; font:700 .75rem 'Manrope'; cursor:pointer; }.user-summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin-top:1rem; }.user-summary { display:flex; flex-direction:column; gap:.35rem; padding:1rem 1.15rem; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 3px 10px rgba(28,37,32,.05); }.user-summary span,.user-summary small { color:var(--muted); font-size:.7rem; }.user-summary strong { font-size:1.5rem; }.users-card { margin-top:1rem; }.users-heading { align-items:center; }.user-filters { display:flex; gap:.5rem; }.user-filters input,.user-filters select { border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); padding:.6rem .7rem; font:500 .72rem 'Manrope'; }.users-table-wrap { overflow-x:auto; }.users-table { min-width:760px; }.user-cell { display:flex; align-items:center; gap:.65rem; }.user-initial { width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:#ffe1e1; color:var(--red); font-weight:800; }.user-cell strong,.user-cell small { display:block; }.user-cell strong { color:var(--ink); font-size:.75rem; }.user-cell small { margin-top:.2rem; color:var(--muted); font-size:.65rem; }.role-badge,.status-badge { display:inline-block; padding:.32rem .55rem; border-radius:999px; font-size:.65rem; }.role-badge { background:#edf4f1; color:#427167; }.status-badge { text-transform:capitalize; }.status-badge.active { background:#d9f7e7; color:#1d9e5e; }.status-badge.pending { background:#fff0d5; color:#bd7b00; }.status-badge.suspended { background:#ffe1e1; color:var(--red); }.table-action { border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--red); padding:.4rem .55rem; font-size:.65rem; cursor:pointer; }.empty-users { padding:2rem; text-align:center; color:var(--muted); }
 .brief-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:1rem; margin-top:1rem; }.brief-card { padding:1.15rem 1.4rem; border-left:3px solid var(--red); }.brief-card h2 { margin:.7rem 0 .4rem; font-size:.95rem; font-weight:600; }.brief-card span { color:var(--muted); font-size:.78rem; }.metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-top:1rem; }.metric-card { padding:1rem; min-height:105px; border-top:3px solid var(--red); }.metric-heading { display:flex; justify-content:space-between; gap:.5rem; color:var(--muted); font:500 .62rem 'DM Mono'; text-transform:uppercase; }.metric-heading b { width:25px; height:25px; display:grid; place-items:center; border-radius:7px; font:700 .85rem Arial; }.metric-heading .green { background:#d9f7e7; color:#1d9e5e; }.metric-heading .blue { background:#e0f0ff; color:#2587cb; }.metric-heading .red { background:#ffe1e1; color:var(--red); }.metric-heading .orange { background:#fff0d5; color:#e99716; }.metric-heading .purple { background:#f0e2f8; color:#a756c4; }.metric-heading .teal { background:#dbf6f1; color:#168f80; }.metric-heading .yellow { background:#fff4d2; color:#d99c00; }.metric-heading .neutral { background:#f0f1ef; color:#68726d; }.metric-card>strong { display:block; margin:1rem 0 .6rem; font-size:1.05rem; }.metric-card small { color:var(--muted); font-size:.65rem; }.lower-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:1rem; margin-top:1rem; }.dashboard-card { padding:1.15rem 1.25rem; }.card-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; margin-bottom:1.2rem; }.card-heading h2 { margin:.45rem 0 0; font-size:1rem; }.card-heading>span { color:var(--muted); font:500 .65rem 'DM Mono'; }.shop-row { display:grid; grid-template-columns:1fr auto; gap:.2rem .75rem; margin-bottom:1.15rem; }.shop-row strong { display:block; font-size:.8rem; }.shop-row small { color:var(--muted); font-size:.65rem; }.shop-row>b { grid-column:2; grid-row:1 / span 2; align-self:center; font-size:.8rem; }.progress { grid-column:1 / span 2; height:7px; margin-top:.3rem; background:#e9ebe8; border-radius:99px; overflow:hidden; }.progress span { display:block; height:100%; background:var(--red); border-radius:99px; }.table-wrap { overflow:auto; } table { width:100%; border-collapse:collapse; font-size:.7rem; } th { background:#f2f3ef; color:#68716c; font:500 .62rem 'DM Mono'; text-transform:uppercase; text-align:left; padding:.7rem; } td { padding:.75rem; border-bottom:1px solid var(--line); color:var(--muted); } td:first-child { color:var(--ink); font-weight:600; }.activity-card ul { list-style:none; padding:0; margin:0; }.activity-card li { display:flex; align-items:center; gap:.7rem; padding:.75rem 0; border-bottom:1px solid var(--line); }.activity-icon { width:28px; height:28px; display:grid; place-items:center; border-radius:7px; background:#ffe8e8; color:var(--red); }.activity-card li div { min-width:0; flex:1; }.activity-card li strong,.activity-card li small { display:block; }.activity-card li strong { font-size:.75rem; }.activity-card li small { color:var(--muted); font-size:.65rem; margin-top:.2rem; }.activity-card li>b { font-size:.7rem; color:var(--red); }.link-button { border:0; background:none; color:var(--red); cursor:pointer; font-size:.7rem; font-weight:700; }.quick-actions button { width:100%; display:flex; justify-content:space-between; margin-bottom:.55rem; padding:.75rem .8rem; border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--ink); font-size:.75rem; cursor:pointer; }.quick-actions button span { color:var(--red); }.toast { position:fixed; right:1.5rem; bottom:1.5rem; z-index:5; background:var(--ink); color:#fff; padding:.8rem 1rem; border-radius:7px; font-size:.75rem; box-shadow:0 8px 20px rgba(0,0,0,.2); }
 @media (max-width:900px) { .metric-grid { grid-template-columns:repeat(3,1fr); }.intro-panel { align-items:flex-start; flex-direction:column; }.filters { width:100%; }.filters select { margin-left:auto; }.brief-grid,.lower-grid { grid-template-columns:1fr; } }
