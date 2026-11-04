@@ -1,6 +1,6 @@
 <template>
   <section class="overview-shell" :class="{ 'board-mode': boardMode }">
-    <section class="brief-grid">
+    <section v-if="!boardMode" class="brief-grid">
       <article class="brief-card highlight">
         <p>General remarks</p>
         <h2>{{ selectedPeriod }} business summary</h2>
@@ -14,7 +14,21 @@
       </article>
     </section>
 
-    <section class="metric-grid">
+    <section v-else class="brief-grid board-intro-grid">
+      <article class="brief-card highlight">
+        <p>Operations snapshot</p>
+        <h2>Live flow across client work and technician delivery.</h2>
+        <span>Task board view focuses on active work, execution pressure, and completion rate across the live queue.</span>
+      </article>
+
+      <article class="brief-card watchlist">
+        <p>Board focus</p>
+        <h2>Prioritise stalled work and client commitments.</h2>
+        <span>{{ taskBoard?.summary?.totalOpen ?? 0 }} open tasks are currently tracked and scheduled.</span>
+      </article>
+    </section>
+
+    <section v-if="!boardMode" class="metric-grid">
       <article v-for="metric in metrics" :key="metric.label" class="metric-card">
         <div class="metric-heading">
           <span>{{ metric.label }}</span>
@@ -25,7 +39,7 @@
       </article>
     </section>
 
-    <section v-if="taskBoard" class="task-board-panel">
+    <section v-if="taskBoard && boardMode" class="task-board-panel">
       <div class="board-header">
         <div>
           <p>Operations board</p>
@@ -269,6 +283,10 @@ const taskStatusClass = (status = '') => {
 .board-mode .brief-card.watchlist {
   background: linear-gradient(135deg, rgba(15, 157, 138, 0.08), rgba(255, 255, 255, 0.96));
   border-color: rgba(15, 157, 138, 0.3);
+}
+
+.board-intro-grid {
+  margin-bottom: 0.25rem;
 }
 
 .board-header {
